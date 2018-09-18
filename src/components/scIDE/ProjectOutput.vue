@@ -1,0 +1,125 @@
+<template>
+  <div class="pro-output-container">
+    <div class="pro-output-container">
+      <div class="row">
+        <div class="col-auto mr-auto">
+          <button class="btn btn-sm btn-outline-secondary pro-output-btn-event" disabled>{{ $t('project.logs')}}</button>
+        </div>
+        <div class="col-auto pro-output-btn">
+          <div @click="cleanLog"><i class="fa fa-trash-o pro-output-fa-trash"></i></div>
+        </div>
+      </div>
+      <div class="pro-output-border">
+        <div id="pro-output-box" class="pro-output-content">
+          <p v-for="(value, key) in output.logs" :key="key">
+            {{value}}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+  import {mapState} from 'vuex'
+  import {CLEAR_OUTPUT_EVENTS} from '../../store/mutation-type'
+  import {CLEAR_OUTPUT_LOGS} from '../../store/mutation-type'
+  import Clipboard from 'clipboard';
+
+  export default {
+    name: 'project-output',
+    data() {
+      return {
+      }
+    },
+
+    created(){
+      this.cleanLog()
+    },
+    computed: {
+      ...mapState({
+        output: state => state.ProjectOutput.OutputInfo,
+        wasmOutput: state => state.ProjectWASMOutput.WASMOutputInfo,
+      })
+    },
+
+    methods:{
+      cleanLog(){
+        this.$store.commit({
+          type : CLEAR_OUTPUT_EVENTS,
+        })
+        this.$store.commit({
+          type : CLEAR_OUTPUT_LOGS,
+        })
+      },
+      copy(){
+        let clipboard = new Clipboard('.nav-link');
+      },
+      downloadWast(){
+        if(!this.wasmOutput.wast){
+          return;
+        }
+        let content = new Blob([this.wasmOutput.wast], { type: 'text/wat' })
+        let urlObject = window.URL || window.webkitURL || window
+        let url = urlObject.createObjectURL(content)
+        let el = document.createElement('a')
+        el.href = url
+        el.download ="program.wast"
+        document.body.appendChild(el)
+        el.click()
+        urlObject.revokeObjectURL(url)
+      }
+    }
+  }
+
+</script>
+
+<style scoped>
+  .pro-output-container {
+    max-width: 100% ;
+    min-width: 50%;
+    height: 100%;
+  }
+
+  .pro-output-btn-event {
+    width: 100px;
+    height: 26px;
+    margin-top: 1px;
+    border-radius:0;
+    color: black;
+    font-size: 10px;
+
+  }
+  .pro-output-btn-selected {
+    background: #cccccc;
+    color: black;
+    border-color: #C4C3C3;
+  }
+  .pro-output-border{
+    height: 100%;
+    margin-top: -26px;
+    padding-top: 26px;
+  }
+  .pro-output-content {
+    max-width: 100% !important;
+    min-width: 100%;
+    height: 100%;
+    background: #cccccc;
+    padding: 5px;
+    overflow: auto;
+  }
+  .pro-output-content p {
+    word-wrap: break-word;
+    word-break: break-all;
+  }
+  .pro-output-fa-trash{
+    font-size: 18px;
+    margin-top: 7px;
+    cursor: pointer;
+  }
+
+  .pro-output-btn{
+    margin-right: 12px;
+  }
+
+</style>

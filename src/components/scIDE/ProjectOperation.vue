@@ -1,0 +1,179 @@
+<template>
+  <div class="pro-operation-page">
+    <div class="row">
+      <div class="col pro-operation-btn-left">
+        <button class="btn btn-outline-dark pro-operation-button" @click="getCompilePage" :class="[showCompile ? 'pro-operation-button-click' : '']" data-toggle="tooltip" data-placement="bottom" :title="$t('projectOperation.compileTooltips')">{{$t('projectOperation.compile')}}</button>
+      </div>
+      <div class="col pro-operation-btn-center">
+        <button class="btn btn-outline-dark pro-operation-button" @click="getDeployPage" :class="[showDeploy ? 'pro-operation-button-click' : '']" data-toggle="tooltip" data-placement="bottom" :title="$t('projectOperation.deployTooltips')">{{$t('projectOperation.deploy')}}</button>
+      </div>
+      <div class="col pro-operation-btn-right">
+        <button class="btn btn-outline-dark pro-operation-button" @click="getRunPage" :class="[showRun ? 'pro-operation-button-click' : '']" data-toggle="tooltip" data-placement="bottom" :title="$t('projectOperation.runTooltips')">{{$t('projectOperation.run')}}</button>
+      </div>
+    </div>
+    <div class="pro-operation-border">
+      <div v-show="showCompile" class="pro-operation-height">
+        <compile :isRecompile='isShowPreDeployAndPreRun'></compile>
+      </div>
+      <div v-show="showDeploy" class="pro-operation-height">
+        <deploy :isShowPreDeployAndPreRun='isShowPreDeployAndPreRun'></deploy>
+      </div>
+      <div v-show="showRun" class="pro-operation-height">
+        <run  :isShowPreDeployAndPreRun='isShowPreDeployAndPreRun'></run>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+  import Compile from './Compile'
+  import Deploy from './Deploy'
+  import Run from './Run'
+  import {mapState} from 'vuex'
+
+  export default {
+    props: ['useChineseLanguage','isShowPreDeployAndPreRun'],
+    name: "project-operation",
+    data() {
+      return {
+        showCompile: true,
+        showDeploy: false,
+        showRun: false,
+        isUseChineseLang: this.$i18n.locale === 'zh' ? true : false,
+      }
+    },
+    components: {
+      Compile,
+      Deploy,
+      Run
+    },
+    watch: {
+      '$route': 'getPage',
+      'useChineseLanguage':function (val,oldval) {
+        this.isUseChineseLang = val
+      }
+    },
+    created() {
+      this.getPage();
+    },
+    computed: {
+      /*
+        projectInfo:{
+          info:{
+            abi:'',
+            code:'',
+            contract_hash:'',
+            created_at:'',
+            id:'',
+            info_author:'',
+            info_desc:'',
+            info_email:'',
+            info_name:'',
+            info_version:'',
+            language:'',
+            name:'',
+            nvm_byte_code:'',
+            type:'',
+            updated_at:'',
+            user_id:'',
+            wat:''
+        }，
+        projectName:{
+          info:{
+            id:'',
+            language:'',
+            projectName:'',
+          }
+        }
+       */
+      ...mapState({
+        projectInfo: state => state.ProjectInfoPage.ProjectInfo,
+        projectName: state => state.ProjectInfoPage.ProjectName,
+      })
+    },
+    methods: {
+      showCompilePage(){
+        this.showCompile = true
+        this.showDeploy = false
+        this.showRun = false
+      },
+      showDeployPage(){
+        this.showCompile = false
+        this.showDeploy = true
+        this.showRun = false
+      },
+      showRunPage(){
+        this.showCompile = false
+        this.showDeploy = false
+        this.showRun = true
+      },
+      getCompilePage(){
+        this.$router.push({ name:'IDE-Compile',params:{projectName:this.projectName.info.projectName}})
+      },
+      getDeployPage(){
+        this.$router.push({ name:'IDE-Deploy',params:{projectName:this.projectName.info.projectName}})
+      },
+      getRunPage(){
+        this.$router.push({ name:'IDE-Run',params:{projectName:this.projectName.info.projectName}})
+      },
+      getPage(){
+        if(this.$route.name === 'IDE-Compile'){
+          this.showCompilePage()
+        }else if(this.$route.name === 'IDE-Deploy'){
+          this.showDeployPage()
+        }else if(this.$route.name === 'IDE-Run'){
+          this.showRunPage()
+        }
+      },
+    }
+  }
+</script>
+
+<style scoped>
+  .pro-operation-page{
+    height: 100%;
+  }
+  .pro-operation-border{
+    border:1px solid #C4C3C3;
+    background-color: #ECF0F1;
+    width: 100%;
+    height: 100%;
+    margin-top: -26px;
+    padding-top: 26px;
+  }
+  .pro-operation-button {
+    border-radius: 0;
+    min-width: 100%;
+    height: 26px;
+    color: black;
+    border-color: #C4C3C3;
+    text-align: center;
+    padding: 4px;
+    font-size: 10px;
+  }
+  .pro-operation-button:hover,
+  .pro-operation-button:active {
+    background-color: #ECF0F1;
+    color: black;
+  }
+  .pro-operation-button:focus{
+    box-shadow:none !important;
+    outline: none !important;
+  }
+  .pro-operation-button-click{
+    background-color: #D2D2D2;
+  }
+  .pro-operation-btn-left{
+    padding-right: 0px;
+  }
+  .pro-operation-btn-center{
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+  .pro-operation-btn-right{
+    padding-left: 0px;
+  }
+  .pro-operation-height{
+    height: 100%;
+  }
+</style>
