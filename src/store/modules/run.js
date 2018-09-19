@@ -7,7 +7,7 @@ let Ont = require('ontology-ts-sdk');
 
 export default {
   state: {
-    Debugger: {},
+    Debugger: undefined,
     RunStatus : {
       running : false
     },
