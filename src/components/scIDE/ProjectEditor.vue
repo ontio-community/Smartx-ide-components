@@ -16,7 +16,7 @@ def Main(operation, args):
 
 
 def Hello(msg):
-  Log(msg)
+  Notify(msg)
   return True
       </div>
 
