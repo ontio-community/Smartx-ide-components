@@ -257,7 +257,15 @@
         debugMap.forEach((m) => {
           lineMappings[m.file_line_no] = m.start;
         });
-        let debug = new Debugger(avm, lineMappings);
+        let self = this;
+        let debug = new Debugger(avm, lineMappings, (payload) => {
+          console.log(payload);
+          if (payload.line !== undefined) {
+            let selection = self.projectEditor.selection;
+            selection.moveCursorToPosition({row: payload.line - 1, column: 0});
+            selection.selectLine();
+          }
+        });
 
         this.$store.commit({
           type: types.SET_DEBUGGER,
