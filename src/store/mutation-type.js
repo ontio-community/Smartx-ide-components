@@ -34,4 +34,4 @@ export const SET_AVM = 'SET_AVM'
 
 export const SET_EDITOR = 'SET_EDITOR'
 
-
+export const SET_DEBUGGER = 'SET_DEBUGGER'

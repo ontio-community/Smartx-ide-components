@@ -7,6 +7,7 @@ let Ont = require('ontology-ts-sdk');
 
 export default {
   state: {
+    Debugger: {},
     RunStatus : {
       running : false
     },
@@ -16,6 +17,9 @@ export default {
 
   },
   mutations: {
+    [types.SET_DEBUGGER](state, payload) {
+      state.Debugger = payload.debug;
+    },
     [types.SET_RUN_STATUS](state, payload) {
       state.RunStatus.running = payload.running
     },

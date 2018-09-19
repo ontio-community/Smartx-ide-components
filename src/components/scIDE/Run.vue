@@ -54,6 +54,8 @@
     </div>
 
     <div class="run-card">
+      <button class="btn btn-outline-success run-btn-submit" 
+              v-bind:disabled="runStatus" @click="debugContract()">{{runStatus ? $t('run.waiting') : $t('run.debugRun')}}</button>
       <button class="btn btn-outline-success run-btn-submit"
               id="preRun" data-toggle="tooltip" data-placement="top" :title="$t('run.preRuntips')"
               v-bind:disabled="runStatus" @click="runContract(true)">{{runStatus ? $t('run.waiting') : $t('run.preRun')}}</button>
@@ -90,7 +92,43 @@
   import en from './../../common/lang/en'
   import LangStorage from './../../helpers/lang'
   import * as types from './../../store/mutation-type'
+  import { OP_TYPE } from './../../helpers/consts';
   let Ont = require('ontology-ts-sdk');
+  let Debugger = require('ontology-ts-debugger').Debugger;
+
+  function validateRun(self) {
+    if(!self.functionName) {
+      self.ErrorInfo = (LangStorage.getLang('zh') === "zh") ? zh.run.errorFunction : en.run.errorFunction
+      $('#RunError').modal('show')
+      self.$store.commit({
+        type : types.SET_RUN_STATUS,
+        running : false
+      })
+      return false;
+    }
+    //validate and format parameters
+    const parameters = self.functionParameters.slice();
+    for(let p of parameters) {
+      if(p.name && !p.value) {
+        alert('Parameter '+ p.name + ' is required.')
+        self.$store.commit({
+          type : types.SET_RUN_STATUS,
+          running : false
+        })
+        return false;
+      }
+      if(p.type === 'ByteArray' && p.value.length%2 !== 0) {
+        alert('Parameter ' + p.name + ' is not valid hex string.')
+        self.runStatus = false;
+        return;
+      }
+      if(p.type === 'Integer') {
+        p.value = parseInt(p.value)
+      }
+    }
+
+    return true;
+  }
 
   export default {
     name: "run",
@@ -152,6 +190,7 @@
         projectInfo: state => state.ProjectInfoPage.ProjectInfo,
         compileInfo: state => state.CompilePage.CompileInfo,
         runInfo : state => state.RunPage.RunInfo,
+        projectEditor: state => state.EditorPage.OntEditor,
       })
     },
     mounted(){
@@ -201,18 +240,67 @@
         }
         return typeTip;
       },
-      runContract(preExec) {
-        this.runStaus = true;
-        
-        if(!this.functionName) {
-          this.ErrorInfo = (LangStorage.getLang('zh') === "zh") ? zh.run.errorFunction : en.run.errorFunction
-          $('#RunError').modal('show')
-          this.$store.commit({
-            type : types.SET_RUN_STATUS,
-            running : false
-          })
+      debugContract: async function() {
+        this.runStatus = true;
+
+        if (!validateRun(this)) {
+          this.runStatus = false;
           return;
         }
+
+        let args = Ont.ScriptBuilder.buildSmartContractParam(this.functionName, this.functionParameters);
+        console.log(args);
+
+        let avm = new Buffer(this.compileInfo.avm, 'hex');
+        let lineMappings = {};
+        let debugMap = this.compileInfo.debug.map;
+        debugMap.forEach((m) => {
+          lineMappings[m.file_line_no] = m.start;
+        });
+        let debug = new Debugger(avm, lineMappings);
+
+        this.$store.commit({
+          type: types.SET_DEBUGGER,
+          debug
+        })
+
+        let breakpoints = this.projectEditor.getSession().getBreakpoints();
+        for (let [i, value] of breakpoints.entries()) {
+          if (value !== undefined) {
+            debug.addLineBreakpoint(i + 1);
+          }
+        }
+
+        let { result, notifications } = await debug.execute([new Buffer(args, 'hex')]);
+        //console.log(result);
+        //console.log(notifications);
+
+        this.$store.commit({
+          type: types.SET_DEBUGGER
+        })
+
+        let formattedResult;
+        if (result.type === 'IntegerType') {
+          formattedResult = 'Integer(' + result.value.toString() + ')';
+        } else if (result.type === 'ByteArrayType') {
+          formattedResult = 'ByteArray(' + result.value.toString() + ')';
+        }
+
+        this.$store.commit({
+          type: types.APPEND_OUTPUT_LOG,
+          log: formattedResult,
+          op: OP_TYPE.Invoke
+        })
+
+        this.runStatus = false;
+      },
+      runContract(preExec) {
+        this.runStatus = true;
+        
+        if (!validateRun(this)) {
+          return;
+        }
+
         if(!this.runInfo.contractHash) {
           this.ErrorInfo = (LangStorage.getLang('zh') === "zh") ? zh.run.noContractHash : en.run.noContractHash
           $('#RunError').modal('show')
@@ -221,26 +309,6 @@
             running : false
           })
           return;
-        }
-        //validate and format parameters
-        const parameters = this.functionParameters.slice();
-        for(let p of parameters) {
-          if(p.name && !p.value) {
-            alert('Parameter '+ p.name + ' is required.')
-            this.$store.commit({
-              type : types.SET_RUN_STATUS,
-              running : false
-            })
-            return;
-          }
-          if(p.type === 'ByteArray' && p.value.length%2 !== 0) {
-            alert('Parameter ' + p.name + ' is not valid hex string.')
-            this.runStatus = false;
-            return;
-          }
-          if(p.type === 'Integer') {
-            p.value = parseInt(p.value)
-          }
         }
 
         let contractHash = this.runInfo.contractHash

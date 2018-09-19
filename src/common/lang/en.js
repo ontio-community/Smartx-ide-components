@@ -230,6 +230,7 @@ module.exports = {
     noContractHash: 'No contract hash.Please deploy your contract first.',
     function:'Function:',
     param:'Params:',
+    debugRun:'Debug Run',
     preRun:'Pre-Run',
     preRuntips: 'Use Pre-Run to invoke query method or get the gas limit of the contract',
   },
