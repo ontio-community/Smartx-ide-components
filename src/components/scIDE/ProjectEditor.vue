@@ -183,7 +183,6 @@ import {SET_EDITOR} from '../../store/mutation-type'
           }
         })
         // Use F9 to continue running
-        let _self = this
         editor.commands.addCommand({
           name: "debugContinue",
           bindKey: {win: "F9", mac: "F9"},
