@@ -171,6 +171,17 @@ import {SET_EDITOR} from '../../store/mutation-type'
             }
           }
         })
+        // Use F8 to step over line
+        let _self = this
+        editor.commands.addCommand({
+          name: "debugStepOverLine",
+          bindKey: {win: "F8", mac: "F8"},
+          exec: function (editor) {
+            if (_self.debug !== undefined) {
+              _self.debug.stepOverLine();
+            }
+          }
+        })
         // Use F9 to continue running
         let _self = this
         editor.commands.addCommand({
