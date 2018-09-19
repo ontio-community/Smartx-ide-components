@@ -263,7 +263,7 @@ export default {
           if (typeof (res) === 'string') {
             res = JSON.parse(res)
           }
-          let { avm, errcode, abi, errdetail } = res
+          let { avm, errcode, abi, errdetail, debug } = res
           //console.log(res)
           let contractHash = ''
           if (avm && abi) {
@@ -271,10 +271,14 @@ export default {
             abi = cleanAndFormatAbi(cleanData(abi))
             contractHash = Ont.Crypto.Address.fromVmCode(avm).toHexString()
           }
+          if (debug) {
+            debug = JSON.parse(debug);
+          }
           let info = {
             avm,
             abi,
             contractHash,
+            debug,
             showCompileInfo: true,
             errdetail : errdetail
           }
