@@ -142,6 +142,24 @@ import {SET_EDITOR} from '../../store/mutation-type'
             })
           }
         })
+        // Use F2 to toggle breakpoint
+        editor.commands.addCommand({
+          name: "toggleBreakpoint",
+          bindKey: {win: "F2", mac: "F2"},
+          exec: function (editor) {
+            let selection = editor.getSelection();
+            if (!selection.isMultiLine()) {
+              let line = selection.getRange().start.row;
+              let session = editor.getSession();
+              if (session.getBreakpoints()[line] === undefined) {
+                session.setBreakpoint(line);
+              } else {
+                session.clearBreakpoint(line);
+              }
+            }
+          }
+        })
+
         //Listen for changes
         //监听改变事件:
         let _self = this

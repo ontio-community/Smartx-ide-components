@@ -56,6 +56,9 @@
     font-weight: 300;
   }
 
+  .ace_breakpoint {
+      background-color: red!important;
+  }
 
   /* top nav height */
   .container-div {
