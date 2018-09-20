@@ -94,6 +94,7 @@ import {SET_EDITOR} from '../../store/mutation-type'
         ProjectName: state => state.ProjectInfoPage.ProjectName,
         projectEditor: state => state.EditorPage.OntEditor,
         debug: state => state.RunPage.Debugger,
+        debugLine: state => state.RunPage.DebuggerLine,
       })
     },
     watch: {
@@ -177,6 +178,10 @@ import {SET_EDITOR} from '../../store/mutation-type'
           name: "debugStepOverLine",
           bindKey: {win: "F8", mac: "F8"},
           exec: function (editor) {
+            if (_self.debugLine !== undefined) {
+              let session = editor.getSession();
+              session.removeGutterDecoration(_self.debugLine, 'ace_breakpoint_active');
+            }
             if (_self.debug !== undefined) {
               _self.debug.stepOverLine();
             }
@@ -187,6 +192,10 @@ import {SET_EDITOR} from '../../store/mutation-type'
           name: "debugContinue",
           bindKey: {win: "F9", mac: "F9"},
           exec: function (editor) {
+            if (_self.debugLine !== undefined) {
+              let session = editor.getSession();
+              session.removeGutterDecoration(_self.debugLine, 'ace_breakpoint_active');
+            }
             if (_self.debug !== undefined) {
               _self.debug.continue();
             }

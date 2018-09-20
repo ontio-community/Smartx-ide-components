@@ -237,12 +237,14 @@ module.exports = {
   project: {
     event: 'Event',
     logs: 'Logs',
+    evaluationStack: 'Evaluation Stack',
+    altStack: 'Alt Stack',
     clearLogs : 'Clear',
     textFormat:'Text Format',
     wasmOutput:'Wasm Output'
   },
   ide:{
-    annotation: 'Use CTRL+ALT+H to acess the hotkeys informations',
+    annotation: 'Use CTRL+ALT+H to acess the hotkeys informations, F2 to toggle breakpoint, F8 to step over and F9 to continue',
     file: 'File',
     open: 'Open...',
     save: 'Save',

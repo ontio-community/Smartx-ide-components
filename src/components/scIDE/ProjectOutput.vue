@@ -2,17 +2,33 @@
   <div class="pro-output-container">
     <div class="pro-output-container">
       <div class="row">
-        <div class="col-auto mr-auto">
-          <button class="btn btn-sm btn-outline-secondary pro-output-btn-event" disabled>{{ $t('project.logs')}}</button>
+        <div class="col-auto pro-output-btn-left">
+          <button class="btn btn-sm btn-outline-secondary pro-output-btn-event" @click="showLogPage" :class="[showLog ? 'pro-output-button-click' : '']">{{ $t('project.logs')}}</button>
+        </div>
+        <div class="col-auto pro-output-btn-center">
+          <button class="btn btn-sm btn-outline-secondary pro-output-btn-event" @click="showEvaluationStackPage" :class="[showEvaluationStack ? 'pro-output-button-click' : '']">{{ $t('project.evaluationStack')}}</button>
+        </div>
+        <div class="col-auto mr-auto pro-output-btn-center">
+          <button class="btn btn-sm btn-outline-secondary pro-output-btn-event" @click="showAltStackPage" :class="[showAltStack ? 'pro-output-button-click' : '']">{{ $t('project.altStack')}}</button>
         </div>
         <div class="col-auto pro-output-btn">
           <div @click="cleanLog"><i class="fa fa-trash-o pro-output-fa-trash"></i></div>
         </div>
       </div>
       <div class="pro-output-border">
-        <div id="pro-output-box" class="pro-output-content">
+        <div v-show="showLog" id="pro-output-box" class="pro-output-content">
           <p v-for="(value, key) in output.logs" :key="key">
             {{value}}
+          </p>
+        </div>
+        <div v-show="showEvaluationStack" id="pro-evaluationstack-box" class="pro-output-content">
+          <p v-for="(value, key) in evaluationStack" :key="key">
+            {{value.toString()}}
+          </p>
+        </div>
+        <div v-show="showAltStack" id="pro-altstack-box" class="pro-output-content">
+          <p v-for="(value, key) in altStack" :key="key">
+            {{value.toString()}}
           </p>
         </div>
       </div>
@@ -30,6 +46,9 @@
     name: 'project-output',
     data() {
       return {
+        showLog: true,
+        showEvaluationStack: false,
+        showAltStack: false
       }
     },
 
@@ -39,15 +58,32 @@
     computed: {
       ...mapState({
         output: state => state.ProjectOutput.OutputInfo,
+        evaluationStack: state => state.RunPage.EvaluationStack,
+        altStack: state => state.RunPage.AltStack,
         wasmOutput: state => state.ProjectWASMOutput.WASMOutputInfo,
       })
     },
 
     methods:{
+      showLogPage() {
+        this.showLog = true;
+        this.showEvaluationStack = false;
+        this.showAltStack = false;
+      },
+      showEvaluationStackPage() {
+        this.showLog = false;
+        this.showEvaluationStack = true;
+        this.showAltStack = false;
+      },
+      showAltStackPage() {
+        this.showLog = false;
+        this.showEvaluationStack = false;
+        this.showAltStack = true;
+      },
       cleanLog(){
         this.$store.commit({
           type : CLEAR_OUTPUT_EVENTS,
-        })
+        });
         this.$store.commit({
           type : CLEAR_OUTPUT_LOGS,
         })
@@ -79,6 +115,19 @@
     max-width: 100% ;
     min-width: 50%;
     height: 100%;
+  }
+
+  .pro-output-button-click {
+    background-color: #D2D2D2;
+  }
+
+  .pro-output-btn-left {
+    padding-right: 0px;
+  }
+
+  .pro-output-btn-center{
+    padding-left: 0px;
+    padding-right: 0px;
   }
 
   .pro-output-btn-event {

@@ -260,17 +260,35 @@
         let self = this;
         let debug = new Debugger(avm, lineMappings, (payload) => {
           console.log(payload);
+          let line;
           if (payload.line !== undefined) {
+            line = payload.line - 1;
             let selection = self.projectEditor.selection;
-            selection.moveCursorToPosition({row: payload.line - 1, column: 0});
-            selection.selectLine();
+            self.projectEditor.gotoLine(payload.line, 0);
+            self.projectEditor.navigateLineStart();
+            let session = self.projectEditor.getSession();
+            session.addGutterDecoration(payload.line - 1, 'ace_breakpoint_active');
           }
+          let evaluationStack = [];
+          for (let i = 0; i < payload.evaluationStack.count(); i++) {
+            evaluationStack.push(payload.evaluationStack.peek(i));
+          }
+          let altStack = [];
+          for (let i = 0; i < payload.altStack.count(); i++) {
+            altStack.push(payload.altStack.peek(i));
+          }
+          this.$store.commit({
+            type: types.SET_DEBUGGER_STATE,
+            line,
+            evaluationStack,
+            altStack
+          });
         });
 
         this.$store.commit({
           type: types.SET_DEBUGGER,
           debug
-        })
+        });
 
         let breakpoints = this.projectEditor.getSession().getBreakpoints();
         for (let [i, value] of breakpoints.entries()) {
@@ -285,7 +303,10 @@
 
         this.$store.commit({
           type: types.SET_DEBUGGER
-        })
+        });
+        this.$store.commit({
+          type: types.SET_DEBUGGER_STATE
+        });
 
         let formattedResult;
         if (result.type === 'IntegerType') {
@@ -298,7 +319,7 @@
           type: types.APPEND_OUTPUT_LOG,
           log: formattedResult,
           op: OP_TYPE.Invoke
-        })
+        });
 
         this.runStatus = false;
       },
