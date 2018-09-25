@@ -277,11 +277,13 @@
           for (let i = 0; i < payload.altStack.count(); i++) {
             altStack.push(payload.altStack.peek(i));
           }
+          let history = payload.history.slice().reverse();
           this.$store.commit({
             type: types.SET_DEBUGGER_STATE,
             line,
             evaluationStack,
-            altStack
+            altStack,
+            history
           });
         });
 

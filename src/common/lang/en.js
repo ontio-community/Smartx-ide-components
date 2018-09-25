@@ -239,6 +239,7 @@ module.exports = {
     logs: 'Logs',
     evaluationStack: 'Evaluation Stack',
     altStack: 'Alt Stack',
+    history: 'History',
     clearLogs : 'Clear',
     textFormat:'Text Format',
     wasmOutput:'Wasm Output'

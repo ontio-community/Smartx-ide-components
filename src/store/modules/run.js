@@ -11,6 +11,7 @@ export default {
     DebuggerLine: undefined,
     EvaluationStack: undefined,
     AltStack: undefined,
+    History: undefined,
     RunStatus : {
       running : false
     },
@@ -27,6 +28,7 @@ export default {
       state.DebuggerLine = payload.line;
       state.EvaluationStack = payload.evaluationStack;
       state.AltStack = payload.altStack;
+      state.History = payload.history;
     },
     [types.SET_RUN_STATUS](state, payload) {
       state.RunStatus.running = payload.running
