@@ -15,6 +15,12 @@
           <button class="btn btn-sm btn-outline-secondary pro-output-btn-event" @click="showHistoryPage" :class="[showHistory ? 'pro-output-button-click' : '']">{{ $t('project.history')}}</button>
         </div>
         <div class="col-auto pro-output-btn">
+          <div @click="resume"><i class="fa fa-play pro-output-fa-trash"></i></div>
+        </div>
+        <div class="col-auto pro-output-btn">
+          <div @click="stepOver"><i class="fa fa-level-down pro-output-fa-trash"></i></div>
+        </div>
+        <div class="col-auto pro-output-btn">
           <div @click="cleanLog"><i class="fa fa-trash-o pro-output-fa-trash"></i></div>
         </div>
       </div>
@@ -71,6 +77,7 @@
         altStack: state => state.RunPage.AltStack,
         history: state => state.RunPage.History,
         wasmOutput: state => state.ProjectWASMOutput.WASMOutputInfo,
+        projectEditor: state => state.EditorPage.OntEditor,
       })
     },
 
@@ -98,6 +105,12 @@
         this.showEvaluationStack = false;
         this.showAltStack = false;
         this.showHistory = true;
+      },
+      stepOver() {
+        this.projectEditor.execCommand("debugStepOverLine")
+      },
+      resume() {
+        this.projectEditor.execCommand("debugContinue")
       },
       cleanLog(){
         this.$store.commit({
