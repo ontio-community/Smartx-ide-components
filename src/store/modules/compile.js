@@ -263,7 +263,7 @@ export default {
           if (typeof (res) === 'string') {
             res = JSON.parse(res)
           }
-          let { avm, errcode, abi, errdetail, debug } = res
+          let { avm, errcode, abi, errdetail, debug, opcode } = res
           //console.log(res)
           let contractHash = ''
           if (avm && abi) {
@@ -279,6 +279,7 @@ export default {
             abi,
             contractHash,
             debug,
+            opcode,
             showCompileInfo: true,
             errdetail : errdetail
           }
@@ -299,6 +300,7 @@ export default {
             avm : '',
             abi : '',
             contractHash : '',
+            opcode : '',
             showCompileInfo : true,
             errdetail : 'Network error'
           }

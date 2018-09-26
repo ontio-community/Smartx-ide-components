@@ -149,6 +149,7 @@ module.exports = {
     waiting: 'Waiting...',
     abi: 'ABI',
     outputInfo: 'AVM Byte code',
+    opCode: 'Opcode',
     next: 'Next',
     name: 'Name',
     value: 'Value',
