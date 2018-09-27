@@ -187,6 +187,18 @@ import {SET_EDITOR} from '../../store/mutation-type'
             }
           }
         })
+        editor.commands.addCommand({
+          name: "debugStepOverOpcode",
+          exec: function (editor) {
+            if (_self.debugLine !== undefined) {
+              let session = editor.getSession();
+              session.removeGutterDecoration(_self.debugLine, 'ace_breakpoint_active');
+            }
+            if (_self.debug !== undefined) {
+              _self.debug.stepOverOpcode();
+            }
+          }
+        })
         // Use F9 to continue running
         editor.commands.addCommand({
           name: "debugContinue",

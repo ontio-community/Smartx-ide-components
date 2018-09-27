@@ -21,6 +21,9 @@
           <div @click="stepOver"><i class="fa fa-level-down pro-output-fa-trash"></i></div>
         </div>
         <div class="col-auto pro-output-btn">
+          <div @click="stepOverOpcode"><i class="fa fa-long-arrow-down pro-output-fa-trash"></i></div>
+        </div>
+        <div class="col-auto pro-output-btn">
           <div @click="cleanLog"><i class="fa fa-trash-o pro-output-fa-trash"></i></div>
         </div>
       </div>
@@ -108,6 +111,9 @@
       },
       stepOver() {
         this.projectEditor.execCommand("debugStepOverLine")
+      },
+      stepOverOpcode() {
+        this.projectEditor.execCommand("debugStepOverOpcode")
       },
       resume() {
         this.projectEditor.execCommand("debugContinue")
