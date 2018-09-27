@@ -253,14 +253,23 @@
 
         let avm = new Buffer(this.compileInfo.avm, 'hex');
         let lineMappings = {};
+        let lineToMethod = {};
         let debugMap = this.compileInfo.debug.map;
         debugMap.forEach((m) => {
           lineMappings[m.file_line_no] = m.start;
+          lineToMethod[m.file_line_no] = m.method;
         });
+
+        let funcMap = {};
+        this.compileInfo.funcmap.Functions.forEach((f) => {
+          funcMap[f.Method] = f.VarMap;
+        });
+
         let self = this;
         let debug = new Debugger(avm, lineMappings, (payload) => {
           console.log(payload);
           let line;
+          let locals;
           if (payload.line !== undefined) {
             line = payload.line - 1;
             let selection = self.projectEditor.selection;
@@ -268,6 +277,23 @@
             self.projectEditor.navigateLineStart();
             let session = self.projectEditor.getSession();
             session.addGutterDecoration(payload.line - 1, 'ace_breakpoint_active');
+
+            if (payload.altStack.count() > 0) {
+              let stack = payload.altStack.peek(0).getArray();
+              let method = lineToMethod[line];
+              if (method != null) {
+                let map = funcMap[method];
+                if (map != null) {
+                  locals = [];
+                  Object.entries(map).forEach((k, v) => {
+                    locals.push({
+                      name: k[0],
+                      value: stack[v]
+                    });
+                  });
+                }
+              }
+            }
           }
           let evaluationStack = [];
           for (let i = 0; i < payload.evaluationStack.count(); i++) {
@@ -283,7 +309,8 @@
             line,
             evaluationStack,
             altStack,
-            history
+            history,
+            locals
           });
         });
 

@@ -11,8 +11,11 @@
         <div class="col-auto pro-output-btn-center">
           <button class="btn btn-sm btn-outline-secondary pro-output-btn-event" @click="showAltStackPage" :class="[showAltStack ? 'pro-output-button-click' : '']">{{ $t('project.altStack')}}</button>
         </div>
-        <div class="col-auto mr-auto pro-output-btn-center">
+        <div class="col-auto pro-output-btn-center">
           <button class="btn btn-sm btn-outline-secondary pro-output-btn-event" @click="showHistoryPage" :class="[showHistory ? 'pro-output-button-click' : '']">{{ $t('project.history')}}</button>
+        </div>
+        <div class="col-auto mr-auto pro-output-btn-center">
+          <button class="btn btn-sm btn-outline-secondary pro-output-btn-event" @click="showLocalsPage" :class="[showLocals ? 'pro-output-button-click' : '']">{{ $t('project.locals')}}</button>
         </div>
         <div class="col-auto pro-output-btn">
           <div @click="resume"><i class="fa fa-play pro-output-fa-trash"></i></div>
@@ -48,6 +51,11 @@
             {{value.instructionPointer}}: {{value.opName}} [{{value.evaluationStack.join(", ")}}]
           </p>
         </div>
+        <div v-show="showLocals" id="pro-locals-box" class="pro-output-content">
+          <p v-for="(value, key) in locals" :key="key">
+            {{value.name}} = {{value.value.toString()}}
+          </p>
+        </div>
       </div>
     </div>
   </div>
@@ -66,7 +74,8 @@
         showLog: true,
         showEvaluationStack: false,
         showAltStack: false,
-        showHistory: false
+        showHistory: false,
+        showLocals: false
       }
     },
 
@@ -79,6 +88,7 @@
         evaluationStack: state => state.RunPage.EvaluationStack,
         altStack: state => state.RunPage.AltStack,
         history: state => state.RunPage.History,
+        locals: state => state.RunPage.Locals,
         wasmOutput: state => state.ProjectWASMOutput.WASMOutputInfo,
         projectEditor: state => state.EditorPage.OntEditor,
       })
@@ -90,24 +100,35 @@
         this.showEvaluationStack = false;
         this.showAltStack = false;
         this.showHistory = false;
+        this.showLocals = false;
       },
       showEvaluationStackPage() {
         this.showLog = false;
         this.showEvaluationStack = true;
         this.showAltStack = false;
         this.showHistory = false;
+        this.showLocals = false;
       },
       showAltStackPage() {
         this.showLog = false;
         this.showEvaluationStack = false;
         this.showAltStack = true;
         this.showHistory = false;
+        this.showLocals = false;
       },
       showHistoryPage() {
         this.showLog = false;
         this.showEvaluationStack = false;
         this.showAltStack = false;
         this.showHistory = true;
+        this.showLocals = false;
+      },
+      showLocalsPage() {
+        this.showLog = false;
+        this.showEvaluationStack = false;
+        this.showAltStack = false;
+        this.showHistory = false;
+        this.showLocals = true;
       },
       stepOver() {
         this.projectEditor.execCommand("debugStepOverLine")

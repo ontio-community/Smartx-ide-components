@@ -12,6 +12,7 @@ export default {
     EvaluationStack: undefined,
     AltStack: undefined,
     History: undefined,
+    Locals: undefined,
     RunStatus : {
       running : false
     },
@@ -29,6 +30,7 @@ export default {
       state.EvaluationStack = payload.evaluationStack;
       state.AltStack = payload.altStack;
       state.History = payload.history;
+      state.Locals = payload.locals;
     },
     [types.SET_RUN_STATUS](state, payload) {
       state.RunStatus.running = payload.running

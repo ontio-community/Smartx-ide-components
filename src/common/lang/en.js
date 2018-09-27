@@ -241,6 +241,7 @@ module.exports = {
     evaluationStack: 'Evaluation Stack',
     altStack: 'Alt Stack',
     history: 'History',
+    locals: 'Locals',
     clearLogs : 'Clear',
     textFormat:'Text Format',
     wasmOutput:'Wasm Output'

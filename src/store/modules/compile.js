@@ -263,7 +263,7 @@ export default {
           if (typeof (res) === 'string') {
             res = JSON.parse(res)
           }
-          let { avm, errcode, abi, errdetail, debug, opcode } = res
+          let { avm, errcode, abi, errdetail, debug, opcode, funcmap } = res
           //console.log(res)
           let contractHash = ''
           if (avm && abi) {
@@ -274,12 +274,16 @@ export default {
           if (debug) {
             debug = JSON.parse(debug);
           }
+          if (funcmap) {
+            funcmap = JSON.parse(funcmap);
+          }
           let info = {
             avm,
             abi,
             contractHash,
             debug,
             opcode,
+            funcmap,
             showCompileInfo: true,
             errdetail : errdetail
           }
