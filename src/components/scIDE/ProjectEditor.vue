@@ -145,7 +145,7 @@ import {SET_EDITOR} from '../../store/mutation-type'
         editor.setOptions({
           enableBasicAutocompletion: true, //Auto prompt completion, shortcut CTRL +shift+space//自动提示补全，快捷键ctrl+shift+space
           enableSnippets: true,
-          enableLiveAutocompletion: false,
+          enableLiveAutocompletion: true,
           minLines: 2,
 
         })
