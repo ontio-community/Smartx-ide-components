@@ -242,6 +242,9 @@ module.exports = {
     altStack: 'Alt Stack',
     history: 'History',
     locals: 'Locals',
+    continue: 'Continue (F9)',
+    stepOverOpcode: 'Step Over Opcode (F7)',
+    stepOverLine: 'Step Over Line (F8)',
     clearLogs : 'Clear',
     textFormat:'Text Format',
     wasmOutput:'Wasm Output'
