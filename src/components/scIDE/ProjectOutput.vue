@@ -43,7 +43,7 @@
         </div>
         <div v-show="showAltStack" id="pro-altstack-box" class="pro-output-content">
           <p v-for="(value, key) in altStack" :key="key">
-            {{value.toString()}}
+            {{value[0] != null ? value[0] + ": " : ""}}{{value[1].toString()}}
           </p>
         </div>
         <div v-show="showHistory" id="pro-history-box" class="pro-output-content">

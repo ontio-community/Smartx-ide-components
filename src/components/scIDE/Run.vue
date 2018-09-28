@@ -270,6 +270,7 @@
           console.log(payload);
           let line;
           let locals;
+          let method;
           if (payload.line !== undefined) {
             line = payload.line - 1;
             let selection = self.projectEditor.selection;
@@ -280,7 +281,7 @@
 
             if (payload.altStack.count() > 0) {
               let stack = payload.altStack.peek(0).getArray();
-              let method = lineToMethod[line];
+              method = lineToMethod[line];
               if (method != null) {
                 let map = funcMap[method];
                 if (map != null) {
@@ -301,7 +302,11 @@
           }
           let altStack = [];
           for (let i = 0; i < payload.altStack.count(); i++) {
-            altStack.push(payload.altStack.peek(i));
+            if (method != null && i === 0) {
+              altStack.push([method, payload.altStack.peek(i)]);
+            } else {
+              altStack.push([null, payload.altStack.peek(i)]);
+            }
           }
           let history = payload.history.slice().reverse();
           this.$store.commit({
