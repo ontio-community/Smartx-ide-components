@@ -189,6 +189,7 @@ import {SET_EDITOR} from '../../store/mutation-type'
         })
         editor.commands.addCommand({
           name: "debugStepOverOpcode",
+          bindKey: {win: "F7", mac: "F7"},
           exec: function (editor) {
             if (_self.debugLine !== undefined) {
               let session = editor.getSession();
