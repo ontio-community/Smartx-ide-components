@@ -7,6 +7,12 @@ let Ont = require('ontology-ts-sdk');
 
 export default {
   state: {
+    Debugger: undefined,
+    DebuggerLine: undefined,
+    EvaluationStack: undefined,
+    AltStack: undefined,
+    History: undefined,
+    Locals: undefined,
     RunStatus : {
       running : false
     },
@@ -16,6 +22,16 @@ export default {
 
   },
   mutations: {
+    [types.SET_DEBUGGER](state, payload) {
+      state.Debugger = payload.debug;
+    },
+    [types.SET_DEBUGGER_STATE](state, payload) {
+      state.DebuggerLine = payload.line;
+      state.EvaluationStack = payload.evaluationStack;
+      state.AltStack = payload.altStack;
+      state.History = payload.history;
+      state.Locals = payload.locals;
+    },
     [types.SET_RUN_STATUS](state, payload) {
       state.RunStatus.running = payload.running
     },
