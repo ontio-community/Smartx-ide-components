@@ -21,6 +21,9 @@
           <div @click="resume" data-toggle="tooltip" data-placement="bottom" :title="$t('project.continue')"><i class="fa fa-play pro-output-fa-trash"></i></div>
         </div>
         <div class="col-auto pro-output-btn">
+          <div @click="stop" data-toggle="tooltip" data-placement="bottom" :title="$t('project.stop')"><i class="fa fa-stop pro-output-fa-trash"></i></div>
+        </div>
+        <div class="col-auto pro-output-btn">
           <div @click="stepOver" data-toggle="tooltip" data-placement="bottom" :title="$t('project.stepOverLine')"><i class="fa fa-level-down pro-output-fa-trash"></i></div>
         </div>
         <div class="col-auto pro-output-btn">
@@ -138,6 +141,9 @@
       },
       resume() {
         this.projectEditor.execCommand("debugContinue")
+      },
+      stop() {
+        this.projectEditor.execCommand("debugStop")
       },
       cleanLog(){
         this.$store.commit({

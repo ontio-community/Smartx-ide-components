@@ -214,6 +214,18 @@ import {SET_EDITOR} from '../../store/mutation-type'
             }
           }
         })
+        editor.commands.addCommand({
+          name: "debugStop",
+          exec: function (editor) {
+            if (_self.debugLine !== undefined) {
+              let session = editor.getSession();
+              session.removeGutterDecoration(_self.debugLine, 'ace_breakpoint_active');
+            }
+            if (_self.debug !== undefined) {
+              _self.debug.stop();
+            }
+          }
+        })
 
         //Listen for changes
         //监听改变事件:
