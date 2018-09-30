@@ -16,7 +16,7 @@ def Main(operation, args):
 
 
 def Hello(msg):
-  Log(msg)
+  Notify(msg)
   return True
       </div>
 
@@ -31,6 +31,22 @@ def Hello(msg):
 import {PROJECT_LANGAUGE} from '../../helpers/consts'
 import {mapState} from 'vuex'
 import {SET_EDITOR} from '../../store/mutation-type'
+
+  function toggleBreakpoint(_self, line) {
+    let editor = _self.projectEditor;
+    let session = editor.getSession();
+    if (session.getBreakpoints()[line] === undefined) {
+      session.setBreakpoint(line);
+      if (_self.debug !== undefined) {
+        _self.debug.addLineBreakpoint(line + 1);
+      }
+    } else {
+      session.clearBreakpoint(line);
+      if (_self.debug !== undefined) {
+        _self.debug.removeLineBreakpoint(line + 1);
+      }
+    }
+  }
 
   export default {
     name: "project-editor",
@@ -77,6 +93,8 @@ import {SET_EDITOR} from '../../store/mutation-type'
         projectInfo: state => state.ProjectInfoPage.ProjectInfo,
         ProjectName: state => state.ProjectInfoPage.ProjectName,
         projectEditor: state => state.EditorPage.OntEditor,
+        debug: state => state.RunPage.Debugger,
+        debugLine: state => state.RunPage.DebuggerLine,
       })
     },
     watch: {
@@ -127,7 +145,7 @@ import {SET_EDITOR} from '../../store/mutation-type'
         editor.setOptions({
           enableBasicAutocompletion: true, //Auto prompt completion, shortcut CTRL +shift+space//自动提示补全，快捷键ctrl+shift+space
           enableSnippets: true,
-          enableLiveAutocompletion: false,
+          enableLiveAutocompletion: true,
           minLines: 2,
 
         })
@@ -142,11 +160,81 @@ import {SET_EDITOR} from '../../store/mutation-type'
             })
           }
         })
+        // Use F2 to toggle breakpoint
+        editor.commands.addCommand({
+          name: "toggleBreakpoint",
+          bindKey: {win: "F2", mac: "F2"},
+          exec: function (editor) {
+            let selection = editor.getSelection();
+            if (!selection.isMultiLine()) {
+              let line = selection.getRange().start.row;
+              toggleBreakpoint(_self, line);
+            }
+          }
+        })
+        // Use F8 to step over line
+        let _self = this
+        editor.commands.addCommand({
+          name: "debugStepOverLine",
+          bindKey: {win: "F8", mac: "F8"},
+          exec: function (editor) {
+            if (_self.debugLine !== undefined) {
+              let session = editor.getSession();
+              session.removeGutterDecoration(_self.debugLine, 'ace_breakpoint_active');
+            }
+            if (_self.debug !== undefined) {
+              _self.debug.stepOverLine();
+            }
+          }
+        })
+        editor.commands.addCommand({
+          name: "debugStepOverOpcode",
+          bindKey: {win: "F7", mac: "F7"},
+          exec: function (editor) {
+            if (_self.debugLine !== undefined) {
+              let session = editor.getSession();
+              session.removeGutterDecoration(_self.debugLine, 'ace_breakpoint_active');
+            }
+            if (_self.debug !== undefined) {
+              _self.debug.stepOverOpcode();
+            }
+          }
+        })
+        // Use F9 to continue running
+        editor.commands.addCommand({
+          name: "debugContinue",
+          bindKey: {win: "F9", mac: "F9"},
+          exec: function (editor) {
+            if (_self.debugLine !== undefined) {
+              let session = editor.getSession();
+              session.removeGutterDecoration(_self.debugLine, 'ace_breakpoint_active');
+            }
+            if (_self.debug !== undefined) {
+              _self.debug.continue();
+            }
+          }
+        })
+        editor.commands.addCommand({
+          name: "debugStop",
+          exec: function (editor) {
+            if (_self.debugLine !== undefined) {
+              let session = editor.getSession();
+              session.removeGutterDecoration(_self.debugLine, 'ace_breakpoint_active');
+            }
+            if (_self.debug !== undefined) {
+              _self.debug.stop();
+            }
+          }
+        })
+
         //Listen for changes
         //监听改变事件:
-        let _self = this
         editor.getSession().on('change', function(e) {
           _self.$emit('showPreDeployAndPreRun',Math.random());
+        });
+
+        editor.on('guttermousedown', function(e) {
+          toggleBreakpoint(_self, e.getDocumentPosition().row);
         });
 
         this.$store.commit({

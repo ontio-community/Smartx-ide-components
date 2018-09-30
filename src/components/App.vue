@@ -56,6 +56,13 @@
     font-weight: 300;
   }
 
+  .ace_breakpoint {
+    background-color: red!important;
+  }
+
+  .ace_breakpoint_active {
+    background-color: green!important;
+  }
 
   /* top nav height */
   .container-div {

@@ -70,7 +70,7 @@
             </div>
             <div class="row compile-avm-btn-div">
               <div @click="saveAVM"><i class="fa fa-download compile-fa-trash"></i></div>
-              <div><button class="nav-link ide-nav-link compile-btn-copy" @click="copyAvm" data-clipboard-target="#compileAvm" ><i class="fa fa-copy compile-fa-trash"></i></button></div>
+              <div><button class="nav-link ide-nav-link compile-btn-copy" @click="copy" data-clipboard-target="#compileAvm" ><i class="fa fa-copy compile-fa-trash"></i></button></div>
             </div>
           </div>
         </div>
@@ -82,6 +82,27 @@
           <div class="card-body" v-else>
             <!-- <p class="card-text">{{$t('compile.noData')}}</p> -->
             <textarea name="avm" id="compileAvm" class="card-text" @change="setAvm" :value="compileInfo.avm"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="compile-card card-opcode" v-show="compileInfo.showCompileInfo">
+      <div class="card border-secondary mb-3" style="max-width: 20rem;">
+        <div class="card-header">
+          <div class="row">
+            <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10 card-header-text">
+              <div>{{$t('compile.opCode')}}</div>
+            </div>
+            <div class="row compile-avm-btn-div">
+              <div @click="saveOpcode"><i class="fa fa-download compile-fa-trash"></i></div>
+              <div><button class="nav-link ide-nav-link compile-btn-copy" @click="copy" data-clipboard-target="#compileOpcode" ><i class="fa fa-copy compile-fa-trash"></i></button></div>
+            </div>
+          </div>
+        </div>
+        <div class="compile-card-scroll">
+          <div class="card-body">
+            <textarea name="opcode" id="compileOpcode" class="card-text" :value="compileInfo.opcode"></textarea>
           </div>
         </div>
       </div>
@@ -207,7 +228,7 @@
       showDeploy(){
         this.$router.push({ name:'IDE-Deploy',params:{projectName:this.projectName.info.projectName}})
       },
-      copyAvm(){
+      copy(){
         let clipboard = new Clipboard('.nav-link');
       },
       saveAbi(){
@@ -216,6 +237,10 @@
       saveAVM(){
         const AVMName = this.projectName.info.projectName + '.avm'
         FileHelper.downloadFile(this.compileInfo.avm,AVMName)
+      },
+      saveOpcode(){
+        const OpcodeName = this.projectName.info.projectName + '_opcode.txt'
+        FileHelper.downloadTextFile(this.compileInfo.opcode, OpcodeName)
       },
     }
   }
@@ -299,17 +324,22 @@
     height:200px;
   }
   .card-abi{
-    height: 50%;
+    height: 30%;
     margin-top: -65px;
     padding-top: 69px;
   }
   .card-output-info{
-    height: 50%;
+    height: 30%;
     margin-bottom: -21px;
     padding-bottom: 21px;
   }
   .compile-card-scroll{
     overflow-y:auto;
+  }
+  .card-opcode{
+    height: 40%;
+    margin-bottom: -21px;
+    padding-bottom: 21px;
   }
   .card-header-text{
     padding-left: 20%;
