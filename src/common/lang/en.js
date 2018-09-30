@@ -243,6 +243,7 @@ module.exports = {
     history: 'History',
     locals: 'Locals',
     continue: 'Continue (F9)',
+    stop: 'Debug Stop',
     stepOverOpcode: 'Step Over Opcode (F7)',
     stepOverLine: 'Step Over Line (F8)',
     clearLogs : 'Clear',
