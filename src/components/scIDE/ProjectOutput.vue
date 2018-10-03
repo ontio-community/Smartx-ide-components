@@ -55,8 +55,16 @@
           </p>
         </div>
         <div v-show="showLocals" id="pro-locals-box" class="pro-output-content">
-          <p v-for="(value, key) in locals" :key="key">
-            {{value.name}} = {{value.value.toString()}}
+          <p v-for="(local, i) in locals">
+            <span v-if="isMap(local.value)">
+              {{local.name}} = {{local.value.type}}(<span v-for="(list, j) in Array.from(local.value.value)">{{list[0].type}}(<input @change="setEncodedValue($event, list[0])" style="width: 80px" type="text" :value="getEncodedValue(list[0])" />): {{list[1].type}}(<input @change="setEncodedValue($event, list[1])" style="width: 80px" type="text" :value="getEncodedValue(list[1])" />)<span v-if="j != local.value.value.size - 1">, </span></span>)
+            </span>
+            <span v-else-if="isArray(local.value)">
+              {{local.name}} = {{local.value.type}}(<span v-for="(item, j) in local.value.value">{{item.type}}(<input @change="setEncodedValue($event, item)" style="width: 80px" type="text" :value="getEncodedValue(item)" />)<span v-if="j != local.value.value.length - 1">, </span></span>)
+            </span>
+            <span v-else>
+              {{local.name}} = {{local.value.type}}(<input @change="setEncodedValue($event, local.value)" style="width: 80px" type="text" :value="getEncodedValue(local.value)" />)
+            </span>
           </p>
         </div>
       </div>
@@ -98,6 +106,18 @@
     },
 
     methods:{
+      isArray(value) {
+        return value.type === 'ArrayType' || value.type === 'StructType';
+      },
+      isMap(value) {
+        return value.type === 'MapType';
+      },
+      getEncodedValue(value) {
+        return value.getEncodedValue();
+      },
+      setEncodedValue(e, item) {
+        item.setEncodedValue(e.target.value);
+      },
       showLogPage() {
         this.showLog = true;
         this.showEvaluationStack = false;
