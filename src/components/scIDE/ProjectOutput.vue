@@ -62,7 +62,7 @@
             <span v-else-if="isArray(local.value)">
               {{local.name}} = {{local.value.type}}(<span v-for="(item, j) in local.value.value">{{item.type}}(<input @change="setEncodedValue($event, item)" style="width: 80px" type="text" :value="getEncodedValue(item)" />)<span v-if="j != local.value.value.length - 1">, </span></span>)
             </span>
-            <span v-else>
+            <span v-else-if="notInterop(local.value)">
               {{local.name}} = {{local.value.type}}(<input @change="setEncodedValue($event, local.value)" style="width: 80px" type="text" :value="getEncodedValue(local.value)" />)
             </span>
           </p>
@@ -111,6 +111,9 @@
       },
       isMap(value) {
         return value.type === 'MapType';
+      },
+      notInterop(value) {
+        return value.type !== 'InteropType';
       },
       getEncodedValue(value) {
         return value.getEncodedValue();
