@@ -16,3 +16,4 @@ npm run build
 
 ```
 
+![smartx](https://raw.githubusercontent.com/ontio-community/specifications/master/images/smartx.png)
