@@ -35,6 +35,11 @@ import {SET_EDITOR} from '../../store/mutation-type'
   function toggleBreakpoint(_self, line) {
     let editor = _self.projectEditor;
     let session = editor.getSession();
+    let document = session.getDocument();
+    let text = document.getLine(line);
+    if (text.trim().length <= 0) {
+      return;
+    }
     if (session.getBreakpoints()[line] === undefined) {
       session.setBreakpoint(line);
       if (_self.debug !== undefined) {
