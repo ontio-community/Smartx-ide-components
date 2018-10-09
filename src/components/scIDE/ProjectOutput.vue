@@ -14,8 +14,11 @@
         <div class="col-auto pro-output-btn-center">
           <button class="btn btn-sm btn-outline-secondary pro-output-btn-event" @click="showHistoryPage" :class="[showHistory ? 'pro-output-button-click' : '']">{{ $t('project.history')}}</button>
         </div>
-        <div class="col-auto mr-auto pro-output-btn-center">
+        <div class="col-auto pro-output-btn-center">
           <button class="btn btn-sm btn-outline-secondary pro-output-btn-event" @click="showLocalsPage" :class="[showLocals ? 'pro-output-button-click' : '']">{{ $t('project.locals')}}</button>
+        </div>
+        <div class="col-auto mr-auto pro-output-btn-center">
+          <button class="btn btn-sm btn-outline-secondary pro-output-btn-event" @click="showStoragePage" :class="[showLocals ? 'pro-output-button-click' : '']">{{ $t('project.storage')}}</button>
         </div>
         <div class="col-auto pro-output-btn">
           <div @click="resume" data-toggle="tooltip" data-placement="bottom" :title="$t('project.continue')"><i class="fa fa-play pro-output-fa-trash"></i></div>
@@ -67,6 +70,11 @@
             </span>
           </p>
         </div>
+        <div v-show="showStorage" id="pro-storage-box" class="pro-output-content">
+          <p v-for="(value, key) in getStorage()" :key="key">
+            {{key}} = {{value}}
+          </p>
+        </div>
       </div>
     </div>
   </div>
@@ -86,7 +94,8 @@
         showEvaluationStack: false,
         showAltStack: false,
         showHistory: false,
-        showLocals: false
+        showLocals: false,
+        showStorage: false
       }
     },
 
@@ -102,6 +111,7 @@
         locals: state => state.RunPage.Locals,
         wasmOutput: state => state.ProjectWASMOutput.WASMOutputInfo,
         projectEditor: state => state.EditorPage.OntEditor,
+        store : state => state.EditorPage.Store
       })
     },
 
@@ -121,12 +131,22 @@
       setEncodedValue(e, item) {
         item.setEncodedValue(e.target.value);
       },
+      getStorage() {
+        let result = {};
+        this.store.data.forEach((value, key) => {
+          if (key.startsWith('05')) {
+            result[key.substr(42)] = Buffer.from(value.value).toString('hex');
+          }
+        });
+        return result;
+      },
       showLogPage() {
         this.showLog = true;
         this.showEvaluationStack = false;
         this.showAltStack = false;
         this.showHistory = false;
         this.showLocals = false;
+        this.showStorage = false;
       },
       showEvaluationStackPage() {
         this.showLog = false;
@@ -134,6 +154,7 @@
         this.showAltStack = false;
         this.showHistory = false;
         this.showLocals = false;
+        this.showStorage = false;
       },
       showAltStackPage() {
         this.showLog = false;
@@ -141,6 +162,7 @@
         this.showAltStack = true;
         this.showHistory = false;
         this.showLocals = false;
+        this.showStorage = false;
       },
       showHistoryPage() {
         this.showLog = false;
@@ -148,6 +170,7 @@
         this.showAltStack = false;
         this.showHistory = true;
         this.showLocals = false;
+        this.showStorage = false;
       },
       showLocalsPage() {
         this.showLog = false;
@@ -155,6 +178,15 @@
         this.showAltStack = false;
         this.showHistory = false;
         this.showLocals = true;
+        this.showStorage = false;
+      },
+      showStoragePage() {
+        this.showLog = false;
+        this.showEvaluationStack = false;
+        this.showAltStack = false;
+        this.showHistory = false;
+        this.showLocals = false;
+        this.showStorage = true;
       },
       stepOver() {
         this.projectEditor.execCommand("debugStepOverLine")

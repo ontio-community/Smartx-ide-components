@@ -1,8 +1,10 @@
 import * as types from "../mutation-type"
+import {RuntimeStateStore} from 'ontology-ts-debugger'
 
 export default {
     state : {
-        OntEditor : {}
+        OntEditor : {},
+        Store : new RuntimeStateStore()
     },
 
     mutations : {
