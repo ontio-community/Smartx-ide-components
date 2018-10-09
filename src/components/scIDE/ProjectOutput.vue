@@ -72,7 +72,7 @@
         </div>
         <div v-show="showStorage" id="pro-storage-box" class="pro-output-content">
           <p v-for="(value, key) in getStorage()" :key="refresh">
-            <input @change="setStorageKey($event, value)" style="width: 100px" type="text" :value="key" /> = <input @change="setStorageValue($event, value)" style="width: 100px" type="text" :value="value.text" /> <a href="#" @click="deleteStorageItem(value)">delete</a>
+            0x<input @change="setStorageKey($event, value)" style="width: 100px" type="text" :value="key" /> = 0x<input @change="setStorageValue($event, value)" style="width: 100px" type="text" :value="value.text" /> <a href="#" @click="deleteStorageItem(value)">delete</a>
           </p>
         </div>
       </div>
