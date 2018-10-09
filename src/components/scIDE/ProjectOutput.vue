@@ -71,8 +71,8 @@
           </p>
         </div>
         <div v-show="showStorage" id="pro-storage-box" class="pro-output-content">
-          <p v-for="(value, key) in getStorage()" :key="key">
-            {{key}} = <input @change="setStorageValue($event, value)" style="width: 100px" type="text" :value="value.text" />
+          <p v-for="(value, key) in getStorage()" :key="refresh">
+            <input @change="setStorageKey($event, value)" style="width: 100px" type="text" :value="key" /> = <input @change="setStorageValue($event, value)" style="width: 100px" type="text" :value="value.text" /> <a href="#" @click="deleteStorageItem(value)">delete</a>
           </p>
         </div>
       </div>
@@ -95,7 +95,8 @@
         showAltStack: false,
         showHistory: false,
         showLocals: false,
-        showStorage: false
+        showStorage: false,
+        refresh: false
       }
     },
 
@@ -140,8 +141,20 @@
         });
         return result;
       },
+      setStorageKey(e, value) {
+        let oldKey = value.key;
+        let prefix = oldKey.substring(0, 42);
+        let newKey = prefix + e.target.value;
+        this.store.data.delete(oldKey);
+        this.store.data.set(newKey, value.item);
+      },
       setStorageValue(e, value) {
         value.item.value = Buffer.from(e.target.value, 'hex');
+      },
+      deleteStorageItem(value) {
+        this.refresh = true;
+        this.store.data.delete(value.key);
+        this.refresh = false;
       },
       showLogPage() {
         this.showLog = true;
