@@ -72,7 +72,7 @@
         </div>
         <div v-show="showStorage" id="pro-storage-box" class="pro-output-content">
           <p v-for="(value, key) in getStorage()" :key="key">
-            {{key}} = {{value}}
+            {{key}} = <input @change="setStorageValue($event, value)" style="width: 100px" type="text" :value="value.text" />
           </p>
         </div>
       </div>
@@ -133,12 +133,15 @@
       },
       getStorage() {
         let result = {};
-        this.store.data.forEach((value, key) => {
+        this.store.data.forEach((item, key) => {
           if (key.startsWith('05')) {
-            result[key.substr(42)] = Buffer.from(value.value).toString('hex');
+            result[key.substr(42)] = {text: Buffer.from(item.value).toString('hex'), key, item};
           }
         });
         return result;
+      },
+      setStorageValue(e, value) {
+        value.item.value = Buffer.from(e.target.value, 'hex');
       },
       showLogPage() {
         this.showLog = true;
