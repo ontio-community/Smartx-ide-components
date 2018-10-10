@@ -140,6 +140,7 @@ module.exports = {
     compile: '编译',
     deploy: '部署',
     run: '运行',
+    tool:'工具',
     compileTooltips: '编译代码，生成ABI和AVM',
     deployTooltips: '将编译后的合约部署到链上',
     runTooltips: '运行合约方法'
@@ -232,6 +233,9 @@ module.exports = {
     param:'参数：',
     preRun:'运行预执行',
     preRuntips: '使用预执行调用查询方法或者查询合约的gas limit。',
+  },
+  tool:{
+    transform: '运行'
   },
   project: {
     event: '事件',
