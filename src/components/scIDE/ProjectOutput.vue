@@ -14,8 +14,11 @@
         <div class="col-auto pro-output-btn-center">
           <button class="btn btn-sm btn-outline-secondary pro-output-btn-event" @click="showHistoryPage" :class="[showHistory ? 'pro-output-button-click' : '']">{{ $t('project.history')}}</button>
         </div>
-        <div class="col-auto mr-auto pro-output-btn-center">
+        <div class="col-auto pro-output-btn-center">
           <button class="btn btn-sm btn-outline-secondary pro-output-btn-event" @click="showLocalsPage" :class="[showLocals ? 'pro-output-button-click' : '']">{{ $t('project.locals')}}</button>
+        </div>
+        <div class="col-auto mr-auto pro-output-btn-center">
+          <button class="btn btn-sm btn-outline-secondary pro-output-btn-event" @click="showStoragePage" :class="[showLocals ? 'pro-output-button-click' : '']">{{ $t('project.storage')}}</button>
         </div>
         <div class="col-auto pro-output-btn">
           <div @click="resume" data-toggle="tooltip" data-placement="bottom" :title="$t('project.continue')"><i class="fa fa-play pro-output-fa-trash"></i></div>
@@ -67,6 +70,11 @@
             </span>
           </p>
         </div>
+        <div v-show="showStorage" id="pro-storage-box" class="pro-output-content">
+          <p v-for="(value, key) in getStorage()" :key="refresh">
+            0x<input @change="setStorageKey($event, value)" style="width: 100px" type="text" :value="key" /> = 0x<input @change="setStorageValue($event, value)" style="width: 100px" type="text" :value="value.text" /> <a href="#" @click="deleteStorageItem(value)">delete</a>
+          </p>
+        </div>
       </div>
     </div>
   </div>
@@ -86,7 +94,9 @@
         showEvaluationStack: false,
         showAltStack: false,
         showHistory: false,
-        showLocals: false
+        showLocals: false,
+        showStorage: false,
+        refresh: false
       }
     },
 
@@ -102,6 +112,7 @@
         locals: state => state.RunPage.Locals,
         wasmOutput: state => state.ProjectWASMOutput.WASMOutputInfo,
         projectEditor: state => state.EditorPage.OntEditor,
+        store : state => state.EditorPage.Store
       })
     },
 
@@ -121,12 +132,37 @@
       setEncodedValue(e, item) {
         item.setEncodedValue(e.target.value);
       },
+      getStorage() {
+        let result = {};
+        this.store.data.forEach((item, key) => {
+          if (key.startsWith('05')) {
+            result[key.substr(42)] = {text: Buffer.from(item.value).toString('hex'), key, item};
+          }
+        });
+        return result;
+      },
+      setStorageKey(e, value) {
+        let oldKey = value.key;
+        let prefix = oldKey.substring(0, 42);
+        let newKey = prefix + e.target.value;
+        this.store.data.delete(oldKey);
+        this.store.data.set(newKey, value.item);
+      },
+      setStorageValue(e, value) {
+        value.item.value = Buffer.from(e.target.value, 'hex');
+      },
+      deleteStorageItem(value) {
+        this.refresh = true;
+        this.store.data.delete(value.key);
+        this.refresh = false;
+      },
       showLogPage() {
         this.showLog = true;
         this.showEvaluationStack = false;
         this.showAltStack = false;
         this.showHistory = false;
         this.showLocals = false;
+        this.showStorage = false;
       },
       showEvaluationStackPage() {
         this.showLog = false;
@@ -134,6 +170,7 @@
         this.showAltStack = false;
         this.showHistory = false;
         this.showLocals = false;
+        this.showStorage = false;
       },
       showAltStackPage() {
         this.showLog = false;
@@ -141,6 +178,7 @@
         this.showAltStack = true;
         this.showHistory = false;
         this.showLocals = false;
+        this.showStorage = false;
       },
       showHistoryPage() {
         this.showLog = false;
@@ -148,6 +186,7 @@
         this.showAltStack = false;
         this.showHistory = true;
         this.showLocals = false;
+        this.showStorage = false;
       },
       showLocalsPage() {
         this.showLog = false;
@@ -155,6 +194,15 @@
         this.showAltStack = false;
         this.showHistory = false;
         this.showLocals = true;
+        this.showStorage = false;
+      },
+      showStoragePage() {
+        this.showLog = false;
+        this.showEvaluationStack = false;
+        this.showAltStack = false;
+        this.showHistory = false;
+        this.showLocals = false;
+        this.showStorage = true;
       },
       stepOver() {
         this.projectEditor.execCommand("debugStepOverLine")
