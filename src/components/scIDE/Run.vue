@@ -320,6 +320,7 @@
           });
         }, this.store);
 
+
         this.$store.commit({
           type: types.SET_DEBUGGER,
           debug

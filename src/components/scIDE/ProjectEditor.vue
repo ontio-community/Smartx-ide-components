@@ -38,6 +38,7 @@ import {SET_EDITOR} from '../../store/mutation-type'
     let document = session.getDocument();
     let text = document.getLine(line);
     if (session.getBreakpoints()[line] === undefined && text.trim().length > 0) {
+
       session.setBreakpoint(line);
       if (_self.debug !== undefined) {
         _self.debug.addLineBreakpoint(line + 1);

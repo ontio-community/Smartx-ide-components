@@ -14,6 +14,7 @@
         <div class="col-auto pro-output-btn-center">
           <button class="btn btn-sm btn-outline-secondary pro-output-btn-event" @click="showHistoryPage" :class="[showHistory ? 'pro-output-button-click' : '']">{{ $t('project.history')}}</button>
         </div>
+
         <div class="col-auto pro-output-btn-center">
           <button class="btn btn-sm btn-outline-secondary pro-output-btn-event" @click="showLocalsPage" :class="[showLocals ? 'pro-output-button-click' : '']">{{ $t('project.locals')}}</button>
         </div>
@@ -58,6 +59,7 @@
           </p>
         </div>
         <div v-show="showLocals" id="pro-locals-box" class="pro-output-content">
+
           <p v-for="(local, i) in locals">
             <span v-if="isMap(local.value)">
               {{local.name}} = {{local.value.type}}(<span v-for="(list, j) in Array.from(local.value.value)">{{list[0].type}}(<input @change="setEncodedValue($event, list[0])" style="width: 80px" type="text" :value="getEncodedValue(list[0])" />): {{list[1].type}}(<input @change="setEncodedValue($event, list[1])" style="width: 80px" type="text" :value="getEncodedValue(list[1])" />)<span v-if="j != local.value.value.size - 1">, </span></span>)
@@ -73,6 +75,7 @@
         <div v-show="showStorage" id="pro-storage-box" class="pro-output-content">
           <p v-for="(value, key) in getStorage()" :key="refresh">
             0x<input @change="setStorageKey($event, value)" style="width: 100px" type="text" :value="key" /> = 0x<input @change="setStorageValue($event, value)" style="width: 100px" type="text" :value="value.text" /> <a href="#" @click="deleteStorageItem(value)">delete</a>
+
           </p>
         </div>
       </div>
@@ -97,6 +100,7 @@
         showLocals: false,
         showStorage: false,
         refresh: false
+
       }
     },
 
@@ -113,6 +117,7 @@
         wasmOutput: state => state.ProjectWASMOutput.WASMOutputInfo,
         projectEditor: state => state.EditorPage.OntEditor,
         store : state => state.EditorPage.Store
+
       })
     },
 
@@ -156,6 +161,7 @@
         this.store.data.delete(value.key);
         this.refresh = false;
       },
+
       showLogPage() {
         this.showLog = true;
         this.showEvaluationStack = false;
@@ -171,6 +177,7 @@
         this.showHistory = false;
         this.showLocals = false;
         this.showStorage = false;
+
       },
       showAltStackPage() {
         this.showLog = false;
@@ -179,6 +186,7 @@
         this.showHistory = false;
         this.showLocals = false;
         this.showStorage = false;
+
       },
       showHistoryPage() {
         this.showLog = false;
