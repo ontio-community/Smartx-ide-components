@@ -324,6 +324,7 @@
           type: types.SET_DEBUGGER,
           debug
         });
+        this.$store.dispatch('setContractHash', debug.address.value.toString('hex'));
 
         let breakpoints = this.projectEditor.getSession().getBreakpoints();
         for (let [i, value] of breakpoints.entries()) {
