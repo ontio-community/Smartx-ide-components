@@ -71,15 +71,12 @@
           </p>
         </div>
         <div v-show="showStorage" id="pro-storage-box" class="pro-output-content">
-          <span v-show="contractHash != ''">
-            <p>Contract 0x{{contractHash}}:</p>
-            <p v-for="(value, key) in getStorage()" :key="refresh">
-              0x<input @change="setStorageKey($event, value)" style="width: 100px" type="text" :value="key" /> = 0x<input @change="setStorageValue($event, value)" style="width: 100px" type="text" :value="value.text" /> <a href="#" @click="deleteStorageItem(value)">delete</a>
-            </p>
-            <p>
-              0x<input style="width: 100px" type="text" ref="newKey" placeholder="key" /> = 0x<input style="width: 100px" type="text" ref="newValue" placeholder="value" /> <a href="#" @click="addStorageItem()">add</a>
-            </p>
-          </span>
+          <p v-for="(value, key) in getStorage()" :key="refresh">
+            0x<input @change="setStorageKey($event, value)" style="width: 100px" type="text" :value="key" /> = 0x<input @change="setStorageValue($event, value)" style="width: 100px" type="text" :value="value.text" /> <a href="#" @click="deleteStorageItem(value)">delete</a>
+          </p>
+          <p>
+            0x<input style="width: 100px" type="text" ref="newKey" placeholder="key" /> = 0x<input style="width: 100px" type="text" ref="newValue" placeholder="value" /> <a href="#" @click="addStorageItem()">add</a>
+          </p>
         </div>
       </div>
     </div>
@@ -117,7 +114,6 @@
         altStack: state => state.RunPage.AltStack,
         history: state => state.RunPage.History,
         locals: state => state.RunPage.Locals,
-        contractHash: state => state.RunPage.RunInfo.contractHash,
         wasmOutput: state => state.ProjectWASMOutput.WASMOutputInfo,
         projectEditor: state => state.EditorPage.OntEditor,
         store : state => state.EditorPage.Store
@@ -169,7 +165,7 @@
         this.refresh = true;
         let key = this.$refs.newKey.value;
         let value = this.$refs.newValue.value;
-        this.store.data.set('05' + this.contractHash + key, new StorageItem(Buffer.from(value, 'hex')));
+        this.store.data.set('050000000000000000000000000000000000000000' + key, new StorageItem(Buffer.from(value, 'hex')));
         this.$refs.newKey.value = '';
         this.$refs.newValue.value = '';
         this.storage = this.getStorage();

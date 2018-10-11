@@ -211,9 +211,6 @@
         }
         let _self = this
         this.$store.dispatch('axiosCompile', payload).then(res => {
-          let reversedContractHash = this.compileInfo.contractHash.match(/[a-fA-F0-9]{2}/g).reverse().join('')
-          this.$store.dispatch('setContractHash', reversedContractHash)
-
           _self.waitingStatus = false
           //save code to server
 
