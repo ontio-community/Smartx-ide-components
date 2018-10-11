@@ -10,13 +10,13 @@
             <div class="tool-card-text">
               <a>Hex String : </a>
               <input v-model="originalHexString"/>
-              <a>----> String : </a>
+              <a>————> String : </a>
               <a>{{newString}}&nbsp;&nbsp;</a>
             </div>
             <div class="tool-card-text">
               <a >String : </a>
               <input v-model="originalString"/>
-              <a>----> Hex String : </a>
+              <a>————> Hex String : </a>
               <a>{{newHexString}}&nbsp;&nbsp;</a>
             </div>
             <button class="btn btn-outline-success tool-btn-submit" @click="StringAndHexString">
@@ -36,13 +36,13 @@
             <div class="tool-card-text">
               <a>Script Hash : </a>
               <input v-model="originalScriptHash"/>
-              <a>----> Address : </a>
+              <a>————> Address : </a>
               <a>{{newAddress}}&nbsp;&nbsp;</a>
             </div>
             <div class="tool-card-text">
               <a >Address: </a>
               <input v-model="originalAddress"/>
-              <a>----> Script Hash : </a>
+              <a>————> Script Hash : </a>
               <a>{{newScriptHash}}&nbsp;&nbsp;</a>
             </div>
             <button class="btn btn-outline-success tool-btn-submit" @click="AddressAndScriptHash">
@@ -62,13 +62,13 @@
             <div class="tool-card-text">
               <a>Hex Number : </a>
               <input v-model="originalHexNumber"/>
-              <a>----> Number : </a>
+              <a>————> Number : </a>
               <a>{{newNumber}}&nbsp;&nbsp;</a>
             </div>
             <div class="tool-card-text">
               <a >Number : </a>
               <input v-model="originalNumber"/>
-              <a>----> Hex Number : </a>
+              <a>————> Hex Number : </a>
               <a>{{newHexNumber}}&nbsp;&nbsp;</a>
             </div>
             <button class="btn btn-outline-success tool-btn-submit" @click="NumberAndHexNumber">
@@ -83,12 +83,12 @@
       <div class="card border-secondary mb-3" style="max-width: 20rem;">
         <div class="tool-card-scroll-x">
           <div class="card-body tool-cart-body tool-card-text-nowrap" >
-            <p class="card-text-title">Script Hash (Big-endian/Little-endian)</p>
-            <br class="tool-card-text">e.g : 0xbc99b2a477e28581b2fd04249ba27599ebd736d3 - d336d7eb9975a29b2404fdb28185e277a4b299bc&nbsp;&nbsp;</p>
+            <p class="card-text-title">Hex String (Big-endian/Little-endian)</p>
+            <br class="tool-card-text">e.g : bc99b2a477e28581b2fd04249ba27599ebd736d3 - d336d7eb9975a29b2404fdb28185e277a4b299bc&nbsp;&nbsp;</p>
             <div class="tool-card-text">
-              <a>script hash(big/little) : </a>
+              <a>Hex String(big/little) : </a>
               <input v-model="originalScriptH"/>
-              <a>----> script hash(little/big) : </a>
+              <a>————> Hex String(little/big) : </a>
               <a>{{newScriptH}}&nbsp;&nbsp;</a>
             </div>
             <button class="btn btn-outline-success tool-btn-submit" @click="bigEndianAndLittleEndian">
@@ -108,7 +108,7 @@
             <div class="tool-card-text">
               <a>Hex String : </a>
               <input v-model="originalHexString_2"/>
-              <a>----> Byte array : </a>
+              <a>————> Byte array : </a>
               <a>{{newByteArray}}&nbsp;&nbsp;</a>
             </div>
             <button class="btn btn-outline-success tool-btn-submit" @click="HexStringToByteArray">
@@ -128,13 +128,13 @@
             <div class="tool-card-text">
               <a>Private Key : </a>
               <input v-model="originalPrivateKey"/>
-              <a>----> WIF : </a>
+              <a>————> WIF : </a>
               <a>{{newWIF}}&nbsp;&nbsp;</a>
             </div>
             <div class="tool-card-text">
               <a >WIF : </a>
               <input v-model="originalWIF"/>
-              <a>----> Private Key : </a>
+              <a>————> Private Key : </a>
               <a>{{newPrivateKey}}&nbsp;&nbsp;</a>
             </div>
             <button class="btn btn-outline-success tool-btn-submit" @click="PrivateKeyAndWIF">
@@ -167,7 +167,7 @@
               <input v-model="password"/>
             </div>
             <div class="tool-card-text">
-              <a>Private Key ----> </a>
+              <a>Private Key ————> </a>
               <a>{{privateKey}}&nbsp;&nbsp;</a>
             </div>
 
@@ -259,13 +259,8 @@
       },
       bigEndianAndLittleEndian(){
         let util = Ont.utils
-        if(this.originalScriptH.length === 40){
-          this.newScriptH = '0x'+util.reverseHex(this.originalScriptH)
-        }else if(this.originalScriptH.length === 42){
-          this.newScriptH = util.reverseHex(this.originalScriptH.substring(2))
-        }else{
-          console.log('Wrong script hash')
-        }
+        this.newScriptH = util.reverseHex(this.originalScriptH)
+
       },
       HexStringToByteArray(){
         let byteArray= '{'
