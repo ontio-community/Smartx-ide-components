@@ -140,6 +140,7 @@ module.exports = {
     compile: 'Compile',
     deploy: 'Deploy',
     run: 'Run',
+    tool:'Tool',
     compileTooltips: 'Compile the code to generate ABI and AVM.',
     deployTooltips: 'Deploy the compiled contract to the blockchain.',
     runTooltips: 'Running contract method'
@@ -235,6 +236,9 @@ module.exports = {
     preRun:'Pre-Run',
     preRuntips: 'Use Pre-Run to invoke query method or get the gas limit of the contract',
   },
+  tool:{
+    transform: 'Transform'
+  },
   project: {
     event: 'Event',
     logs: 'Logs',
@@ -242,6 +246,7 @@ module.exports = {
     altStack: 'Alt Stack',
     history: 'History',
     locals: 'Locals',
+    storage: 'Storage',
     continue: 'Continue (F9)',
     stop: 'Debug Stop',
     stepOverOpcode: 'Step Over Opcode (F7)',
