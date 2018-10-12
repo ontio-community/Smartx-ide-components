@@ -71,7 +71,7 @@
           </p>
         </div>
         <div v-show="showStorage" id="pro-storage-box" class="pro-output-content">
-          <p v-for="(value, key) in getStorage()" :key="refresh">
+          <p v-for="(value, key) in getStorage()" :key="key">
             0x<input @change="setStorageKey($event, value)" style="width: 100px" type="text" :value="key" /> = 0x<input @change="setStorageValue($event, value)" style="width: 100px" type="text" :value="value.text" /> <a href="#" @click="deleteStorageItem(value)">delete</a>
           </p>
           <p>
@@ -100,7 +100,7 @@
         showHistory: false,
         showLocals: false,
         showStorage: false,
-        refresh: false
+        refresh: 0
       }
     },
 
@@ -137,6 +137,7 @@
         item.setEncodedValue(e.target.value);
       },
       getStorage() {
+        this.refresh; // needed here to trigger storage refresh when this value changes
         let result = {};
         this.store.data.forEach((item, key) => {
           if (key.startsWith('05')) {
@@ -156,20 +157,16 @@
         value.item.value = Buffer.from(e.target.value, 'hex');
       },
       deleteStorageItem(value) {
-        this.refresh = true;
         this.store.data.delete(value.key);
-        this.storage = this.getStorage();
-        this.refresh = false;
+        this.refresh++;
       },
       addStorageItem() {
-        this.refresh = true;
         let key = this.$refs.newKey.value;
         let value = this.$refs.newValue.value;
         this.store.data.set('050000000000000000000000000000000000000000' + key, new StorageItem(Buffer.from(value, 'hex')));
         this.$refs.newKey.value = '';
         this.$refs.newValue.value = '';
-        this.storage = this.getStorage();
-        this.refresh = false;
+        this.refresh++;
       },
       showLogPage() {
         this.showLog = true;
