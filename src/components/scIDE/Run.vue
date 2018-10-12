@@ -191,6 +191,7 @@
         compileInfo: state => state.CompilePage.CompileInfo,
         runInfo : state => state.RunPage.RunInfo,
         projectEditor: state => state.EditorPage.OntEditor,
+        store : state => state.EditorPage.Store
       })
     },
     mounted(){
@@ -317,7 +318,7 @@
             history,
             locals
           });
-        });
+        }, this.store);
 
         this.$store.commit({
           type: types.SET_DEBUGGER,

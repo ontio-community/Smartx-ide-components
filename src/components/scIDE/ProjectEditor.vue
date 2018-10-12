@@ -35,7 +35,9 @@ import {SET_EDITOR} from '../../store/mutation-type'
   function toggleBreakpoint(_self, line) {
     let editor = _self.projectEditor;
     let session = editor.getSession();
-    if (session.getBreakpoints()[line] === undefined) {
+    let document = session.getDocument();
+    let text = document.getLine(line);
+    if (session.getBreakpoints()[line] === undefined && text.trim().length > 0) {
       session.setBreakpoint(line);
       if (_self.debug !== undefined) {
         _self.debug.addLineBreakpoint(line + 1);
@@ -122,6 +124,8 @@ import {SET_EDITOR} from '../../store/mutation-type'
         this.$store.dispatch('setProjectCode', code)
       },
       getEditor($codeLang) {
+        let langTools = ace.require("ace/ext/language_tools");
+
         let editor
         if ($codeLang === PROJECT_LANGAUGE.C_SHARP){
           this.showEditorCSharp = true
@@ -149,6 +153,73 @@ import {SET_EDITOR} from '../../store/mutation-type'
           minLines: 2,
 
         })
+
+        langTools.addCompleter({
+          getCompletions: function(editor, session, pos, prefix, callback) {
+            callback(null, [
+              {value: "boa.interop.Ontology.Attribute", meta: "class", score: 1000000},
+              {value: "boa.interop.Ontology.Contract", meta: "class", score: 1000000},
+              {value: "boa.interop.Ontology.Header", meta: "class", score: 1000000},
+              {value: "boa.interop.Ontology.Native", meta: "class", score: 1000000},
+              {value: "boa.interop.Ontology.Transaction", meta: "class", score: 1000000},
+              {value: "boa.interop.System.Block", meta: "class", score: 1000000},
+              {value: "boa.interop.System.Blockchain", meta: "class", score: 1000000},
+              {value: "boa.interop.System.Contract", meta: "class", score: 1000000},
+              {value: "boa.interop.System.ExecutionEngine", meta: "class", score: 1000000},
+              {value: "boa.interop.System.Header", meta: "class", score: 1000000},
+              {value: "boa.interop.System.Runtime", meta: "class", score: 1000000},
+              {value: "boa.interop.System.Storage", meta: "class", score: 1000000},
+              {value: "boa.interop.System.StorageContext", meta: "class", score: 1000000},
+              {value: "boa.interop.System.Transaction", meta: "class", score: 1000000},
+              {value: "AsReadOnly", meta: "func", score: 1000000},
+              {value: "CheckWitness", meta: "func", score: 1000000},
+              {value: "Create", meta: "func", score: 1000000},
+              {value: "Delete", meta: "func", score: 1000000},
+              {value: "Deserialize", meta: "func", score: 1000000},
+              {value: "Destroy", meta: "func", score: 1000000},
+              {value: "Get", meta: "func", score: 1000000},
+              {value: "GetAttributes", meta: "func", score: 1000000},
+              {value: "GetBlock", meta: "func", score: 1000000},
+              {value: "GetCallingScriptHash", meta: "func", score: 1000000},
+              {value: "GetConsensusData", meta: "func", score: 1000000},
+              {value: "GetContext", meta: "func", score: 1000000},
+              {value: "GetContract", meta: "func", score: 1000000},
+              {value: "GetData", meta: "func", score: 1000000},
+              {value: "GetEntryScriptHash", meta: "func", score: 1000000},
+              {value: "GetExecutingScriptHash", meta: "func", score: 1000000},
+              {value: "GetHash", meta: "func", score: 1000000},
+              {value: "GetHash", meta: "func", score: 1000000},
+              {value: "GetHeader", meta: "func", score: 1000000},
+              {value: "GetHeight", meta: "func", score: 1000000},
+              {value: "GetIndex", meta: "func", score: 1000000},
+              {value: "GetMerkleRoot", meta: "func", score: 1000000},
+              {value: "GetNextConsensus", meta: "func", score: 1000000},
+              {value: "GetPrevHash", meta: "func", score: 1000000},
+              {value: "GetReadOnlyContext", meta: "func", score: 1000000},
+              {value: "GetScript", meta: "func", score: 1000000},
+              {value: "GetScriptContainer", meta: "func", score: 1000000},
+              {value: "GetStorageContext", meta: "func", score: 1000000},
+              {value: "GetTime", meta: "func", score: 1000000},
+              {value: "GetTimestamp", meta: "func", score: 1000000},
+              {value: "GetTransaction", meta: "func", score: 1000000},
+              {value: "GetTransaction", meta: "func", score: 1000000},
+              {value: "GetTransactionCount", meta: "func", score: 1000000},
+              {value: "GetTransactionHeight", meta: "func", score: 1000000},
+              {value: "GetTransactions", meta: "func", score: 1000000},
+              {value: "GetTrigger", meta: "func", score: 1000000},
+              {value: "GetType", meta: "func", score: 1000000},
+              {value: "GetUsage", meta: "func", score: 1000000},
+              {value: "GetVersion", meta: "func", score: 1000000},
+              {value: "Invoke", meta: "func", score: 1000000},
+              {value: "Log", meta: "func", score: 1000000},
+              {value: "Migrate", meta: "func", score: 1000000},
+              {value: "Notify", meta: "func", score: 1000000},
+              {value: "Put", meta: "func", score: 1000000},
+              {value: "Serialize", meta: "func", score: 1000000}
+            ]);
+          }
+        });
+
         //Use CTRL+ALT+H to acess the hotkeys informations
         //CTRL+ALT+H可显示快捷键列表。
         editor.commands.addCommand({
