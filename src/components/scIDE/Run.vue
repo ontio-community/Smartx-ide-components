@@ -332,29 +332,37 @@
           }
         }
 
-        let { result, notifications, logs } = await debug.execute([new Buffer(args, 'hex')]);
+        try {
+          let { result, notifications, logs } = await debug.execute([new Buffer(args, 'hex')]);
+
+          for (let log of logs) {
+            this.$store.commit({
+              type: types.APPEND_OUTPUT_LOG,
+              log: log.message,
+              op: OP_TYPE.Log
+            });
+          }
+
+          let formattedResult = result.toString();
+
+          this.$store.commit({
+            type: types.APPEND_OUTPUT_LOG,
+            log: formattedResult,
+            op: OP_TYPE.Invoke
+          });
+        } catch (e) {
+          this.$store.commit({
+            type: types.APPEND_OUTPUT_LOG,
+            log: e.toString(),
+            op: OP_TYPE.Error
+          });
+        }
 
         this.$store.commit({
           type: types.SET_DEBUGGER
         });
         this.$store.commit({
           type: types.SET_DEBUGGER_STATE
-        });
-
-        for (let log of logs) {
-          this.$store.commit({
-            type: types.APPEND_OUTPUT_LOG,
-            log: log.message,
-            op: OP_TYPE.Log
-          });
-        }
-
-        let formattedResult = result.toString();
-
-        this.$store.commit({
-          type: types.APPEND_OUTPUT_LOG,
-          log: formattedResult,
-          op: OP_TYPE.Invoke
         });
 
         this.runStatus = false;
