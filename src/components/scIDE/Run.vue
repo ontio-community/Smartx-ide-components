@@ -257,7 +257,7 @@
         let lineToMethod = {};
         let debugMap = this.compileInfo.debug.map;
         debugMap.forEach((m) => {
-          lineMappings[m.file_line_no] = m.start;
+          lineMappings[m.file_line_no] = {start: m.start, end: m.end};
           lineToMethod[m.file_line_no] = m.method;
         });
 
@@ -332,9 +332,7 @@
           }
         }
 
-        let { result, notifications } = await debug.execute([new Buffer(args, 'hex')]);
-        //console.log(result);
-        //console.log(notifications);
+        let { result, notifications, logs } = await debug.execute([new Buffer(args, 'hex')]);
 
         this.$store.commit({
           type: types.SET_DEBUGGER
@@ -343,12 +341,15 @@
           type: types.SET_DEBUGGER_STATE
         });
 
-        let formattedResult;
-        if (result.type === 'IntegerType') {
-          formattedResult = 'Integer(' + result.value.toString() + ')';
-        } else if (result.type === 'ByteArrayType') {
-          formattedResult = 'ByteArray(' + result.value.toString() + ')';
+        for (let log of logs) {
+          this.$store.commit({
+            type: types.APPEND_OUTPUT_LOG,
+            log: log.message,
+            op: OP_TYPE.Log
+          });
         }
+
+        let formattedResult = result.toString();
 
         this.$store.commit({
           type: types.APPEND_OUTPUT_LOG,
