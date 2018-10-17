@@ -17,7 +17,8 @@ export const OP_TYPE = {
   Compile : 'Compile',
   Deploy : 'Deploy',
   Invoke : 'Invoke',
-  Log : 'Log'
+  Log : 'Log',
+  Error : 'Error'
 }
 
 export const INCLUDE_ONT_H = '#include "ont.h"'
