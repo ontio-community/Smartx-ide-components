@@ -318,7 +318,19 @@
             history,
             locals
           });
-        }, this.store);
+        }, this.store, (notification) => {
+          this.$store.commit({
+            type: types.APPEND_OUTPUT_LOG,
+            log: notification.states,
+            op: OP_TYPE.Notify
+          });
+        }, (log) => {
+          this.$store.commit({
+            type: types.APPEND_OUTPUT_LOG,
+            log: log.message,
+            op: OP_TYPE.Log
+          });
+        });
 
         this.$store.commit({
           type: types.SET_DEBUGGER,
@@ -334,14 +346,6 @@
 
         try {
           let { result, notifications, logs } = await debug.execute([new Buffer(args, 'hex')]);
-
-          for (let log of logs) {
-            this.$store.commit({
-              type: types.APPEND_OUTPUT_LOG,
-              log: log.message,
-              op: OP_TYPE.Log
-            });
-          }
 
           let formattedResult = result.toString();
 

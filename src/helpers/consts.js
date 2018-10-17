@@ -17,6 +17,7 @@ export const OP_TYPE = {
   Compile : 'Compile',
   Deploy : 'Deploy',
   Invoke : 'Invoke',
+  Notify : 'Notify',
   Log : 'Log',
   Error : 'Error'
 }
