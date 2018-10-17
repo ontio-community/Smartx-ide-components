@@ -36,8 +36,8 @@ import {SET_EDITOR} from '../../store/mutation-type'
     let editor = _self.projectEditor;
     let session = editor.getSession();
     let document = session.getDocument();
-    let text = document.getLine(line);
-    if (session.getBreakpoints()[line] === undefined && text.trim().length > 0) {
+    let text = document.getLine(line).trim();
+    if (session.getBreakpoints()[line] === undefined && text.length > 0 && !text.startsWith("#")) {
       session.setBreakpoint(line);
       if (_self.debug !== undefined) {
         _self.debug.addLineBreakpoint(line + 1);
