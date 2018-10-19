@@ -247,6 +247,7 @@ module.exports = {
     altStack: 'Alt Stack',
     history: 'History',
     locals: 'Locals',
+    storage: 'Storage',
     continue: 'Continue (F9)',
     stop: 'Debug Stop',
     stepOverOpcode: 'Step Over Opcode (F7)',

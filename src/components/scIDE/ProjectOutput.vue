@@ -14,8 +14,11 @@
         <div class="col-auto pro-output-btn-center">
           <button class="btn btn-sm btn-outline-secondary pro-output-btn-event" @click="showHistoryPage" :class="[showHistory ? 'pro-output-button-click' : '']">{{ $t('project.history')}}</button>
         </div>
-        <div class="col-auto mr-auto pro-output-btn-center">
+        <div class="col-auto pro-output-btn-center">
           <button class="btn btn-sm btn-outline-secondary pro-output-btn-event" @click="showLocalsPage" :class="[showLocals ? 'pro-output-button-click' : '']">{{ $t('project.locals')}}</button>
+        </div>
+        <div class="col-auto mr-auto pro-output-btn-center">
+          <button class="btn btn-sm btn-outline-secondary pro-output-btn-event" @click="showStoragePage" :class="[showLocals ? 'pro-output-button-click' : '']">{{ $t('project.storage')}}</button>
         </div>
         <div class="col-auto pro-output-btn">
           <div @click="resume" data-toggle="tooltip" data-placement="bottom" :title="$t('project.continue')"><i class="fa fa-play pro-output-fa-trash"></i></div>
@@ -55,8 +58,24 @@
           </p>
         </div>
         <div v-show="showLocals" id="pro-locals-box" class="pro-output-content">
-          <p v-for="(value, key) in locals" :key="key">
-            {{value.name}} = {{value.value.toString()}}
+          <p v-for="(local, i) in locals">
+            <span v-if="isMap(local.value)">
+              {{local.name}} = {{local.value.type}}(<span v-for="(list, j) in Array.from(local.value.value)">{{list[0].type}}(<input @change="setEncodedValue($event, list[0])" style="width: 80px" type="text" :value="getEncodedValue(list[0])" />): {{list[1].type}}(<input @change="setEncodedValue($event, list[1])" style="width: 80px" type="text" :value="getEncodedValue(list[1])" />)<span v-if="j != local.value.value.size - 1">, </span></span>)
+            </span>
+            <span v-else-if="isArray(local.value)">
+              {{local.name}} = {{local.value.type}}(<span v-for="(item, j) in local.value.value">{{item.type}}(<input @change="setEncodedValue($event, item)" style="width: 80px" type="text" :value="getEncodedValue(item)" />)<span v-if="j != local.value.value.length - 1">, </span></span>)
+            </span>
+            <span v-else-if="notInterop(local.value)">
+              {{local.name}} = {{local.value.type}}(<input @change="setEncodedValue($event, local.value)" style="width: 80px" type="text" :value="getEncodedValue(local.value)" />)
+            </span>
+          </p>
+        </div>
+        <div v-show="showStorage" id="pro-storage-box" class="pro-output-content">
+          <p v-for="(value, key) in getStorage()" :key="key">
+            0x<input @change="setStorageKey($event, value)" style="width: 100px" type="text" :value="key" /> = 0x<input @change="setStorageValue($event, value)" style="width: 100px" type="text" :value="value.text" /> <a href="#" @click="deleteStorageItem(value)">delete</a>
+          </p>
+          <p>
+            0x<input style="width: 100px" type="text" ref="newKey" placeholder="key" /> = 0x<input style="width: 100px" type="text" ref="newValue" placeholder="value" /> <a href="#" @click="addStorageItem()">add</a>
           </p>
         </div>
       </div>
@@ -69,6 +88,7 @@
   import {CLEAR_OUTPUT_EVENTS} from '../../store/mutation-type'
   import {CLEAR_OUTPUT_LOGS} from '../../store/mutation-type'
   import Clipboard from 'clipboard';
+  import {StorageItem} from 'ontology-ts-vm';
 
   export default {
     name: 'project-output',
@@ -78,7 +98,9 @@
         showEvaluationStack: false,
         showAltStack: false,
         showHistory: false,
-        showLocals: false
+        showLocals: false,
+        showStorage: false,
+        refresh: 0
       }
     },
 
@@ -94,16 +116,65 @@
         locals: state => state.RunPage.Locals,
         wasmOutput: state => state.ProjectWASMOutput.WASMOutputInfo,
         projectEditor: state => state.EditorPage.OntEditor,
+        store : state => state.EditorPage.Store
       })
     },
 
     methods:{
+      isArray(value) {
+        return value.type === 'ArrayType' || value.type === 'StructType';
+      },
+      isMap(value) {
+        return value.type === 'MapType';
+      },
+      notInterop(value) {
+        return value.type !== 'InteropType';
+      },
+      getEncodedValue(value) {
+        return value.getEncodedValue();
+      },
+      setEncodedValue(e, item) {
+        item.setEncodedValue(e.target.value);
+      },
+      getStorage() {
+        this.refresh; // needed here to trigger storage refresh when this value changes
+        let result = {};
+        this.store.data.forEach((item, key) => {
+          if (key.startsWith('05')) {
+            result[key.substr(42)] = {text: Buffer.from(item.value).toString('hex'), key, item};
+          }
+        });
+        return result;
+      },
+      setStorageKey(e, value) {
+        let oldKey = value.key;
+        let prefix = oldKey.substring(0, 42);
+        let newKey = prefix + e.target.value;
+        this.store.data.delete(oldKey);
+        this.store.data.set(newKey, value.item);
+      },
+      setStorageValue(e, value) {
+        value.item.value = Buffer.from(e.target.value, 'hex');
+      },
+      deleteStorageItem(value) {
+        this.store.data.delete(value.key);
+        this.refresh++;
+      },
+      addStorageItem() {
+        let key = this.$refs.newKey.value;
+        let value = this.$refs.newValue.value;
+        this.store.data.set('050000000000000000000000000000000000000000' + key, new StorageItem(Buffer.from(value, 'hex')));
+        this.$refs.newKey.value = '';
+        this.$refs.newValue.value = '';
+        this.refresh++;
+      },
       showLogPage() {
         this.showLog = true;
         this.showEvaluationStack = false;
         this.showAltStack = false;
         this.showHistory = false;
         this.showLocals = false;
+        this.showStorage = false;
       },
       showEvaluationStackPage() {
         this.showLog = false;
@@ -111,6 +182,7 @@
         this.showAltStack = false;
         this.showHistory = false;
         this.showLocals = false;
+        this.showStorage = false;
       },
       showAltStackPage() {
         this.showLog = false;
@@ -118,6 +190,7 @@
         this.showAltStack = true;
         this.showHistory = false;
         this.showLocals = false;
+        this.showStorage = false;
       },
       showHistoryPage() {
         this.showLog = false;
@@ -125,6 +198,7 @@
         this.showAltStack = false;
         this.showHistory = true;
         this.showLocals = false;
+        this.showStorage = false;
       },
       showLocalsPage() {
         this.showLog = false;
@@ -132,6 +206,15 @@
         this.showAltStack = false;
         this.showHistory = false;
         this.showLocals = true;
+        this.showStorage = false;
+      },
+      showStoragePage() {
+        this.showLog = false;
+        this.showEvaluationStack = false;
+        this.showAltStack = false;
+        this.showHistory = false;
+        this.showLocals = false;
+        this.showStorage = true;
       },
       stepOver() {
         this.projectEditor.execCommand("debugStepOverLine")
