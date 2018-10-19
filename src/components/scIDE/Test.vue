@@ -110,7 +110,8 @@
     name: "tool",
     data() {
       return {
-        accountPrivateKey:'063441409768bb701301a44d67a7dbaf75d73479101c4241d7da2f8e9962840f',
+        //accountPrivateKey:'063441409768bb701301a44d67a7dbaf75d73479101c4241d7da2f8e9962840f',
+        accountPrivateKey:'',
         showAddAccountEdit:false,
         optionId: [''],
         functionName : '',
@@ -394,7 +395,16 @@
           if($testFunction.preExec==='0'){
             const tx = Ont.TransactionBuilder.makeInvokeTransaction($testFunction.functionName, $testFunction.params, contractAddr, '500', '20000',payer);
             Ont.TransactionBuilder.signTransaction(tx, privateKey);
-            const res = new Ont.RestClient().sendRawTransaction(tx.serialize(), false, false);
+            let res
+            if(this.network === '0'){
+              res = new Ont.RestClient().sendRawTransaction(tx.serialize(), false, false);
+              console.log(new Ont.RestClient('http://dappnode1.ont.io/').getUrl())
+            }else if(this.network === '1'){
+              res = new Ont.RestClient().sendRawTransaction(tx.serialize(), false, false);
+            }else{
+              res = new Ont.RestClient('http://127.0.0.1:20334/').sendRawTransaction(tx.serialize(), false, false);
+            }
+
             res.then(function(value) {
               console.log(value)
               _self.$store.commit({
@@ -413,7 +423,14 @@
           }else{
             const tx = Ont.TransactionBuilder.makeInvokeTransaction($testFunction.functionName, $testFunction.params, contractAddr, '500', '20000',payer);
             Ont.TransactionBuilder.signTransaction(tx, privateKey);
-            const res = new Ont.RestClient().sendRawTransaction(tx.serialize(), true, false);
+            if(this.network === '0'){
+              res = new Ont.RestClient().sendRawTransaction(tx.serialize(), true, false);
+              console.log(new Ont.RestClient('http://dappnode1.ont.io/').getUrl())
+            }else if(this.network === '1'){
+              res = new Ont.RestClient().sendRawTransaction(tx.serialize(), true, false);
+            }else{
+              res = new Ont.RestClient('http://127.0.0.1:20334/').sendRawTransaction(tx.serialize(), true, false);
+            }
             res.then(function(value) {
               console.log(value)
               _self.$store.commit({
