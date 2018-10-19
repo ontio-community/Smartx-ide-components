@@ -358,25 +358,54 @@
         this.runStatus = false;
       },
       runContract(preExec) {
-        this.runStatus = true;
-        
-        if (!validateRun(this)) {
-          return;
-        }
+        this.runStaus = true;
+        let errorTitle = (LangStorage.getLang('zh') === "zh") ? zh.run.errorTitle : en.run.errorTitle
 
-        if(!this.runInfo.contractHash) {
-          this.ErrorInfo = (LangStorage.getLang('zh') === "zh") ? zh.run.noContractHash : en.run.noContractHash
-          $('#RunError').modal('show')
+        if(!this.functionName) {
+          this.ErrorInfo = (LangStorage.getLang('zh') === "zh") ? zh.run.errorFunction : en.run.errorFunction
+          this.showLoadingModal(errorTitle,this.ErrorInfo,true)
           this.$store.commit({
             type : types.SET_RUN_STATUS,
             running : false
           })
           return;
         }
+        if(!this.runInfo.contractHash) {
+          this.ErrorInfo = (LangStorage.getLang('zh') === "zh") ? zh.run.noContractHash : en.run.noContractHash
+          this.showLoadingModal(errorTitle,this.ErrorInfo,true)
+          this.$store.commit({
+            type : types.SET_RUN_STATUS,
+            running : false
+          })
+          return;
+        }
+        //validate and format parameters
+        const parameters = this.functionParameters.slice();
+        for(let p of parameters) {
+          if(p.name && !p.value) {
+            alert('Parameter '+ p.name + ' is required.')
+            this.$store.commit({
+              type : types.SET_RUN_STATUS,
+              running : false
+            })
+            return;
+          }
+          if(p.type === 'ByteArray' && p.value.length%2 !== 0) {
+            alert('Parameter ' + p.name + ' is not valid hex string.')
+            this.runStatus = false;
+            return;
+          }
+          if(p.type === 'Integer') {
+            p.value = parseInt(p.value)
+          }
+          if(p.type === 'Boolean') {
+            p.value = Boolean(p.value);
+          }
+        }
 
         let contractHash = this.runInfo.contractHash
 
-        const params = {  
+        const params = {
           contract: contractHash,
           method: this.functionName,
           parameters: parameters,
@@ -404,11 +433,10 @@
                 alert(this.$t('ide.noProviderAccount'));
                 return;
               }
-            })            
+            })
           }
         })
-        
-      }
+      },
     }
   }
 </script>

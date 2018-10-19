@@ -10,8 +10,11 @@
       <div class="col pro-operation-btn-center">
         <button class="btn btn-outline-dark pro-operation-button" @click="getRunPage" :class="[showRun ? 'pro-operation-button-click' : '']" data-toggle="tooltip" data-placement="bottom" :title="$t('projectOperation.runTooltips')">{{$t('projectOperation.run')}}</button>
       </div>
+      <div class="col pro-operation-btn-center">
+        <button class="btn btn-outline-dark pro-operation-button" @click="getToolPage" :class="[showTool ? 'pro-operation-button-click' : '']" data-toggle="tooltip" data-placement="bottom" >{{$t('projectOperation.tool')}}</button>
+      </div>
       <div class="col pro-operation-btn-right">
-        <button class="btn btn-outline-dark pro-operation-button" @click="getToolPage" :class="[showTool ? 'pro-operation-button-click' : '']" data-toggle="tooltip" data-placement="bottom" :title="$t('projectOperation.runTooltips')">{{$t('projectOperation.tool')}}</button>
+        <button class="btn btn-outline-dark pro-operation-button" @click="getTestPage" :class="[showTest ? 'pro-operation-button-click' : '']" data-toggle="tooltip" data-placement="bottom" >{{$t('projectOperation.test')}}</button>
       </div>
     </div>
     <div class="pro-operation-border">
@@ -27,6 +30,9 @@
       <div v-show="showTool" class="pro-operation-height">
         <tool  :isShowPreDeployAndPreRun='isShowPreDeployAndPreRun'></tool>
       </div>
+      <div v-show="showTest" class="pro-operation-height">
+        <Test  :isShowPreDeployAndPreRun='isShowPreDeployAndPreRun'></Test>
+      </div>
     </div>
   </div>
 </template>
@@ -36,6 +42,7 @@
   import Deploy from './Deploy'
   import Run from './Run'
   import Tool from './Tool'
+  import Test from './Test'
   import {mapState} from 'vuex'
 
   export default {
@@ -47,6 +54,7 @@
         showDeploy: false,
         showRun: false,
         showTool: false,
+        showTest:false,
         isUseChineseLang: this.$i18n.locale === 'zh' ? true : false,
       }
     },
@@ -54,7 +62,8 @@
       Compile,
       Deploy,
       Run,
-      Tool
+      Tool,
+      Test
     },
     watch: {
       '$route': 'getPage',
@@ -106,24 +115,35 @@
         this.showDeploy = false
         this.showRun = false
         this.showTool = false
+        this.showTest = false
       },
       showDeployPage(){
         this.showCompile = false
         this.showDeploy = true
         this.showRun = false
         this.showTool = false
+        this.showTest = false
       },
       showRunPage(){
         this.showCompile = false
         this.showDeploy = false
         this.showRun = true
         this.showTool = false
+        this.showTest = false
       },
       showToolPage(){
         this.showCompile = false
         this.showDeploy = false
         this.showRun = false
         this.showTool = true
+        this.showTest = false
+      },
+      showTestPage(){
+        this.showCompile = false
+        this.showDeploy = false
+        this.showRun = false
+        this.showTool = false
+        this.showTest = true
       },
       getCompilePage(){
         this.$router.push({ name:'IDE-Compile',params:{projectName:this.projectName.info.projectName}})
@@ -137,6 +157,9 @@
       getToolPage(){
         this.$router.push({ name:'IDE-Tool',params:{projectName:this.projectName.info.projectName}})
       },
+      getTestPage(){
+        this.$router.push({ name:'IDE-Test',params:{projectName:this.projectName.info.projectName}})
+      },
       getPage(){
         if(this.$route.name === 'IDE-Compile'){
           this.showCompilePage()
@@ -146,6 +169,8 @@
           this.showRunPage()
         }else if(this.$route.name === 'IDE-Tool'){
           this.showToolPage()
+        }else if(this.$route.name === 'IDE-Test'){
+          this.showTestPage()
         }
       },
     }

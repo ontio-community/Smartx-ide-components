@@ -6,6 +6,7 @@ import Compile from '@/components/scIDE/Compile'
 import Deploy from '@/components/scIDE/Deploy'
 import Run from '@/components/scIDE/Run'
 import Tool from '@/components/scIDE/Tool'
+import Test from '@/components/scIDE/Test'
 
 Vue.use(Router)
 let routes = [
@@ -17,7 +18,8 @@ let routes = [
       {path: '/ide-compile/:projectName',name:'IDE-Compile',component:IDE-Compile},
       {path: '/ide-deploy/:projectName',name:'IDE-Deploy',component:IDE-Deploy},
       {path: '/ide-run/:projectName',name:'IDE-Run',component:IDE-Run},
-      {path: '/ide-tool/:projectName',name:'IDE-Tool',component:IDE-Tool}
+      {path: '/ide-tool/:projectName',name:'IDE-Tool',component:IDE-Tool},
+      {path: '/ide-test/:projectName',name:'IDE-Test',component:IDE-Test}
     ]
   },
 ]

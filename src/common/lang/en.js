@@ -141,6 +141,7 @@ module.exports = {
     deploy: 'Deploy',
     run: 'Run',
     tool:'Tool',
+    test:'Test',
     compileTooltips: 'Compile the code to generate ABI and AVM.',
     deployTooltips: 'Deploy the compiled contract to the blockchain.',
     runTooltips: 'Running contract method'
@@ -239,6 +240,31 @@ module.exports = {
   tool:{
     transform: 'Transform',
     clear:'Clear'
+  },
+  test:{
+    account:'Account',
+    accountPrivateKey:'Account private key:',
+    accountAddress:'Account',
+    ok:'Ok',
+    addAccount:'Add Account',
+    editAccount:'Edit Account',
+    errorPrivateKey:'Private Key Error',
+    errorPrivateKeyContent:'Private key input error, please enter again',
+    testFunction:'Test Function',
+    selectAccount:'Select Sign Account',
+    addFunction:'Add Function',
+    runThisFunc:'Running this function',
+    preRunThisFunc:'Pre-Running this function',
+    multiSign:'Multi-signature(Comming soon)',
+    function:'Function',
+    selectNet:'Select Network:',
+    mainNet:'Main net',
+    testNet:'Test net',
+    privateNet:'Private net',
+    selectRunType:'Select Run Type:',
+    run:'Run',
+    preRun:'Pre-run',
+    runError:'Run Error'
   },
   project: {
     event: 'Event',

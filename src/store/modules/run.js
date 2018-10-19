@@ -120,6 +120,6 @@ export default {
         })
         return e;
       }
-    }
+    },
   }
 }

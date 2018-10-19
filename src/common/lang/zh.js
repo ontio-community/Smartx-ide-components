@@ -141,6 +141,7 @@ module.exports = {
     deploy: '部署',
     run: '运行',
     tool:'工具',
+    test:'测试',
     compileTooltips: '编译代码，生成ABI和AVM',
     deployTooltips: '将编译后的合约部署到链上',
     runTooltips: '运行合约方法'
@@ -237,6 +238,31 @@ module.exports = {
   tool:{
     transform: '运行',
     clear:'清空'
+  },
+  test:{
+    account:'账户',
+    accountPrivateKey:'账户私钥：',
+    accountAddress:'账户',
+    ok:'确定',
+    addAccount:'添加账户',
+    editAccount:'编辑账户',
+    errorPrivateKey:'私钥错误',
+    errorPrivateKeyContent:'私钥输入错误，请重新输入',
+    testFunction:'测试方法',
+    selectAccount:'选择签名账户',
+    addFunction:'添加方法',
+    runThisFunc:'运行该方法',
+    preRunThisFunc:'预运行该方法',
+    multiSign:'多签(敬请期待）',
+    function:'方法',
+    selectNet:'选择运行网络：',
+    mainNet:'主网',
+    testNet:'测试网',
+    privateNet:'私网',
+    selectRunType:'选择运行方式：',
+    run:'运行',
+    preRun:'预执行',
+    runError:'运行失败'
   },
   project: {
     event: '事件',

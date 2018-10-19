@@ -9,6 +9,8 @@ import CompilePage from './modules/compile'
 import ProjectOutput from './modules/project-out'
 import EditorPage from './modules/editor'
 import ProjectEditor from './modules/project-editor'
+import LoadingModalPage from './modules/LoadingModal'
+import TestPage from './modules/test'
 
 Vue.use(Vuex)
 
@@ -22,5 +24,7 @@ export default new Vuex.Store({
     ProjectOutput,
     EditorPage,
     ProjectEditor,
+    LoadingModalPage,
+    TestPage
   }
 })
