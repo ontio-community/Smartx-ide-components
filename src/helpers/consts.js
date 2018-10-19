@@ -16,7 +16,10 @@ export const VM_TYPE = {
 export const OP_TYPE = {
   Compile : 'Compile',
   Deploy : 'Deploy',
-  Invoke : 'Invoke'
+  Invoke : 'Invoke',
+  Notify : 'Notify',
+  Log : 'Log',
+  Error : 'Error'
 }
 
 export const INCLUDE_ONT_H = '#include "ont.h"'
