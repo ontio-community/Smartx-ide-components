@@ -264,7 +264,10 @@ module.exports = {
     selectRunType:'Select Run Type:',
     run:'Run',
     preRun:'Pre-run',
-    runError:'Run Error'
+    runError:'Run Error',
+    download:'Download',
+    edit:'Edit',
+    cancel:'Cancel'
   },
   project: {
     event: 'Event',

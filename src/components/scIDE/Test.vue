@@ -20,7 +20,6 @@
 
             <div class="test-account-button">
               <button class="btn btn-outline-success test-btn-submit-small"  @click="addAccount()">{{$t('test.addAccount')}}</button>
-              <button class="btn btn-outline-success test-btn-submit-small" @click="editAccount()">{{$t('test.editAccount')}}</button>
             </div>
 
           </div>
@@ -30,7 +29,18 @@
 
     <div class="test-card" >
       <div class="card border-secondary mb-3" style="max-width: 20rem;">
-        <div class="card-header">{{$t('test.testFunction')}}</div>
+        <div class="card-header">
+          <div class="row">
+            <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10 card-header-text">
+              <div>{{$t('test.testFunction')}}</div>
+            </div>
+            <div class="row test-function-header-btn-div">
+              <div class="test-function-header-fa" @click="downloadJson">{{ $t('test.download') }}</div>
+              <div class="test-function-header-fa" v-show="!isShowDeleteTestFunction" @click="editTestFunction(true)" style="margin-left: 10px">{{ $t('test.edit') }}</div>
+              <div class="test-function-header-fa" v-show="isShowDeleteTestFunction" @click="editTestFunction(false)" style="margin-left: 10px">{{ $t('test.cancel') }}</div>
+            </div>
+          </div>
+        </div>
         <div class="test-card-scroll-y">
           <div class="card-body">
 
@@ -39,9 +49,15 @@
               <label class="card-text test-title-text"><input name="testFunctionNet" type="radio" v-model="network" value="0"/><strong style="margin-left: 4px">{{ $t('test.mainNet') }}</strong></label>
               <label class="card-text test-title-text" style="margin-left: 8px"><input name="testFunctionNet" type="radio" v-model="network" value="1"/><strong style="margin-left: 4px">{{ $t('test.testNet') }}</strong></label>
               <label class="card-text test-title-text" style="margin-left: 8px"><input name="testFunctionNet" type="radio" v-model="network" value="2"/><strong style="margin-left: 4px">{{ $t('test.privateNet') }}</strong></label>
+              <input class="test-private-net-input" v-show="network === '2'" v-model="privateNet" >
             </div>
 
+            <button class="btn btn-outline-success test-btn-submit" @click="runTest()">{{runStatus ? $t('run.waiting') : $t('run.run')}}</button>
+
             <div v-for="num in testFunctionNum">
+              <div v-show="isShowDeleteTestFunction" class="test-project-delete"  @click="spliceTestFunction(num)">
+                <img src="./../../../src/assets/project/delete.png" alt="">
+              </div>
               <div class="test-function-bord">
                 <p class="card-text test-card-text-title" style="margin-top: 0px"><strong>{{$t('test.function')}}{{num+1}}</strong></p>
                 <p class="card-text test-card-text-title"><strong>{{ $t('run.selectFuc') }}</strong></p>
@@ -57,7 +73,7 @@
                   <p class="card-text test-title-text test-title-test-run-function"><input type="checkbox" v-model="testFunctions.isRun[num]" /><strong style="margin-left: 4px">{{ $t('test.runThisFunc') }}</strong></p>
                 </div>
 
-                <div  v-show="testFunctions.isRun[num]">
+                <div v-show="testFunctions.isRun[num]">
                   <div class="test-input-and-txt" v-for="parameter in testFunctions.params[num]" @change="changeParameterTypeTip(parameter)">
                     <select v-model="parameter.type" style="margin-right: 5px;">
                       <option value="ByteArray">ByteArray</option>
@@ -91,9 +107,6 @@
         </div>
       </div>
     </div>
-    <div class="test-card">
-      <button class="btn btn-outline-success test-btn-submit" @click="runTest()">{{runStatus ? $t('run.waiting') : $t('run.run')}}</button>
-    </div>
   </div>
 </template>
 
@@ -110,8 +123,8 @@
     name: "tool",
     data() {
       return {
-        //accountPrivateKey:'063441409768bb701301a44d67a7dbaf75d73479101c4241d7da2f8e9962840f',
-        accountPrivateKey:'',
+        accountPrivateKey:'063441409768bb701301a44d67a7dbaf75d73479101c4241d7da2f8e9962840f',
+        //accountPrivateKey:'',
         showAddAccountEdit:false,
         optionId: [''],
         functionName : '',
@@ -122,11 +135,13 @@
           functionName: [''],
           params: [''],
           account:[''],
-          isRun:[true],
+          isRun:[false],
           preExec: ['0'],
         },
         network:'0',
         testFunctionNum:[0],
+        privateNet:'http://127.0.0.1:20334/',
+        isShowDeleteTestFunction:false
       }
     },
     computed: {
@@ -177,6 +192,8 @@
         compileInfo: state => state.CompilePage.CompileInfo,
         runInfo : state => state.RunPage.RunInfo,
         testAccountInfo : state =>state.TestPage.testAccountInfo,
+        deployInfo : state =>state.TestPage.DeployInfo,
+        deployContractInfo: state =>state.TestPage.DeployContractInfo,
         //testFunctions : state =>state.TestPage.testFunctions,
         //testFunctionNum : state =>state.TestPage.testFunctionNum,
       })
@@ -219,9 +236,6 @@
         if(this.testAccountInfo.info.length === 0){
           this.showAddAccountEdit = true
         }
-      },
-      editAccount(){
-
       },
       showTestFunctions(){
         if(this.compileInfo.abi.functions){
@@ -276,7 +290,7 @@
         this.testFunctions.functionName.push('')
         this.testFunctions.params.push('')
         this.testFunctions.account.push('')
-        this.testFunctions.isRun.push(true)
+        this.testFunctions.isRun.push(false)
         this.testFunctions.preExec.push('0')
         this.functionParameters.push('')
         this.optionId.push($functionId)
@@ -295,9 +309,13 @@
         this.testFunctions.params = []
         this.addressId = []
       },
+      editTestFunction($isShowDeleteTestFunction){
+        this.isShowDeleteTestFunction = $isShowDeleteTestFunction
+      },
       spliceTestFunction($functionId){
+        this.testFunctionNum.splice($functionId,1)
         let num = this.testFunctionNum.length
-        for (let i=0;i<num-1;i++){
+        for (let i=0;i<num;i++){
           this.testFunctionNum[i]=i
         }
         this.testFunctions.functionName.splice($functionId,1)
@@ -307,7 +325,6 @@
         this.testFunctions.preExec.splice($functionId,1)
         this.functionParameters.splice($functionId,1)
         this.optionId.splice($functionId,1)
-        this.testFunctions.params.splice($functionId,1)
         this.addressId.splice($functionId,1)
       },
       runTest(){
@@ -325,7 +342,6 @@
         }
         this.runStatus = false;
       },
-
       runContract($testFunction) {
         this.runStatus = true;
 
@@ -402,7 +418,7 @@
             }else if(this.network === '1'){
               res = new Ont.RestClient().sendRawTransaction(tx.serialize(), false, false);
             }else{
-              res = new Ont.RestClient('http://127.0.0.1:20334/').sendRawTransaction(tx.serialize(), false, false);
+              res = new Ont.RestClient(this.privateNet).sendRawTransaction(tx.serialize(), false, false);
             }
 
             res.then(function(value) {
@@ -421,8 +437,8 @@
               })
             });
           }else{
-            const tx = Ont.TransactionBuilder.makeInvokeTransaction($testFunction.functionName, $testFunction.params, contractAddr, '500', '20000',payer);
-            Ont.TransactionBuilder.signTransaction(tx, privateKey);
+            const tx = Ont.TransactionBuilder.makeInvokeTransaction($testFunction.functionName, $testFunction.params, contractAddr, '500', '20000');
+            let res
             if(this.network === '0'){
               res = new Ont.RestClient().sendRawTransaction(tx.serialize(), true, false);
               console.log(new Ont.RestClient('http://dappnode1.ont.io/').getUrl())
@@ -456,6 +472,77 @@
           this.runStatus = false;
         }
       },
+      downloadJson(){
+        let testFunctionJson={
+          defaultWallet:'' ,
+          networks:'',
+          password:'',
+          deployConfig:'',
+          invokeConfig:''
+        }
+
+        let defaultNet
+        if(this.network === '0'){
+          defaultNet = {
+            host: "http://dappnode1.ont.io",
+            prot:20336
+          }
+        }else if(this.network === '1'){
+          defaultNet = {
+            host: "http://polaris3.ont.io",
+            prot:20336
+          }
+        }else{
+          defaultNet = {
+            host: "http://127.0.0.1",
+            prot:20336
+          }
+        }
+        testFunctionJson.networks = {
+          defaultNet:defaultNet,
+          testNet:{
+            host: "http://polaris3.ont.io",
+            prot:20336
+          },
+          mainNet:{
+            host: "http://dappnode1.ont.io",
+            prot:20336
+          },
+          privateNet:{
+            host: "http://127.0.0.1",
+            prot:20336
+          }
+        }
+
+        let functionParams={}
+        for(let i=0 ;i<this.testFunctionNum.length ;i++){
+          let preExec
+          if(this.testFunctions.preExec[i] === '0'){
+            preExec = false
+          }else{
+            preExec = true
+          }
+
+          let params = {}
+          console.log(this.testFunctions.params.length)
+          for(let j=0 ;j<this.testFunctions.params.length ;j++){
+            let param = {}
+            param[this.testFunctions.params[i][j].name]=this.testFunctions.params[i][j].value
+            console.log(param)
+
+          }
+          let functionParam ={}
+          functionParam[this.testFunctions.functionName[i]] = {
+            params: params,
+            signers:'',
+            preExec: preExec
+          }
+          console.log(functionParam)
+        }
+
+
+
+      }
     }
   }
 </script>
@@ -537,18 +624,18 @@
     border: 1px solid #CCCCCC;
     background-color: #fbfbfc;
     padding: 16px 10px;
-    margin: 0px -10px 10px -10px;
-    border-radius: 6px;
+    margin:0 -2% 2% -2%;
+    border-radius: 5px;
   }
   .test-btn-submit {
-    border-radius: 0;
-    width: 100%;
+    border-radius: 5px;
+    width: 104%;
     color: white;
     border-color: #36a3bc;
     background-color: #36a3bc;
     font-size: 10px;
     padding: 8px 17.6px;
-    margin-bottom:15px;
+    margin:0 -2% 2% -2%;
   }
   .test-btn-submit:hover,
   .test-btn-submit:active {
@@ -560,7 +647,7 @@
     margin-top: 8px;
   }
   .test-card-select-function-name{
-    width: 70%;
+    width: 50%;
   }
   .test-title-test-run-function{
     margin-left: 20px;
@@ -568,7 +655,7 @@
   }
   .test-btn-add-function {
     border-radius: 5px;
-    width: 100%;
+    width: 104%;
     color: #36a3bc;
     border-color: #36a3bc;
     background-color: white;
@@ -584,5 +671,40 @@
   .test-btn-add-function:focus{
     box-shadow:none !important;
     outline: none !important;
+  }
+  .test-private-net-input{
+    width: 40%;
+    height: 20px;
+    margin-left: 8px;
+  }
+  .run-input{
+    width: 50%;
+    height: 22px;
+    margin-left: 16px;
+  }
+  .test-function-header-btn-div{
+    text-align: right;
+    margin-left: 4%;
+  }
+  .test-function-header-fa{
+    font-size: 10px;
+    margin-top: 1px;
+    cursor: pointer;
+    color: black;
+    font-weight: bolder;
+    text-decoration:underline
+  }
+  .card-header-text{
+    padding-left: 20%;
+    padding-top: 2px;
+  }
+  .test-project-delete {
+    position: absolute;
+    margin-top: -6px;
+    margin-left: -3%;
+    width: 70px;
+    height: 70px;
+    overflow: hidden;
+    cursor: pointer;
   }
 </style>

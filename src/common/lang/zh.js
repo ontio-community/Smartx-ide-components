@@ -262,7 +262,10 @@ module.exports = {
     selectRunType:'选择运行方式：',
     run:'运行',
     preRun:'预执行',
-    runError:'运行失败'
+    runError:'运行失败',
+    download:'下载',
+    edit:'编辑',
+    cancel:'取消'
   },
   project: {
     event: '事件',
