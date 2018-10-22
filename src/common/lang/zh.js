@@ -230,6 +230,7 @@ module.exports = {
     errorWallet: '请先解锁您的钱包文件',
     errorFunction: '请选择一个需要运行的方法',
     noContractHash: '没有合约哈希。请先部署合约。',
+    noFunction:'请添加需要运行的方法',
     function:'方法：',
     param:'参数：',
     preRun:'运行预执行',

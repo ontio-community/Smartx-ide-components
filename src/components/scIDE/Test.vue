@@ -116,7 +116,7 @@
   import {mapState} from 'vuex'
   import { OP_TYPE } from './../../helpers/consts';
   import * as types from './../../store/mutation-type'
-  import Sleep from './../../helpers/sleep'
+  import FileHelper from "./../../common/ont-wallet/file-generate-and-get";
 
   export default {
     name: "tool",
@@ -148,8 +148,8 @@
         compileInfo: state => state.CompilePage.CompileInfo,
         runInfo : state => state.RunPage.RunInfo,
         testAccountInfo : state =>state.TestPage.testAccountInfo,
-        deployInfo : state =>state.TestPage.DeployInfo,
-        deployContractInfo: state =>state.TestPage.DeployContractInfo,
+        deployContractInfo: state => state.DeployPage.DeployContractInfo,
+        deployInfo: state => state.DeployPage.DeployInfo,
       })
     },
     created(){
@@ -288,6 +288,23 @@
       runTest(){
         let _self = this
         let i = 0
+
+        if(_self.testFunctionNum.length === 0){
+          let title = (LangStorage.getLang('zh') === "zh") ? zh.test.runError : en.test.runError
+          let content = (LangStorage.getLang('zh') === "zh") ? zh.run.noFunction : en.run.noFunction
+          let payload = {
+            title:title,
+            content:content,
+            isShowCloseButton:true
+          }
+          this.$store.dispatch('showLoadingModals',payload)
+          this.$store.commit({
+            type : types.SET_RUN_STATUS,
+            running : false
+          })
+          return;
+        }
+
         var interval = setInterval(function(){
           if(i>_self.testFunctionNum.length-1){
             clearInterval(interval);
@@ -449,9 +466,8 @@
       },
       downloadJson(){
         let testFunctionJson={
-          defaultWallet:'' ,
+          contractHash:this.compileInfo.contractHash,
           networks:'',
-          password:'',
           deployConfig:'',
           invokeConfig:''
         }
@@ -469,7 +485,7 @@
           }
         }else{
           defaultNet = {
-            host: "http://127.0.0.1",
+            host: this.privateNet,
             prot:20336
           }
         }
@@ -484,36 +500,41 @@
             prot:20336
           },
           privateNet:{
-            host: "http://127.0.0.1",
+            host: this.privateNet,
             prot:20336
           }
         }
 
-        let functionParams={}
-        for(let i=0 ;i<this.testFunctionNum.length ;i++){
-          let preExec
-          if(this.testFunctions.preExec[i] === '0'){
-            preExec = false
-          }else{
-            preExec = true
-          }
-
-          let params = {}
-          console.log(this.testFunctions.params.length)
-          for(let j=0 ;j<this.testFunctions.params.length ;j++){
-            let param = {}
-            param[this.testFunctions.params[i][j].name]=this.testFunctions.params[i][j].value
-            console.log(param)
-
-          }
-          let functionParam ={}
-          functionParam[this.testFunctions.functionName[i]] = {
-            params: params,
-            signers:'',
-            preExec: preExec
-          }
-          console.log(functionParam)
+        testFunctionJson.deployConfig = {
+          name:this.deployContractInfo.name,
+          version:this.deployContractInfo.version,
+          author:this.deployContractInfo.author,
+          email:this.deployContractInfo.email,
+          desc:this.deployContractInfo.desc,
         }
+
+        testFunctionJson.invokeConfig = {
+          abi:'',
+          defaultPayer:'',
+          gasPrice:500,
+          gasLimit:30000,
+          Function:[]
+        }
+        for(let i=0 ; i<this.testFunctionNum.length;i++){
+          let testFunction ={
+            functionName:'',
+            params:'',
+            isRun:'',
+            preExec:''
+          }
+          testFunction.functionName = this.testFunctions.functionName[i]
+          testFunction.params = this.testFunctions.params[i]
+          testFunction.isRun = this.testFunctions.isRun[i]
+          testFunction.preExec = this.testFunctions.preExec[i]
+          testFunctionJson.invokeConfig.Function[i] = testFunction
+        }
+        //console.log(testFunctionJson)
+        FileHelper.downloadFile(testFunctionJson,"test_file.json")
       }
     }
   }
@@ -656,7 +677,7 @@
   }
   .test-function-header-btn-div{
     text-align: right;
-    margin-left: 8%;
+    margin-left: 4%;
   }
   .test-function-header-fa{
     font-size: 10px;

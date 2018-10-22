@@ -89,6 +89,27 @@
               {{$t('tool.clear')}}
             </button>
 
+            <p class="card-text-title" style="margin-top: 16px">Hex Number <--> Reverse Number</p>
+            <p class="tool-card-text">e.g : 00e1f505 - 100000000&nbsp;&nbsp;</p>
+            <div class="tool-card-text">
+              <a>Hex Number : </a>
+              <input v-model="originalHexNumber_2"/>
+              <a>——> Number : </a>
+              <a>{{newNumber_2}}&nbsp;&nbsp;</a>
+            </div>
+            <div class="tool-card-text">
+              <a >Number : </a>
+              <input v-model="originalNumber_2"/>
+              <a>——> Hex Number : </a>
+              <a>{{newHexNumber_2}}&nbsp;&nbsp;</a>
+            </div>
+
+            <button class="btn btn-outline-success tool-btn-submit" @click="NumberAndHexNumber_2">
+              {{$t('tool.transform')}}
+            </button>
+            <button class="btn btn-outline-success tool-btn-submit" @click="ClearNumberAndHexNumber_2">
+              {{$t('tool.clear')}}
+            </button>
           </div>
         </div>
       </div>
@@ -99,7 +120,7 @@
         <div class="tool-card-scroll-x">
           <div class="card-body tool-cart-body tool-card-text-nowrap" >
             <p class="card-text-title">Hex String (Big-endian/Little-endian)</p>
-            <br class="tool-card-text">e.g : bc99b2a477e28581b2fd04249ba27599ebd736d3 - d336d7eb9975a29b2404fdb28185e277a4b299bc&nbsp;&nbsp;</p>
+            <p class="tool-card-text">e.g : bc99b2a477e28581b2fd04249ba27599ebd736d3 - d336d7eb9975a29b2404fdb28185e277a4b299bc&nbsp;&nbsp;</p>
             <div class="tool-card-text">
               <a>Hex String(big/little) : </a>
               <input v-model="originalScriptH"/>
@@ -123,39 +144,8 @@
       <div class="card border-secondary mb-3" style="max-width: 20rem;">
         <div class="tool-card-scroll-x">
           <div class="card-body tool-cart-body tool-card-text-nowrap" >
-            <p class="card-text-title">Hex Number <--> Reverse Number</p>
-            <p class="tool-card-text">e.g : 00e1f505 - 100000000&nbsp;&nbsp;</p>
-            <div class="tool-card-text">
-              <a>Hex Number : </a>
-              <input v-model="originalHexNumber_2"/>
-              <a>——> Number : </a>
-              <a>{{newNumber_2}}&nbsp;&nbsp;</a>
-            </div>
-            <div class="tool-card-text">
-              <a >Number : </a>
-              <input v-model="originalNumber_2"/>
-              <a>——> Hex Number : </a>
-              <a>{{newHexNumber_2}}&nbsp;&nbsp;</a>
-            </div>
-
-            <button class="btn btn-outline-success tool-btn-submit" @click="NumberAndHexNumber_2">
-              {{$t('tool.transform')}}
-            </button>
-            <button class="btn btn-outline-success tool-btn-submit" @click="ClearNumberAndHexNumber_2">
-              {{$t('tool.clear')}}
-            </button>
-
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="tool-card" >
-      <div class="card border-secondary mb-3" style="max-width: 20rem;">
-        <div class="tool-card-scroll-x">
-          <div class="card-body tool-cart-body tool-card-text-nowrap" >
             <p class="card-text-title">String <--> Byte Array</p>
-            <br class="tool-card-text">e.g : 7472616e73666572 - {0x74,0x72,0x61,0x6e,0x73,0x66,0x65,0x72}&nbsp;&nbsp;</p>
+            <p class="tool-card-text">e.g : 7472616e73666572 - {0x74,0x72,0x61,0x6e,0x73,0x66,0x65,0x72}&nbsp;&nbsp;</p>
             <div class="tool-card-text">
               <a>Hex String : </a>
               <input v-model="originalHexString_2"/>

@@ -231,6 +231,7 @@ module.exports = {
     errorWallet: 'You need to unlock your wallet first.',
     errorFunction: 'You need to select one function to run.',
     noContractHash: 'No contract hash.Please deploy your contract first.',
+    noFunction:'Please add the function to run',
     function:'Function:',
     param:'Params:',
     debugRun:'Debug Run',
