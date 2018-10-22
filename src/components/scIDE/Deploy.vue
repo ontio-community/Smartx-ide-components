@@ -242,7 +242,7 @@
             return;
           }
           this.$store.dispatch('dapiDeploy', params).then(res => {
-            console.log(res)
+            //console.log(res)
             if(res === 'NO_ACCOUNT') {
               this.deployStatus = false
               this.waitingStatus = false
@@ -274,7 +274,7 @@
               info_desc: _self.deployContractInfo.desc,
             }
             this.$store.dispatch('saveProject', param)
-            console.log(res)
+            //console.log(res)
           })
         })
       },

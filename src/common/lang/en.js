@@ -267,7 +267,8 @@ module.exports = {
     runError:'Run Error',
     download:'Download',
     edit:'Edit',
-    cancel:'Cancel'
+    cancel:'Cancel',
+    delete:'Delete'
   },
   project: {
     event: 'Event',

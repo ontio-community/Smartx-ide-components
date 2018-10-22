@@ -10,6 +10,7 @@
             <div class="test-account-address" v-for="(account,index) in testAccountInfo.info">
               <label class="card-text">{{$t('test.accountAddress')}}{{index+1}}:</label>
               <label class="card-text">{{account.address}}</label>
+              <label class="card-text test-account-delete" @click="spliceAccount(index)">{{$t('test.delete')}}</label>
             </div>
 
             <div v-if="showAddAccountEdit">
@@ -21,7 +22,6 @@
             <div class="test-account-button">
               <button class="btn btn-outline-success test-btn-submit-small"  @click="addAccount()">{{$t('test.addAccount')}}</button>
             </div>
-
           </div>
         </div>
       </div>
@@ -36,8 +36,6 @@
             </div>
             <div class="row test-function-header-btn-div">
               <div class="test-function-header-fa" @click="downloadJson">{{ $t('test.download') }}</div>
-              <div class="test-function-header-fa" v-show="!isShowDeleteTestFunction" @click="editTestFunction(true)" style="margin-left: 10px">{{ $t('test.edit') }}</div>
-              <div class="test-function-header-fa" v-show="isShowDeleteTestFunction" @click="editTestFunction(false)" style="margin-left: 10px">{{ $t('test.cancel') }}</div>
             </div>
           </div>
         </div>
@@ -54,12 +52,14 @@
 
             <button class="btn btn-outline-success test-btn-submit" @click="runTest()">{{runStatus ? $t('run.waiting') : $t('run.run')}}</button>
 
+            <div class="test-line"></div>
+
             <div v-for="num in testFunctionNum">
-              <div v-show="isShowDeleteTestFunction" class="test-project-delete"  @click="spliceTestFunction(num)">
+              <div class="test-project-delete"  @click="spliceTestFunction(num)">
                 <img src="./../../../src/assets/project/delete.png" alt="">
               </div>
               <div class="test-function-bord">
-                <p class="card-text test-card-text-title" style="margin-top: 0px"><strong>{{$t('test.function')}}{{num+1}}</strong></p>
+                <p class="card-text test-card-text-title" style="margin-top: 0px"><strong>{{$t('test.function')}} {{num+1}}</strong></p>
                 <p class="card-text test-card-text-title"><strong>{{ $t('run.selectFuc') }}</strong></p>
                 <div style="display: flex;">
                   <select class="form-control test-card-select test-card-select-function-name" v-model="optionId[num]" @change="getParameter(optionId[num],num)">
@@ -97,9 +97,7 @@
                       {{account.address }}
                     </option>
                   </select>
-
                 </div>
-
               </div>
             </div>
             <button class="btn btn-outline-success test-btn-submit test-btn-add-function" @click="addTestFunction(0)">{{$t('test.addFunction')}}</button>
@@ -118,6 +116,7 @@
   import {mapState} from 'vuex'
   import { OP_TYPE } from './../../helpers/consts';
   import * as types from './../../store/mutation-type'
+  import Sleep from './../../helpers/sleep'
 
   export default {
     name: "tool",
@@ -141,52 +140,9 @@
         network:'0',
         testFunctionNum:[0],
         privateNet:'http://127.0.0.1:20334/',
-        isShowDeleteTestFunction:false
       }
     },
     computed: {
-      /*
-        projectInfo:{
-          info:{
-            abi:'',
-            code:'',
-            contract_hash:'',
-            created_at:'',
-            id:'',
-            info_author:'',
-            info_desc:'',
-            info_email:'',
-            info_name:'',
-            info_version:'',
-            language:'',
-            name:'',
-            nvm_byte_code:'',
-            type:'',
-            updated_at:'',
-            user_id:'',
-            wat:''
-        }，
-        compileInfo:{
-          abi{
-            function:[{
-              name:'',
-              parameters:[{
-                name:'',
-                type:''
-              }]
-              returntype:''
-            }],
-            avm:'',
-            contractHash:'',
-            errdetail:'',
-            haveReCompile:'',
-            showCompileInfo: '',
-          }
-        }
-        runInfo:{
-          contractHash:'',
-        }
-       */
       ...mapState({
         projectInfo: state => state.ProjectInfoPage.ProjectInfo,
         compileInfo: state => state.CompilePage.CompileInfo,
@@ -194,8 +150,6 @@
         testAccountInfo : state =>state.TestPage.testAccountInfo,
         deployInfo : state =>state.TestPage.DeployInfo,
         deployContractInfo: state =>state.TestPage.DeployContractInfo,
-        //testFunctions : state =>state.TestPage.testFunctions,
-        //testFunctionNum : state =>state.TestPage.testFunctionNum,
       })
     },
     created(){
@@ -309,9 +263,6 @@
         this.testFunctions.params = []
         this.addressId = []
       },
-      editTestFunction($isShowDeleteTestFunction){
-        this.isShowDeleteTestFunction = $isShowDeleteTestFunction
-      },
       spliceTestFunction($functionId){
         this.testFunctionNum.splice($functionId,1)
         let num = this.testFunctionNum.length
@@ -327,20 +278,43 @@
         this.optionId.splice($functionId,1)
         this.addressId.splice($functionId,1)
       },
+      spliceAccount($accountId){
+        let payload={
+          accountId:$accountId,
+          testAccount:this.testAccountInfo.info,
+        }
+        this.$store.dispatch('spliceAccount',payload)
+      },
       runTest(){
-        for(let i =0 ; i < this.testFunctionNum.length ; i++){
+        let _self = this
+        let i = 0
+        var interval = setInterval(function(){
+          if(i>_self.testFunctionNum.length-1){
+            clearInterval(interval);
+            this.runStatus = false;
+            return;
+          }
           let testFunction = {
-            functionName: this.testFunctions.functionName[i],
-            params: this.testFunctions.params[i],
-            isRun: this.testFunctions.isRun[i],
-            preExec: this.testFunctions.preExec[i],
-            account: this.testFunctions.account[i],
+            functionName: _self.testFunctions.functionName[i],
+            params: _self.testFunctions.params[i],
+            isRun: _self.testFunctions.isRun[i],
+            preExec: _self.testFunctions.preExec[i],
+            account: _self.testFunctions.account[i],
           }
           if(testFunction.isRun){
-            this.runContract(testFunction)
+            _self.runContract(testFunction)
           }
+          i = i+1
+        }, 3000);
+      },
+      sleep(numberMillis) {
+        var now = new Date();
+        var exitTime = now.getTime() + numberMillis;
+        while (true) {
+          now = new Date();
+          if (now.getTime() > exitTime)
+            return;
         }
-        this.runStatus = false;
       },
       runContract($testFunction) {
         this.runStatus = true;
@@ -436,6 +410,7 @@
                 op: OP_TYPE.Invoke
               })
             });
+
           }else{
             const tx = Ont.TransactionBuilder.makeInvokeTransaction($testFunction.functionName, $testFunction.params, contractAddr, '500', '20000');
             let res
@@ -539,9 +514,6 @@
           }
           console.log(functionParam)
         }
-
-
-
       }
     }
   }
@@ -684,7 +656,7 @@
   }
   .test-function-header-btn-div{
     text-align: right;
-    margin-left: 4%;
+    margin-left: 8%;
   }
   .test-function-header-fa{
     font-size: 10px;
@@ -706,5 +678,19 @@
     height: 70px;
     overflow: hidden;
     cursor: pointer;
+  }
+  .test-account-delete{
+    margin-left: 6px;
+    color:#36a3bc;
+    cursor: pointer;
+    font-weight: bolder;
+    text-decoration:underline
+  }
+  .test-line{
+    border: 0.5px solid #CCCCCC;
+    margin-left: -2%;
+    margin-right: -2%;
+    height: 0px;
+    margin-bottom: 10px;
   }
 </style>

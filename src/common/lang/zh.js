@@ -265,7 +265,8 @@ module.exports = {
     runError:'运行失败',
     download:'下载',
     edit:'编辑',
-    cancel:'取消'
+    cancel:'取消',
+    delete:'删除'
   },
   project: {
     event: '事件',

@@ -24,24 +24,7 @@ export default {
     [types.SET_TEST_ACCOUNT](state, payload) {
       state.testAccountInfo.info = payload.info
     },
-    [types.SET_TEST_FUNCTION_NAME](state, payload) {
-      state.testFunctions.functionName = payload.info
-    },
-    [types.SET_TEST_PARAMS](state, payload) {
-      state.testFunctions.params = payload.info
-    },
-    [types.SET_TEST_FUNCTION_ADDRESS](state, payload) {
-      state.testFunctions.accountAddress = payload.info
-    },
-    [types.SET_TEST_FUNCTION_EXEC](state, payload) {
-      state.testFunctions.Exec = payload.info
-    },
-    [types.SET_TEST_FUNCTION_PREEXEC](state, payload) {
-      state.testFunctions.preExec = payload.info
-    },
-    [types.SET_TEST_FUNCTION_NUMBER](state, payload) {
-      state.testFunctionNum.info = payload.info
-    },
+
   },
   actions: {
     addAccount({dispatch, commit},$payload) {
@@ -64,7 +47,17 @@ export default {
       })
 
     },
+    spliceAccount({dispatch, commit},$payload) {
+      let accountId = $payload.accountId
+      let testAccount = $payload.testAccount
 
+      testAccount.splice(accountId,1)
+      commit({
+        type: types.SET_TEST_ACCOUNT,
+        info:testAccount
+      })
+
+    },
 
   }
 }
