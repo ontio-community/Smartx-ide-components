@@ -68,7 +68,7 @@
         <div class="tool-card-scroll-x">
           <div class="card-body tool-cart-body tool-card-text-nowrap" >
             <p class="card-text-title">Number</p>
-            <p class="tool-card-text">e.g : 5f5e100 - 100000000&nbsp;&nbsp;</p>
+            <p class="tool-card-text">e.g : 05f5e100 - 100000000&nbsp;&nbsp;</p>
             <div class="tool-card-text">
               <a>Hex Number : </a>
               <input v-model="originalHexNumber"/>
@@ -89,6 +89,27 @@
               {{$t('tool.clear')}}
             </button>
 
+            <p class="card-text-title" style="margin-top: 16px">Hex Number <--> Reverse Number</p>
+            <p class="tool-card-text">e.g : 00e1f505 - 100000000&nbsp;&nbsp;</p>
+            <div class="tool-card-text">
+              <a>Hex Number : </a>
+              <input v-model="originalHexNumber_2"/>
+              <a>——> Number : </a>
+              <a>{{newNumber_2}}&nbsp;&nbsp;</a>
+            </div>
+            <div class="tool-card-text">
+              <a >Number : </a>
+              <input v-model="originalNumber_2"/>
+              <a>——> Hex Number : </a>
+              <a>{{newHexNumber_2}}&nbsp;&nbsp;</a>
+            </div>
+
+            <button class="btn btn-outline-success tool-btn-submit" @click="NumberAndHexNumber_2">
+              {{$t('tool.transform')}}
+            </button>
+            <button class="btn btn-outline-success tool-btn-submit" @click="ClearNumberAndHexNumber_2">
+              {{$t('tool.clear')}}
+            </button>
           </div>
         </div>
       </div>
@@ -99,7 +120,7 @@
         <div class="tool-card-scroll-x">
           <div class="card-body tool-cart-body tool-card-text-nowrap" >
             <p class="card-text-title">Hex String (Big-endian/Little-endian)</p>
-            <br class="tool-card-text">e.g : bc99b2a477e28581b2fd04249ba27599ebd736d3 - d336d7eb9975a29b2404fdb28185e277a4b299bc&nbsp;&nbsp;</p>
+            <p class="tool-card-text">e.g : bc99b2a477e28581b2fd04249ba27599ebd736d3 - d336d7eb9975a29b2404fdb28185e277a4b299bc&nbsp;&nbsp;</p>
             <div class="tool-card-text">
               <a>Hex String(big/little) : </a>
               <input v-model="originalScriptH"/>
@@ -123,8 +144,8 @@
       <div class="card border-secondary mb-3" style="max-width: 20rem;">
         <div class="tool-card-scroll-x">
           <div class="card-body tool-cart-body tool-card-text-nowrap" >
-            <p class="card-text-title">String And Byte Array</p>
-            <br class="tool-card-text">e.g : 7472616e73666572 - {0x74,0x72,0x61,0x6e,0x73,0x66,0x65,0x72}&nbsp;&nbsp;</p>
+            <p class="card-text-title">String <--> Byte Array</p>
+            <p class="tool-card-text">e.g : 7472616e73666572 - {0x74,0x72,0x61,0x6e,0x73,0x66,0x65,0x72}&nbsp;&nbsp;</p>
             <div class="tool-card-text">
               <a>Hex String : </a>
               <input v-model="originalHexString_2"/>
@@ -152,7 +173,7 @@
       <div class="card border-secondary mb-3" style="max-width: 20rem;">
         <div class="tool-card-scroll-x">
           <div class="card-body tool-cart-body tool-card-text-nowrap" >
-            <p class="card-text-title">Private Key And WIF</p>
+            <p class="card-text-title">Private Key <--> WIF</p>
             <p class="tool-card-text">e.g : 06572e9a167b23dc230ca1cd522339006f05f2866ddf9650c4f0d813c8f40d2d - KwS33fWUWPAPqJTbM3CdbrGGQ7pu1MweKy79VmtcV5bMtEUVxhbS&nbsp;&nbsp;</p>
             <div class="tool-card-text">
               <a>Private Key : </a>
@@ -244,6 +265,10 @@
         newHexNumber:'',
         originalScriptH:'',
         newScriptH:'',
+        originalHexNumber_2:'',
+        newNumber_2:'',
+        originalNumber_2:'',
+        newHexNumber_2:'',
         originalHexString_2:'',
         newByteArray:'',
         originalByteArray:'',
@@ -320,10 +345,37 @@
         this.newHexNumber = ''
         this.originalNumber = ''
       },
+      NumberAndHexNumber_2(){
+        let BigNumber = require('bignumber.js');
+        let util = Ont.utils
+        if(this.originalHexNumber_2 !== ''){
+          let num = util.reverseHex(this.originalHexNumber_2)
+          let HexNumber = new BigNumber(num,16)
+          this.newNumber_2 = HexNumber.toString(10)
+        }else{
+          this.newNumber = ''
+        }
+        if(this.originalNumber_2 !== ''){
+          let Number = new BigNumber(this.originalNumber_2)
+          let newHexNumber_2 = Number.toString(16)
+          if(newHexNumber_2.length%2 === 1){
+            newHexNumber_2 = '0'+newHexNumber_2
+          }
+          this.newHexNumber_2 = util.reverseHex(newHexNumber_2)
+        }else{
+          this.newHexNumber_2 = ''
+        }
+
+      },
+      ClearNumberAndHexNumber_2(){
+        this.newNumber_2 = ''
+        this.originalHexNumber_2 = ''
+        this.newHexNumber_2 = ''
+        this.originalNumber_2 = ''
+      },
       bigEndianAndLittleEndian(){
         let util = Ont.utils
         this.newScriptH = util.reverseHex(this.originalScriptH)
-
       },
       clearBigEndianAndLittleEndian(){
         this.newScriptH = ''

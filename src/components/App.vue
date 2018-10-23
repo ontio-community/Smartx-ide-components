@@ -9,12 +9,15 @@
       </div>
 
     </div>
+
+    <loading-modal></loading-modal>
   </div>
 </template>
 
 <script>
   import 'bootstrap/dist/css/bootstrap.min.css'
   import 'bootstrap/dist/js/bootstrap.min.js'
+  import LoadingModal from './Modals/Loading'
 
   export default {
     name: 'App',
@@ -26,6 +29,7 @@
       }
     },
     components: {
+      LoadingModal
     },
     methods:{
       isShowTopNavGreen($data){
