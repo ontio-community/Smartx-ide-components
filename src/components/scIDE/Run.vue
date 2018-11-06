@@ -282,7 +282,7 @@
 
             if (payload.altStack.count() > 0) {
               let stack = payload.altStack.peek(0).getArray();
-              method = lineToMethod[line];
+              method = lineToMethod[line + 1];
               if (method != null) {
                 let map = funcMap[method];
                 if (map != null) {
