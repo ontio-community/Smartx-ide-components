@@ -22,6 +22,13 @@ export const OP_TYPE = {
   Error : 'Error'
 }
 
+export const DEFAULT_SCRYPT = {
+  cost: 16384, // 除以2时间减半
+  blockSize: 8,
+  parallel: 8,
+  size: 64
+};
+
 export const INCLUDE_ONT_H = '#include "ont.h"'
 
 // export const USER_AGENT_ADDRESS = 'AWc6N2Yawk12Jt14F7sjGGos4nFc8UztVe'

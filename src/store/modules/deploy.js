@@ -6,6 +6,9 @@ let Ont = require('ontology-ts-sdk');
 
 export default {
   state: {
+    DeployWalletInfo: {
+      info: '',
+    },
     DeployInfo:{
       info: '',
     },
@@ -18,6 +21,9 @@ export default {
     }
   },
   mutations: {
+    [types.SET_DEPLOY_WALLET_INFO](state, payload) {
+      state.DeployWalletInfo.info = payload.info
+    },
     [types.SET_DEPLOY_INFO](state, payload) {
       state.DeployInfo.info = payload.info
     },
@@ -33,6 +39,37 @@ export default {
     }
   },
   actions: {
+    setDeployWallet({dispatch, commit},$payload) {
+
+      console.log($payload)
+      let url = process.env.RESTFUL_SERVER_TEST+'/api/v1/balance/'+$payload.address
+      let ont
+      let ong
+      $.ajax({
+        type: 'GET',
+        url: url,
+        dataType: "json",
+        success: function (response) {
+          console.log(response)
+          ont = response.Result.ont
+          ong = response.Result.ong
+
+          let wallet ={
+            account: $payload,
+            address: $payload.address,
+            ont: ont,
+            ong: ong
+          }
+
+          commit({
+            type: types.SET_DEPLOY_WALLET_INFO,
+            info: wallet
+          })
+        },
+      })
+
+
+    },
     setDeployInfo({dispatch, commit},$info){
       //TODO:测试数据，等待ts-sdk提供算法
       let deployInfo ={
