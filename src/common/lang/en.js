@@ -97,6 +97,7 @@ module.exports = {
   projectList:{
     createAndRun: 'Create and Run',
     createProject: 'Create Project',
+    openABI: 'Open ABI File',
     runProject: 'Run Project',
     noProject:'No Project',
     Link: 'Link',
@@ -125,6 +126,16 @@ module.exports = {
     createProjectFail: 'Failure',
     createProjectFailInfo: 'The project name already exists, please rename.'
   },
+  openABIFile:{
+    inputScName:'Enter your smart contract name',
+    chooseAbiFile: 'Choose your ABI file.',
+    scName:'Smart contract name',
+    abiFileName: 'ABI file' ,
+    inputLanguage: 'Choose your smart contract language',
+    projectNameExist: 'The project name already exists, please rename.',
+    openAbiFileFail:'Failed to open ABI file: file format is incorrect.',
+    contractHashWrong:'Failed to open ABI file: contract hash is wrong'
+  },
   selectLanguage: {
     pleaseSelect: 'Select a programming language for smart contract'
   },
@@ -142,6 +153,7 @@ module.exports = {
     run: 'Run',
     tool:'Tool',
     test:'Test',
+    restful:'Restful',
     compileTooltips: 'Compile the code to generate ABI and AVM.',
     deployTooltips: 'Deploy the compiled contract to the blockchain.',
     runTooltips: 'Running contract method'
@@ -267,9 +279,25 @@ module.exports = {
     preRun:'Pre-run',
     runError:'Run Error',
     download:'Download',
+    save:'Save',
     edit:'Edit',
     cancel:'Cancel',
-    delete:'Delete'
+    delete:'Delete',
+    noAccountError_1:'Please select a signed account for function ',
+    selectContractHash:'Select Contract Hash:',
+    currentContractHash:'Current Contract Hash',
+    Other:'Other',
+    contractHashError:'There is a mistake in the contract you entered'
+  },
+  restful:{
+    modelSuccessTitle:'Results',
+    ok:'OK',
+    waiting:'Connecting...',
+    errorTitle:'Connecting failed',
+    errorContent:'Connecting failed.Please check the network',
+    noValue:'Please enter parameters',
+    send:'Send',
+    privateNet:'Cyano Net:'
   },
   project: {
     event: 'Event',

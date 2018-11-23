@@ -35,7 +35,7 @@
               <div>{{$t('test.testFunction')}}</div>
             </div>
             <div class="row test-function-header-btn-div">
-              <div class="test-function-header-fa" @click="downloadJson">{{ $t('test.download') }}</div>
+              <div class="test-function-header-fa" @click="downloadJson"><i class="fa fa-download test-fa-trash"></i></div>
             </div>
           </div>
         </div>
@@ -50,7 +50,14 @@
               <input class="test-private-net-input" v-show="network === '2'" v-model="privateNet" >
             </div>
 
-            <button class="btn btn-outline-success test-btn-submit" @click="runTest()">{{runStatus ? $t('run.waiting') : $t('run.run')}}</button>
+            <div style="margin-bottom: 10px">
+              <p class="card-text test-title-text test-card-text-title" style="margin-top: 0px"><strong>{{ $t('test.selectContractHash') }}</strong></p>
+              <label class="card-text test-title-text"><input name="selectContractHash" type="radio" v-model="selectContractHash" value="0"/><strong style="margin-left: 4px">{{ $t('test.currentContractHash') }}</strong></label>
+              <label class="card-text test-title-text" style="margin-left: 8px"><input name="selectContractHash" type="radio" v-model="selectContractHash" value="1"/><strong style="margin-left: 4px">{{ $t('test.Other') }}</strong></label>
+              <input class="test-private-net-input" v-show="selectContractHash === '1'" v-model="otherContractHash" >
+            </div>
+
+            <button class="btn btn-outline-success test-btn-submit" v-bind:disabled="runStatus"  @click="runTest()">{{runStatus ? $t('run.waiting') : $t('run.run')}}</button>
 
             <div class="test-line"></div>
 
@@ -117,13 +124,14 @@
   import { OP_TYPE } from './../../helpers/consts';
   import * as types from './../../store/mutation-type'
   import FileHelper from "./../../common/ont-wallet/file-generate-and-get";
+  import Sleep from './../../helpers/sleep'
 
   export default {
     name: "tool",
     data() {
       return {
-        accountPrivateKey:'063441409768bb701301a44d67a7dbaf75d73479101c4241d7da2f8e9962840f',
-        //accountPrivateKey:'',
+        //accountPrivateKey:'063441409768bb701301a44d67a7dbaf75d73479101c4241d7da2f8e9962840f',
+        accountPrivateKey:'',
         showAddAccountEdit:false,
         optionId: [''],
         functionName : '',
@@ -137,9 +145,12 @@
           isRun:[false],
           preExec: ['0'],
         },
-        network:'0',
-        testFunctionNum:[0],
+        network:'1',
+        selectContractHash:'0',
+        otherContractHash:'',
+        testFunctionNum:[],
         privateNet:'http://127.0.0.1:20334/',
+        runFunctionNumber:0
       }
     },
     computed: {
@@ -148,13 +159,13 @@
         compileInfo: state => state.CompilePage.CompileInfo,
         runInfo : state => state.RunPage.RunInfo,
         testAccountInfo : state =>state.TestPage.testAccountInfo,
+        testJson : state =>state.TestPage.testFunctionJson,
         deployContractInfo: state => state.DeployPage.DeployContractInfo,
         deployInfo: state => state.DeployPage.DeployInfo,
       })
     },
     created(){
       this.isShowAddAccountEdit()
-      this.showTestFunctions()
     },
     watch: {
       compileInfo : function(newInfo, oldInfo) {
@@ -192,11 +203,16 @@
         }
       },
       showTestFunctions(){
-        if(this.compileInfo.abi.functions){
-          this.emptyTestFunction()
-          let functionCount = this.compileInfo.abi.functions.length
-          for(let i = 0;i<functionCount;i++){
-            this.addTestFunction(i)
+        if(this.testFunctionNum.length === 0 ){
+          if(this.compileInfo.abi.functions){
+            this.emptyTestFunction()
+            let functionCount = this.compileInfo.abi.functions.length
+            for(let i = 0;i<functionCount;i++){
+              this.addTestFunction(i)
+              if(this.testFunctions.functionName[0] === "Main"){
+                this.spliceTestFunction(0)
+              }
+            }
           }
         }
       },
@@ -286,6 +302,7 @@
         this.$store.dispatch('spliceAccount',payload)
       },
       runTest(){
+        this.runStatus = true;
         let _self = this
         let i = 0
 
@@ -302,39 +319,53 @@
             type : types.SET_RUN_STATUS,
             running : false
           })
+          this.runStatus = false;
           return;
         }
 
-        var interval = setInterval(function(){
-          if(i>_self.testFunctionNum.length-1){
-            clearInterval(interval);
+        let isRunNum = 0
+        for(let i=0;i<this.testFunctionNum.length;i++){
+          if(this.testFunctions.isRun[i]){
+            isRunNum = isRunNum+1
+          }
+        }
+        if(isRunNum === 0){
+          let title = (LangStorage.getLang('zh') === "zh") ? zh.test.runError : en.test.runError
+          let content = (LangStorage.getLang('zh') === "zh") ? zh.run.noFunction : en.run.noFunction
+          let payload = {
+            title:title,
+            content:content,
+            isShowCloseButton:true
+          }
+          this.$store.dispatch('showLoadingModals',payload)
+          this.$store.commit({
+            type : types.SET_RUN_STATUS,
+            running : false
+          })
+          this.runStatus = false;
+          return;
+        }
+
+        for(let i=0;i<this.testFunctionNum.length;i++){
+          if(this.testFunctions.isRun[i]&&(this.testFunctions.preExec[i]==='0')&&!this.testFunctions.account[i]){
+            let num = i+1
+            let title = (LangStorage.getLang('zh') === "zh") ? zh.test.runError : en.test.runError
+            let content = (LangStorage.getLang('zh') === "zh") ? zh.test.noAccountError_1+num+zh.test.noAccountError_2: en.test.noAccountError_1+num
+            let payload = {
+              title:title,
+              content:content,
+              isShowCloseButton:true
+            }
+            this.$store.dispatch('showLoadingModals',payload)
+            this.$store.commit({
+              type : types.SET_RUN_STATUS,
+              running : false
+            })
             this.runStatus = false;
             return;
+
           }
-          let testFunction = {
-            functionName: _self.testFunctions.functionName[i],
-            params: _self.testFunctions.params[i],
-            isRun: _self.testFunctions.isRun[i],
-            preExec: _self.testFunctions.preExec[i],
-            account: _self.testFunctions.account[i],
-          }
-          if(testFunction.isRun){
-            _self.runContract(testFunction)
-          }
-          i = i+1
-        }, 3000);
-      },
-      sleep(numberMillis) {
-        var now = new Date();
-        var exitTime = now.getTime() + numberMillis;
-        while (true) {
-          now = new Date();
-          if (now.getTime() > exitTime)
-            return;
         }
-      },
-      runContract($testFunction) {
-        this.runStatus = true;
 
         if(!this.runInfo.contractHash) {
           let title = (LangStorage.getLang('zh') === "zh") ? zh.test.runError : en.test.runError
@@ -349,8 +380,50 @@
             type : types.SET_RUN_STATUS,
             running : false
           })
+          this.runStatus = false;
           return;
         }
+
+        let testFuns=[]
+        for(let i=0;i<this.testFunctionNum.length;i++){
+          if(this.testFunctions.isRun[i]){
+            let testFun = {
+              functionName: _self.testFunctions.functionName[i],
+              params: _self.testFunctions.params[i],
+              isRun: _self.testFunctions.isRun[i],
+              preExec: _self.testFunctions.preExec[i],
+              account: _self.testFunctions.account[i],
+            }
+            testFuns.push(testFun)
+          }
+        }
+
+        this.runFunctionNumber=0
+        this.runTestFunction(testFuns[this.runFunctionNumber],testFuns)
+      },
+      runTestFunction($testFun,$testFuns){
+        this.runContract($testFun)
+        this.runFunctionNumber = this.runFunctionNumber+1
+        if(this.runFunctionNumber<$testFuns.length){
+          if($testFun.preExec === '0'){
+            Sleep.sleep(6000).then(() => {
+              this.runTestFunction($testFuns[this.runFunctionNumber], $testFuns)
+            })
+          }else{
+            Sleep.sleep(1000).then(() => {
+              this.runTestFunction($testFuns[this.runFunctionNumber], $testFuns)
+            })
+          }
+        }else{
+          this.$store.commit({
+            type : types.SET_RUN_STATUS,
+            running : false
+          })
+          this.runStatus = false;
+          return
+        }
+      },
+      runContract($testFunction) {
 
         if(!$testFunction.functionName) {
           let title = (LangStorage.getLang('zh') === "zh") ? zh.test.runError : en.test.runError
@@ -361,6 +434,7 @@
             isShowCloseButton:true
           }
           this.$store.dispatch('showLoadingModals',payload)
+          this.runStatus = false;
           return;
         }
         //validate and format parameters
@@ -387,27 +461,46 @@
           }
         }
 
-        let contractHash = this.runInfo.contractHash
+        let contractHash
+        if(this.selectContractHash === "0"){
+          contractHash = this.runInfo.contractHash
+        }else{
+          if(this.otherContractHash.length!==40){
+            let title = (LangStorage.getLang('zh') === "zh") ? zh.test.runError : en.test.runError
+            let content = (LangStorage.getLang('zh') === "zh") ? zh.run.contractHashError : en.run.contractHashError
+            let payload = {
+              title:title,
+              content:content,
+              isShowCloseButton:true
+            }
+            this.$store.dispatch('showLoadingModals',payload)
+            this.runStatus = false;
+            return;
+          }else{
+            contractHash = this.otherContractHash
+          }
+        }
 
 
-        let payerAddress = $testFunction.account.address
-        let payerPri = $testFunction.account.privateKey
-        const payer = new Ont.Crypto.Address(payerAddress)
-        const privateKey = new Ont.Crypto.PrivateKey(payerPri)
         let util = Ont.utils
         const contractAddr = new Ont.Crypto.Address(util.reverseHex(contractHash));
 
         let _self = this
         try {
           if($testFunction.preExec==='0'){
+            let payerAddress = $testFunction.account.address
+            let payerPri = $testFunction.account.privateKey
+            const payer = new Ont.Crypto.Address(payerAddress)
+            const privateKey = new Ont.Crypto.PrivateKey(payerPri)
+
             const tx = Ont.TransactionBuilder.makeInvokeTransaction($testFunction.functionName, $testFunction.params, contractAddr, '500', '20000',payer);
             Ont.TransactionBuilder.signTransaction(tx, privateKey);
+            console.log(tx)
             let res
             if(this.network === '0'){
-              res = new Ont.RestClient().sendRawTransaction(tx.serialize(), false, false);
-              console.log(new Ont.RestClient('http://dappnode1.ont.io/').getUrl())
+              res = new Ont.RestClient(process.env.NODE_URL).sendRawTransaction(tx.serialize(), false, false);
             }else if(this.network === '1'){
-              res = new Ont.RestClient().sendRawTransaction(tx.serialize(), false, false);
+              res = new Ont.RestClient("https://polaris1.ont.io:10334").sendRawTransaction(tx.serialize(), false, false);
             }else{
               res = new Ont.RestClient(this.privateNet).sendRawTransaction(tx.serialize(), false, false);
             }
@@ -430,14 +523,14 @@
 
           }else{
             const tx = Ont.TransactionBuilder.makeInvokeTransaction($testFunction.functionName, $testFunction.params, contractAddr, '500', '20000');
+            console.log(tx)
             let res
             if(this.network === '0'){
-              res = new Ont.RestClient().sendRawTransaction(tx.serialize(), true, false);
-              console.log(new Ont.RestClient('http://dappnode1.ont.io/').getUrl())
+              res = new Ont.RestClient(process.env.NODE_URL).sendRawTransaction(tx.serialize(), true, false);
             }else if(this.network === '1'){
-              res = new Ont.RestClient().sendRawTransaction(tx.serialize(), true, false);
+              res = new Ont.RestClient("https://polaris1.ont.io:10334").sendRawTransaction(tx.serialize(), true, false);
             }else{
-              res = new Ont.RestClient('http://127.0.0.1:20334/').sendRawTransaction(tx.serialize(), true, false);
+              res = new Ont.RestClient(this.privateNet).sendRawTransaction(tx.serialize(), true, false);
             }
             res.then(function(value) {
               console.log(value)
@@ -465,6 +558,11 @@
         }
       },
       downloadJson(){
+        let testFunctionJson = this.setTestJson()
+        let fileName = this.projectInfo.info.name+"_test.json"
+        FileHelper.downloadFile(testFunctionJson,fileName)
+      },
+      setTestJson(){
         let testFunctionJson={
           contractHash:this.compileInfo.contractHash,
           networks:'',
@@ -489,21 +587,6 @@
             prot:20336
           }
         }
-        testFunctionJson.networks = {
-          defaultNet:defaultNet,
-          testNet:{
-            host: "http://polaris3.ont.io",
-            prot:20336
-          },
-          mainNet:{
-            host: "http://dappnode1.ont.io",
-            prot:20336
-          },
-          privateNet:{
-            host: this.privateNet,
-            prot:20336
-          }
-        }
 
         testFunctionJson.deployConfig = {
           name:this.deployContractInfo.name,
@@ -514,27 +597,79 @@
         }
 
         testFunctionJson.invokeConfig = {
-          abi:'',
+          abi:this.projectInfo.info.name+'_abi.json',
           defaultPayer:'',
+          defaultSigner:'',
           gasPrice:500,
           gasLimit:30000,
-          Function:[]
+          functions:[]
         }
         for(let i=0 ; i<this.testFunctionNum.length;i++){
           let testFunction ={
-            functionName:'',
+            name:'',
             params:'',
-            isRun:'',
+            signers:'',
             preExec:''
           }
-          testFunction.functionName = this.testFunctions.functionName[i]
-          testFunction.params = this.testFunctions.params[i]
-          testFunction.isRun = this.testFunctions.isRun[i]
-          testFunction.preExec = this.testFunctions.preExec[i]
-          testFunctionJson.invokeConfig.Function[i] = testFunction
+          testFunction.name = this.testFunctions.functionName[i]
+
+          testFunction.params={}
+          for(let j=0 ; j<this.testFunctions.params[i].length ; j++){
+            let key = this.testFunctions.params[i][j].name
+            let value
+            switch(this.testFunctions.params[i][j].type)
+            {
+              case 'ByteArray':
+                value =  'ByteArray:'+ this.testFunctions.params[i][j].value
+
+                break;
+              case 'String':
+                value =  this.testFunctions.params[i][j].value
+
+                break;
+              case 'Integer':
+                value =  parseInt(this.testFunctions.params[i][j].value)
+
+                break;
+              case 'Boolean':
+                if(this.testFunctions.params[i][j].value === "true"){
+                  value =  true
+                }else if(this.testFunctions.params[i][j].value === "false"){
+                  value =  false
+                }else{
+                  value =  ''
+                }
+                break;
+              default:
+                value =''
+                break;
+            }
+            testFunction.params[key] = value
+
+          }
+
+          testFunction.signers = {}
+          if(this.testFunctions.preExec[i] === "0"){
+            testFunction.preExec = false
+          }else{
+            testFunction.preExec = true
+          }
+
+          testFunctionJson.invokeConfig.functions[i] = testFunction
         }
-        //console.log(testFunctionJson)
-        FileHelper.downloadFile(testFunctionJson,"test_file.json")
+
+        console.log(testFunctionJson)
+        this.$store.dispatch('setTestJson',testFunctionJson)
+        return testFunctionJson
+      },
+      getTestJson(){
+/*        let testFuns = this.testJson.info.invokeConfig.functions
+        this.emptyTestFunction()
+        console.log(testFuns)
+        for(let i=0 ; i<testFuns.length ; i++){
+          this.testFunctions.functionName[i]=testFuns[i].name
+        }*/
+
       }
     }
   }
@@ -677,7 +812,7 @@
   }
   .test-function-header-btn-div{
     text-align: right;
-    margin-left: 4%;
+    margin-left: 8%;
   }
   .test-function-header-fa{
     font-size: 10px;
@@ -713,5 +848,11 @@
     margin-right: -2%;
     height: 0px;
     margin-bottom: 10px;
+  }
+  .test-fa-trash{
+    font-size: 18px;
+    margin-top: 4px;
+    cursor: pointer;
+    color: black;
   }
 </style>

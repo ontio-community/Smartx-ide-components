@@ -125,6 +125,16 @@ module.exports = {
     createProjectFail: '失败',
     createProjectFailInfo: '该项目名称已存在，请重新命名'
   },
+  openABIFile:{
+    inputScName:'输入您的智能合约名称',
+    chooseAbiFile: '选择您的ABI文件',
+    scName:'智能合约名称',
+    abiFileName: 'ABI文件' ,
+    inputLanguage: '选择您的智能合约语言',
+    projectNameExist: '该项目名称已存在，请重新命名',
+    openAbiFileFail:'打开ABI文件失败：文件格式不正确。',
+    contractHashWrong:'打开ABI文件失败：合约哈希有误。'
+  },
   selectLanguage: {
     pleaseSelect: '选择智能合约的编程语言'
   },
@@ -142,6 +152,7 @@ module.exports = {
     run: '运行',
     tool:'工具',
     test:'测试',
+    restful:'接口',
     compileTooltips: '编译代码，生成ABI和AVM',
     deployTooltips: '将编译后的合约部署到链上',
     runTooltips: '运行合约方法'
@@ -265,13 +276,39 @@ module.exports = {
     preRun:'预执行',
     runError:'运行失败',
     download:'下载',
+    save:'保存',
     edit:'编辑',
     cancel:'取消',
-    delete:'删除'
+    delete:'删除',
+    noAccountError_1:'请为方法',
+    noAccountError_2:'选择签名账户',
+    selectContractHash:'选择合约哈希:',
+    currentContractHash:'当前合约哈希',
+    Other:'其他',
+    contractHashError:'您输入的合约哈希有误'
+  },
+  restful:{
+    modelSuccessTitle:'运行结果',
+    ok:'确定',
+    waiting:'连接中...',
+    errorTitle:'连接失败',
+    errorContent:'连接失败，请检查网络',
+    noValue:'请输入参数',
+    send:'发送',
+    privateNet:'Cyano网络：'
   },
   project: {
     event: '事件',
-    logs: '日志',
+    logs: 'Logs',
+    evaluationStack: 'Evaluation Stack',
+    altStack: 'Alt Stack',
+    history: 'History',
+    locals: 'Locals',
+    storage: 'Storage',
+    continue: 'Continue (F9)',
+    stop: 'Debug Stop',
+    stepOverOpcode: 'Step Over Opcode (F7)',
+    stepOverLine: 'Step Over Line (F8)',
     clearLogs: '清除',
     textFormat:'文本格式',
     wasmOutput:'Wasm输出'

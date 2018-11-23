@@ -241,6 +241,36 @@
         </div>
       </div>
     </div>
+    <div class="tool-card" >
+      <div class="card border-secondary mb-3" style="max-width: 20rem;">
+        <div class="tool-card-scroll-x">
+          <div class="card-body tool-cart-body tool-card-text-nowrap" >
+            <p class="card-text-title">Generate a random private key</p>
+
+            <div class="tool-card-text">
+              <a>——> Private Key : </a>
+              <a>{{newPrivateKey_2}}&nbsp;&nbsp;</a>
+            </div>
+            <div class="tool-card-text">
+              <a>——> Wif : </a>
+              <a>{{newWif}}&nbsp;&nbsp;</a>
+            </div>
+            <div class="tool-card-text">
+              <a>——> Address : </a>
+              <a>{{newAddress_2}}&nbsp;&nbsp;</a>
+            </div>
+
+            <button class="btn btn-outline-success tool-btn-submit" @click="GeneratePrivateKey">
+              {{$t('tool.transform')}}
+            </button>
+            <button class="btn btn-outline-success tool-btn-submit" @click="clearGeneratePrivateKey">
+              {{$t('tool.clear')}}
+            </button>
+
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -282,7 +312,11 @@
         salt:'',
         decryptN:4096,
         password:'',
-        privateKey:''
+        privateKey:'',
+        newPrivateKey_2:'',
+        newHexStirng_3:'',
+        newWif:'',
+        newAddress_2:''
       }
     },
     methods: {
@@ -451,6 +485,27 @@
         this.privateKey = ''
         this.password =''
         this.salt =''
+      },
+      GeneratePrivateKey(){
+        let Crypto = Ont.Crypto
+        let util = Ont.utils
+
+        const privatekey = Crypto.PrivateKey.random();
+        this.newPrivateKey_2 = privatekey.key
+
+        this.newHexStirng_3 = util.str2hexstr(this.newPrivateKey_2)
+
+        this.newWif = privatekey.serializeWIF()
+
+        const publicKey = privatekey.getPublicKey();
+        let addr = Crypto.Address.fromPubKey(publicKey).value
+        this.newAddress_2 = Crypto.Address.deserialize(new util.StringReader(addr)).toBase58()
+      },
+      clearGeneratePrivateKey(){
+        this.newPrivateKey_2 = ''
+        this.newHexStirng_3 = ''
+        this.newWif = ''
+        this.newAddress_2 = ''
       }
     }
   }

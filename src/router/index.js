@@ -7,6 +7,7 @@ import Deploy from '@/components/scIDE/Deploy'
 import Run from '@/components/scIDE/Run'
 import Tool from '@/components/scIDE/Tool'
 import Test from '@/components/scIDE/Test'
+import Restful from '@/components/scIDE/Restful'
 
 Vue.use(Router)
 let routes = [
@@ -19,7 +20,8 @@ let routes = [
       {path: '/ide-deploy/:projectName',name:'IDE-Deploy',component:IDE-Deploy},
       {path: '/ide-run/:projectName',name:'IDE-Run',component:IDE-Run},
       {path: '/ide-tool/:projectName',name:'IDE-Tool',component:IDE-Tool},
-      {path: '/ide-test/:projectName',name:'IDE-Test',component:IDE-Test}
+      {path: '/ide-test/:projectName',name:'IDE-Test',component:IDE-Test},
+      {path: '/ide-restful/:projectName',name:'IDE-Restful',component:IDE-Restful,meta: {requiresAuth: true}}
     ]
   },
 ]

@@ -35,15 +35,22 @@
               </option>
             </select>
             <br/>
-            <div class="run-input-and-txt" v-for="parameter in this.functionParameters" @change="changeParameterTypeTip(parameter)">
-              <select v-model="parameter.type" style="margin-right: 5px;">
+            <div class="run-input-and-txt" v-for="parameter in this.functionParameters" >
+              <select v-model="parameter.type" style="margin-right: 5px;" @change="changeParameterTypeTip(parameter)">
                 <option value="ByteArray">ByteArray</option>
                 <option value="String">String</option>
                 <option value="Integer">Integer</option>
                 <option value="Boolean">Boolean</option>
               </select>
               <p class="card-text">{{parameter.name}}:</p>
-              <input class="run-input" v-model="parameter.value" :placeholder="parameter.typeTip" >
+              <span v-if="parameter.type === 'Boolean'" class="run-input-radio">
+                <input type="radio" value="true" v-model="parameter.value" id="trueValue" :checked="parameter.value">
+                <label for="trueValue">True</label>
+                <input type="radio" value="false" v-model="parameter.value" id="falseValue" :checked="parameter.value">
+                <label for="falseValue">False</label>
+              </span>
+              <input v-else class="run-input" v-model="parameter.value" :placeholder="parameter.typeTip" >
+
             </div>
           </div>
           <div class="card-body" v-else>
@@ -55,12 +62,12 @@
 
     <div class="run-card">
       <button class="btn btn-outline-success run-btn-submit" 
-              v-bind:disabled="runStatus" @click="debugContract()">{{runStatus ? $t('run.waiting') : $t('run.debugRun')}}</button>
+              v-bind:disabled="runStatus" @click="debugContract()">{{runStatus&&runDebug ? $t('run.waiting') : $t('run.debugRun')}}</button>
       <button class="btn btn-outline-success run-btn-submit"
               id="preRun" data-toggle="tooltip" data-placement="top" :title="$t('run.preRuntips')"
-              v-bind:disabled="runStatus" @click="runContract(true)">{{runStatus ? $t('run.waiting') : $t('run.preRun')}}</button>
+              v-bind:disabled="runStatus" @click="runContract(true)">{{runStatus&&runPreRun ? $t('run.waiting') : $t('run.preRun')}}</button>
       <button class="btn btn-outline-success run-btn-submit" 
-               v-bind:disabled="runStatus" @click="runContract(false)">{{runStatus ? $t('run.waiting') : $t('run.run')}}</button>
+               v-bind:disabled="runStatus" @click="runContract(false)">{{runStatus&&runOnly ? $t('run.waiting') : $t('run.run')}}</button>
     </div>
 
     <!-- Error Modal -->
@@ -91,6 +98,7 @@
   import zh from './../../common/lang/zh'
   import en from './../../common/lang/en'
   import LangStorage from './../../helpers/lang'
+  import {PROJECT_LANGAUGE} from '../../helpers/consts'
   import * as types from './../../store/mutation-type'
   import { OP_TYPE } from './../../helpers/consts';
   let Ont = require('ontology-ts-sdk');
@@ -138,7 +146,10 @@
         functionName : '',
         functionParameters : [],
         ErrorInfo: '',
-        runStatus: false
+        runStatus: false,
+        runDebug:false,
+        runPreRun:false,
+        runOnly:false
       }
     },
     created(){
@@ -188,6 +199,7 @@
        */
       ...mapState({
         projectInfo: state => state.ProjectInfoPage.ProjectInfo,
+        ProjectName: state => state.ProjectInfoPage.ProjectName,
         compileInfo: state => state.CompilePage.CompileInfo,
         runInfo : state => state.RunPage.RunInfo,
         projectEditor: state => state.EditorPage.OntEditor,
@@ -220,6 +232,10 @@
       },
       changeParameterTypeTip(parameter) {
         parameter.typeTip = this.getParameterTypeTip(parameter.type)
+        if(parameter.type !== 'Boolean') {
+          console.log(parameter)
+          parameter.value = '';
+        }
       },
       getParameterTypeTip(type) {
         let typeTip = ''
@@ -242,7 +258,11 @@
         return typeTip;
       },
       debugContract: async function() {
-        this.runStatus = true;
+        let codeLang = this.ProjectName.info.language
+        console.log(codeLang)
+        if(codeLang === PROJECT_LANGAUGE.PYTHON){
+          this.runStatus = true;
+          this.runDebug = true
 
         if (!validateRun(this)) {
           this.runStatus = false;
@@ -369,10 +389,23 @@
           type: types.SET_DEBUGGER_STATE
         });
 
-        this.runStatus = false;
+          this.runStatus = false;
+          this.runDebug = false
+        }else{
+          let title = (LangStorage.getLang('zh') === "zh") ? zh.run.comingSoonTitle : en.run.comingSoonTitle
+          let error = (LangStorage.getLang('zh') === "zh") ? zh.run.comingSoon : en.run.comingSoon
+          this.runStatus = false;
+          this.runDebug = false
+          this.showLoadingModal(title,error,true)
+        }
       },
       runContract(preExec) {
         this.runStaus = true;
+        if(preExec){
+          this.runPreRun = true
+        }else{
+          this.runOnly = true
+        }
         let errorTitle = (LangStorage.getLang('zh') === "zh") ? zh.run.errorTitle : en.run.errorTitle
 
         if(!this.functionName) {
@@ -394,8 +427,10 @@
           return;
         }
         //validate and format parameters
-        const parameters = this.functionParameters.slice();
-        for(let p of parameters) {
+        const parameters = [];
+        for(let i = 0; i<this.functionParameters.length; i++) {
+          const p = {...this.functionParameters[i]}
+          parameters.push(p);
           if(p.name && !p.value) {
             alert('Parameter '+ p.name + ' is required.')
             this.$store.commit({
@@ -413,7 +448,7 @@
             p.value = parseInt(p.value)
           }
           if(p.type === 'Boolean') {
-            p.value = Boolean(p.value);
+            p.value = p.value === 'true' ? true : false;
           }
         }
 
@@ -437,12 +472,14 @@
             this.$store.dispatch('dapiInvokeRead', params).then(res => {
               console.log(res);
               this.runStatus = false;
+              this.runPreRun = false
               return;
             })
           } else {
             this.$store.dispatch('dapiInvoke', params).then(res => {
               console.log(res)
               this.runStatus = false
+              this.runOnly = false
               if(res === 'NO_ACCOUNT') {
                 alert(this.$t('ide.noProviderAccount'));
                 return;
@@ -450,6 +487,14 @@
             })
           }
         })
+      },
+      showLoadingModal($title,$content,$isShowCloseButton){
+        let payload = {
+          title:$title,
+          content:$content,
+          isShowCloseButton:$isShowCloseButton
+        }
+        this.$store.dispatch('showLoadingModals',payload)
       },
     }
   }
@@ -534,5 +579,8 @@
   }
   .error-modal-body-text{
     font-size: 16px;
+  }
+  .run-input-radio {
+    margin-left: 16px;
   }
 </style>

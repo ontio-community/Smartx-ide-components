@@ -218,8 +218,10 @@
             id: _self.projectName.info.id,
             code: _self.editor.getValue(),
             nvm_byte_code: _self.compileInfo.avm,
-            abi: JSON.stringify(_self.compileInfo.abi)
+            abi: JSON.stringify(_self.compileInfo.abi),
+	          contract_hash: _self.compileInfo.contractHash
           }
+          console.log(_self.compileInfo)
           this.$store.dispatch('saveProject', param)
           this.$store.dispatch('setHaveReCompile', true)
 
@@ -232,7 +234,12 @@
         let clipboard = new Clipboard('.nav-link');
       },
       saveAbi(){
-        FileHelper.downloadFile(this.compileInfo.abi,"abi.json")
+        let param = {
+          contractHash: this.compileInfo.contractHash,
+          abi:this.compileInfo.abi
+        }
+        const ABIName = this.projectName.info.projectName + '.abi.json'
+        FileHelper.downloadFile(param,ABIName)
       },
       saveAVM(){
         const AVMName = this.projectName.info.projectName + '.avm'
