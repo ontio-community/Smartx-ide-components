@@ -522,6 +522,7 @@
             });
 
           }else{
+            console.log($testFunction.params)
             const tx = Ont.TransactionBuilder.makeInvokeTransaction($testFunction.functionName, $testFunction.params, contractAddr, '500', '20000');
             console.log(tx)
             let res

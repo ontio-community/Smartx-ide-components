@@ -15,6 +15,18 @@ export default {
       console.log(err)
       return null;
     }
+  },
 
+  getAccountPrivateKey($account,$password){
+    const enc = new Crypto.PrivateKey($account.key);
+    const address = new Crypto.Address($account.address)
+
+    try {
+      let privateKey = enc.decrypt($password, address, $account.salt, DEFAULT_SCRYPT)
+      return privateKey
+    } catch (err) {
+      console.log(err)
+      return false;
+    }
   }
 }

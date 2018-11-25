@@ -41,34 +41,44 @@ export default {
   actions: {
     setDeployWallet({dispatch, commit},$payload) {
 
-      console.log($payload)
-      let url = process.env.RESTFUL_SERVER_TEST+'/api/v1/balance/'+$payload.address
-      let ont
-      let ong
+      let account = $payload.account
+      let network = $payload.network
+
+      let wallet ={
+        account: account,
+        address: account.address,
+        ont: '',
+        ong: ''
+      }
+
+      commit({
+        type: types.SET_DEPLOY_WALLET_INFO,
+        info: wallet
+      })
+
+      let url = network+'/api/v1/balance/'+account.address
       $.ajax({
         type: 'GET',
         url: url,
         dataType: "json",
         success: function (response) {
-          console.log(response)
-          ont = response.Result.ont
-          ong = response.Result.ong
+          //console.log(response)
+          let ont = response.Result.ont
+          let ong = response.Result.ong/1000000000
 
-          let wallet ={
-            account: $payload,
-            address: $payload.address,
-            ont: ont,
-            ong: ong
-          }
-
+          wallet.ont = ont
+          wallet.ong = ong
           commit({
             type: types.SET_DEPLOY_WALLET_INFO,
             info: wallet
           })
         },
+        error: function (data, textStatus, errorThrown) {
+          return data
+        },
+        complete: function (XMLHttpRequest, textStatus) {
+        }
       })
-
-
     },
     setDeployInfo({dispatch, commit},$info){
       //TODO:测试数据，等待ts-sdk提供算法

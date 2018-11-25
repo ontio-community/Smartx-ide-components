@@ -7,16 +7,26 @@
     <div class="deploy-card card-info" >
       <div class="card border-secondary mb-3" style="max-width: 20rem;">
         <div class="card-header">{{$t('deploy.walletInfo')}}</div>
-        <div v-show="showWalletInfo" class="deploy-card-scroll">
+        <div class="deploy-card-scroll">
           <div class="card-body">
+            <p class="card-text test-title-text test-card-text-title" style="margin-top: 0px"><strong>{{ $t('test.selectNet') }}</strong></p>
+            <label class="card-text test-title-text"><input name="deployNet" type="radio" v-model="network" value="0" @change="getNetworkAsset()"/><strong style="margin-left: 4px">{{ $t('test.mainNet') }}</strong></label>
+            <label class="card-text test-title-text" style="margin-left: 8px"><input name="deployNet" type="radio" v-model="network" value="1"  @change="getNetworkAsset()"/><strong style="margin-left: 4px">{{ $t('test.testNet') }}</strong></label>
+            <label class="card-text test-title-text" style="margin-left: 8px"><input name="deployNet" type="radio" v-model="network" value="2"  @change="getNetworkAsset()"/><strong style="margin-left: 4px">{{ $t('test.privateNet') }}</strong></label>
+            <input class="test-private-net-input" v-show="network === '2'&& !isHidePrivateNetInput" v-model="privateNet" >
+            <button v-show="network === '2' && !isHidePrivateNetInput" @click="privateNetInputState">ok</button>
+            <a v-show="network === '2' && isHidePrivateNetInput">{{privateNet}}</a>
+            <button v-show="network === '2' && isHidePrivateNetInput" @click="privateNetInputState">Cancel</button>
+          </div>
+          <div  v-show="showWalletInfo" class="card-body">
             <span class="card-text"><strong>{{ $t('deploy.address') }}</strong></span>
             <span class="card-text">{{ deployWalletInfo.info.address }}</span>
           </div>
-          <div class="card-body">
+          <div  v-show="showWalletInfo" class="card-body">
             <span class="card-text"><strong>ONT:</strong></span>
             <span class="card-text">{{deployWalletInfo.info.ont}} </span>
           </div>
-          <div class="card-body card-last-body">
+          <div v-show="showWalletInfo" class="card-body card-last-body">
             <span class="card-text"><strong>ONG:</strong></span>
             <span class="card-text">{{deployWalletInfo.info.ong}}</span>
           </div>
@@ -69,7 +79,8 @@
     </div>
 
     <div class="deploy-card">
-      <button class="btn btn-outline-success deploy-btn-submit" v-bind:disabled="waitingStatus" @click="doDeploy">{{waitingStatus ? $t('deploy.waiting') : $t('deploy.deploy')}}</button>
+      <!--<button class="btn btn-outline-success deploy-btn-submit" v-bind:disabled="waitingStatus" @click="doDeploy">{{waitingStatus ? $t('deploy.waiting') : $t('deploy.deploy')}}</button>-->
+      <button class="btn btn-outline-success deploy-btn-submit" data-toggle="modal" v-bind:disabled="waitingStatus" @click="showEnterWalletPassword" >{{waitingStatus ? $t('deploy.waiting') : $t('deploy.deploy')}}</button>
     </div>
 
     <!--Wallet Modal -->
@@ -109,6 +120,39 @@
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary deploy-dialog-btn-close" data-dismiss="modal">{{$t('deploy.close')}}</button>
             <button type="button" class="btn btn-primary deploy-dialog-btn" v-bind:disabled="waitingUnlockWallet" :data-dismiss="[closeDialog ? 'modal' : '']" @click="unlockWalletFile">{{waitingUnlockWallet ? $t('deploy.waitingUnlock') : $t('deploy.unlock')}}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!--Enter Wallet Password Modal -->
+    <div class="modal fade devlop-modal" id="enterWalletPassword" tabindex="-1" role="dialog" >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" >{{$t('deploy.selectWallet')}}</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <div class="input-group">
+                <input :type="[isShowPassword ? 'text' : 'password']"
+                       v-model="getWalletPrivateKeyPassowrd"
+                       class="form-control deploy-input" name="password" :placeholder="$t('deploy.enterPw')">
+                <div class="input-group-append deploy-input-group-append" @click="viewPassword">
+                    <span class="input-group-text">
+                      <i class="fa" :class="[isShowPassword ? 'fa-eye' : 'fa-eye-slash']" aria-hidden="true"></i>
+                    </span>
+                </div>
+              </div>
+              <small class="form-text text-muted deploy-err-message" v-show="errors.has('password')">{{ errors.first('password') }}</small>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary deploy-dialog-btn-close" data-dismiss="modal">{{$t('deploy.close')}}</button>
+            <button type="button" class="btn btn-primary deploy-dialog-btn" v-bind:disabled="waitingUnlockWallet" :data-dismiss="[closeDialog ? 'modal' : '']" @click="getWalletPrivateKey">{{waitingUnlockWallet ? $t('deploy.waitingUnlock') : $t('deploy.unlock')}}</button>
           </div>
         </div>
       </div>
@@ -161,6 +205,10 @@
         WalletFile: '',
         closeDialog : false,
         waitingUnlockWallet: false,
+        network:'1',
+        privateNet:'http://127.0.0.1:20334',
+        isHidePrivateNetInput:false,
+        getWalletPrivateKeyPassowrd:''
       }
     },
     created(){
@@ -257,6 +305,16 @@
     watch: {
     },
     methods:{
+      privateNetInputState(){
+        this.isHidePrivateNetInput = !this.isHidePrivateNetInput
+        if(this.isHidePrivateNetInput){
+          if(this.deployWalletInfo.info){
+            this.getNetworkWalletInfo(this.deployWalletInfo.info,this)
+          }
+        }else{
+
+        }
+      },
       onFileChange() {
         let files = document.getElementById("exampleInputFileInDeploy").files
         if (!files.length){
@@ -272,22 +330,76 @@
           if (result) {
             this.waitingUnlockWallet = true
             Sleep.sleep(200).then(() => {
-              FileHelper.readWalletFile(this.WalletFile).then( (walletFile) => {
+              FileHelper.readWalletFile(this.WalletFile).then((walletFile) => {
                 if(walletFile) {
                   let account = OWallet.decryptWalletFile(JSON.parse(walletFile), this.password)
                   if(account ) {
-                    _self.$store.dispatch('setDeployWallet', account)
+                    _self.getNetworkWalletInfo(account,_self)
                     _self.showWalletInfo = true
                     $("#WalletFileInfoInDeploy").modal("hide");
+                  }else{
+                    let title = (LangStorage.getLang('zh') === "zh") ? zh.deploy.errorTitle : en.deploy.errorTitle
+                    let content = (LangStorage.getLang('zh') === "zh") ? zh.deploy.errowWalletPassword : en.deploy.errowWalletPassword
+                    this.showErrorModel(title,content,true)
+                    $("#WalletFileInfoInDeploy").modal("hide");
                   }
+                }else{
                 }
               })
               this.waitingUnlockWallet = false
             })
           }else{
-
           }
         })
+      },
+      getNetworkAsset(){
+        if(this.deployWalletInfo.info){
+          this.getNetworkWalletInfo(this.deployWalletInfo.info.account,this)
+        }
+      },
+      getNetworkWalletInfo($account,_self){
+        let defaultNet
+        if(this.network === '0'){
+          defaultNet = process.env.NODE_URL
+        }else if(this.network === '1'){
+          defaultNet = "https://polaris1.ont.io:10334"
+        }else{
+          defaultNet = this.privateNet
+        }
+        let payload = {
+          network: defaultNet,
+          account: $account
+        }
+        _self.$store.dispatch('setDeployWallet', payload).then(result => {
+
+        })
+      },
+      showEnterWalletPassword(){
+        if(this.deployWalletInfo.info) {
+          $("#enterWalletPassword").modal("show");
+        }else{
+          let title = (LangStorage.getLang('zh') === "zh") ? zh.deploy.errorTitle : en.deploy.errorTitle
+          let content = (LangStorage.getLang('zh') === "zh") ? zh.deploy.errorWallet : en.deploy.errorWallet
+          this.showErrorModel(title,content,true)
+        }
+      },
+      getWalletPrivateKey(){
+        this.waitingUnlockWallet = true
+        let account = this.deployWalletInfo.info.account
+        let privateKey = OWallet.getAccountPrivateKey(account,this.getWalletPrivateKeyPassowrd)
+
+        if(privateKey){
+          this.waitingUnlockWallet = false
+          $("#enterWalletPassword").modal("hide");
+          this.doDeploy(privateKey)
+        }else{
+          this.waitingUnlockWallet = false
+          let title = (LangStorage.getLang('zh') === "zh") ? zh.deploy.errorTitle : en.deploy.errorTitle
+          let content = (LangStorage.getLang('zh') === "zh") ? zh.deploy.errowWalletPassword : en.deploy.errowWalletPassword
+          this.showErrorModel(title,content,true)
+          $("#enterWalletPassword").modal("hide");
+        }
+
       },
       viewPassword() {
         this.isShowPassword = !this.isShowPassword
@@ -304,7 +416,7 @@
         this.$store.dispatch('setContractHash', codeHash)
         return codeHash
       },
-     doDeploy(){
+     doDeploy($privateKey){
         if(!this.deployContractInfo.name || !this.deployContractInfo.version || !this.deployContractInfo.author ||
         !this.deployContractInfo.email || !this.deployContractInfo.desc) {
           //Need to be required for now.Will remove it when update on ontology-dapi
@@ -330,22 +442,59 @@
         const email = this.deployContractInfo.email || ''
         const desc = this.deployContractInfo.desc || ''
 
-
         let _self = this
+       let account = this.deployWalletInfo.info.account
 
-        const params = {
-          code : avmCode,
-          name,
-          version,
-          author,
-          email,
-          description:desc,
-          needStorage,
-          gasPrice: 500,
-          gasLimit: 21000000
-        }
 
-        this.$store.dispatch('getDapiProvider').then(provider => {
+         let defaultNet
+         if(this.network === '0'){
+           defaultNet = process.env.NODE_URL
+         }else if(this.network === '1'){
+           defaultNet = "https://polaris1.ont.io:10334"
+         }else{
+           defaultNet = this.privateNet
+         }
+         const restClient = new Ont.RestClient(defaultNet);
+
+         const tx = Ont.TransactionBuilder.makeDeployCodeTransaction(avmCode,name, version, author, email, desc, needStorage, '500', '30000000');
+         tx.payer = new Ont.Crypto.Address(account.address);
+         Ont.TransactionBuilder.signTransaction(tx, $privateKey);
+         const result = restClient.sendRawTransaction(tx.serialize());
+
+         result.then(function(value){
+
+           _self.$store.dispatch('setDeployInfo', value)
+
+           if(value.Desc === "SUCCESS"){
+             _self.deployStatus = true
+             _self.showRun()
+             _self.waitingStatus = false
+
+             let contractHash = _self.getContractHash()
+             //save code to server
+             let param = {
+               id: _self.projectName.info.id,
+               contract_hash: contractHash,
+               info_name: _self.deployContractInfo.name,
+               info_version: _self.deployContractInfo.version,
+               info_author: _self.deployContractInfo.author,
+               info_email: _self.deployContractInfo.email,
+               info_desc: _self.deployContractInfo.desc,
+             }
+             _self.$store.dispatch('saveProject', param)
+           }else{
+             _self.deployStatus = true
+             _self.waitingStatus = false
+             _self.$store.dispatch('clearContractHash')
+           }
+         })
+
+
+
+
+
+
+/*        this.$store.dispatch('getDapiProvider').then(provider => {
           if(!provider) {
             this.ErrorInfo = (LangStorage.getLang('zh') === "zh") ? zh.ide.noProvider : en.ide.noProvider
             $('#DeployError').modal('show')
@@ -388,8 +537,16 @@
             this.$store.dispatch('saveProject', param)
             //console.log(res)
           })
-        })
+        })*/
       },
+      showErrorModel($title,$content,$isShowCloseButton){
+        let payload = {
+          title:$title,
+          content:$content,
+          isShowCloseButton:$isShowCloseButton
+        }
+        this.$store.dispatch('showLoadingModals',payload)
+      }
     }
   }
 </script>
