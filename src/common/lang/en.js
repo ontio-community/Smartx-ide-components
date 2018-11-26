@@ -185,6 +185,7 @@ module.exports = {
   },
   deploy: {
     selectWallet: 'Select Wallet File',
+    generateWallet:'Generate Wallet',
     walletInfo: 'Wallet Info',
     chooseFile: 'Choose File',
     Browse: 'Browse',
@@ -215,10 +216,13 @@ module.exports = {
     resultTooltips: 'Contract deployment result',
     preDeploy: 'Pre-Deploy',
     preDeploytips: 'Please recompile the code first.',
-    emptyInfo: 'Please enter each field of the smart contract information.'
+    emptyInfo: 'Please enter each field of the smart contract information.',
+    generate:'Generate',
+    waitingGenerate:'Waiting...'
   },
   run: {
     selectWallet: 'Select Wallet File',
+    generateWallet:'Generate Wallet',
     walletInfo: 'Wallet Info',
     chooseFile: 'Choose File',
     Browse: 'Browse',

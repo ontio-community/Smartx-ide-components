@@ -183,6 +183,7 @@ module.exports = {
   },
   deploy: {
     selectWallet: '选择钱包文件',
+    generateWallet:'生成钱包',
     walletInfo: '钱包信息',
     chooseFile: '选择文件',
     Browse: '浏览',
@@ -213,10 +214,13 @@ module.exports = {
     resultTooltips: '合约部署结果',
     preDeploy: '部署预执行',
     preDeploytips: '请先重新编译代码',
-    emptyInfo: '请填写智能合约的每项信息。'
+    emptyInfo: '请填写智能合约的每项信息。',
+    generate:'生成',
+    waitingGenerate:'生成中...'
   },
   run: {
     selectWallet: '选择钱包文件',
+    generateWallet:'生成钱包',
     walletInfo: '钱包信息',
     chooseFile: '选择文件',
     Browse: '浏览',

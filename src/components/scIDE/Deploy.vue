@@ -2,7 +2,9 @@
   <div class="deploy-page">
 
     <div class="deploy-card">
-      <button class="btn btn-outline-success deploy-btn-submit" data-toggle="modal" data-target="#WalletFileInfoInDeploy">{{$t('deploy.selectWallet')}}</button>
+      <button class="btn btn-outline-success deploy-btn-submit deploy-btn-submit-wallet" data-toggle="modal" data-target="#WalletFileInfoInDeploy">{{$t('deploy.selectWallet')}}</button>
+      <button class="btn btn-outline-success deploy-btn-submit deploy-btn-submit-wallet" style="float: right" data-toggle="modal" data-target="#GenerateWallet">{{$t('deploy.generateWallet')}}</button>
+
     </div>
     <div class="deploy-card card-info" >
       <div class="card border-secondary mb-3" style="max-width: 20rem;">
@@ -158,6 +160,39 @@
       </div>
     </div>
 
+    <!--Generate Wallet -->
+    <div class="modal fade devlop-modal" id="GenerateWallet" tabindex="-1" role="dialog" >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" >{{$t('deploy.generateWallet')}}</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <div class="input-group">
+                <input :type="[isShowPassword ? 'text' : 'password']"
+                       v-model="generateWalletPassword"
+                       class="form-control deploy-input" name="password" :placeholder="$t('deploy.enterPw')">
+                <div class="input-group-append deploy-input-group-append" @click="viewPassword">
+                    <span class="input-group-text">
+                      <i class="fa" :class="[isShowPassword ? 'fa-eye' : 'fa-eye-slash']" aria-hidden="true"></i>
+                    </span>
+                </div>
+              </div>
+              <small class="form-text text-muted deploy-err-message" v-show="errors.has('password')">{{ errors.first('password') }}</small>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary deploy-dialog-btn-close" data-dismiss="modal">{{$t('deploy.close')}}</button>
+            <button type="button" class="btn btn-primary deploy-dialog-btn" v-bind:disabled="waitingUnlockWallet" :data-dismiss="[closeDialog ? 'modal' : '']" @click="generateWallet">{{waitingUnlockWallet ? $t('deploy.waitingGenerate') : $t('deploy.generate')}}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Error Modal -->
     <div class="modal fade devlop-modal" id="DeployError" tabindex="-1" role="dialog" >
       <div class="modal-dialog" role="document">
@@ -185,10 +220,10 @@
   import zh from './../../common/lang/zh'
   import en from './../../common/lang/en'
   import LangStorage from './../../helpers/lang'
-  let Ont = require('ontology-ts-sdk');
   import Sleep from './../../helpers/sleep'
   import FileHelper from './../../common/ont-wallet/file-generate-and-get'
   import OWallet from './../../common/ont-wallet/wallet'
+  let Ont = require('ontology-ts-sdk');
 
 
   export default {
@@ -208,7 +243,8 @@
         network:'1',
         privateNet:'http://127.0.0.1:20334',
         isHidePrivateNetInput:false,
-        getWalletPrivateKeyPassowrd:''
+        getWalletPrivateKeyPassowrd:'',
+        generateWalletPassword:''
       }
     },
     created(){
@@ -399,6 +435,19 @@
           this.showErrorModel(title,content,true)
           $("#enterWalletPassword").modal("hide");
         }
+
+      },
+      generateWallet(){
+        let privateKey = Ont.Crypto.PrivateKey.random()
+        const wif = privateKey.serializeWIF();
+        let body = {
+          label: this.label,
+          privateKey: privateKey,
+          password: this.generateWalletPassword,
+          wif: wif
+        }
+        let account = OWallet.createJsonWalletWithPrivateKey(body)
+        $("#GenerateWallet").modal("hide");
 
       },
       viewPassword() {
@@ -639,18 +688,6 @@
     margin-right: 5px;
     height: 100%;
   }
-  .deploy-btn-submit {
-    border-radius: 0;
-    width: 100%;
-    color: white;
-    border-color: #36a3bc;
-    background-color: #36a3bc;
-  }
-  .deploy-btn-submit:hover,
-  .deploy-btn-submit:active {
-    background-color: #36a3bc;
-    color: white;
-  }
   .deploy-card{
     margin-top: 5px;
   }
@@ -848,5 +885,9 @@
   }
   .deploy-input-group-append{
     min-width: 55px;
+  }
+  .deploy-btn-submit-wallet{
+    width: 49%;
+    display: inline-block;
   }
 </style>

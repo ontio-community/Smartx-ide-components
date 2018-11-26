@@ -22,7 +22,7 @@
     "mini-toastr": "^0.7.2",
     "ontology-dapi": "^0.4.5",
     "ontology-ts-debugger": "^0.3.10",
-    "ontology-ts-sdk": "^0.9.3",
+    "ontology-ts-sdk": "^0.9.8",
     "ontology-ts-vm": "^0.3.14",
     "popper.js": "^1.14.4",
     "raphael": "^2.2.7",
