@@ -97,6 +97,7 @@ module.exports = {
   projectList:{
     createAndRun: 'Create and Run',
     createProject: 'Create Project',
+    openABI: 'Open ABI File',
     runProject: 'Run Project',
     noProject:'No Project',
     Link: 'Link',
@@ -125,6 +126,16 @@ module.exports = {
     createProjectFail: 'Failure',
     createProjectFailInfo: 'The project name already exists, please rename.'
   },
+  openABIFile:{
+    inputScName:'Enter your smart contract name',
+    chooseAbiFile: 'Choose your ABI file.',
+    scName:'Smart contract name',
+    abiFileName: 'ABI file' ,
+    inputLanguage: 'Choose your smart contract language',
+    projectNameExist: 'The project name already exists, please rename.',
+    openAbiFileFail:'Failed to open ABI file: file format is incorrect.',
+    contractHashWrong:'Failed to open ABI file: contract hash is wrong'
+  },
   selectLanguage: {
     pleaseSelect: 'Select a programming language for smart contract'
   },
@@ -142,6 +153,7 @@ module.exports = {
     run: 'Run',
     tool:'Tool',
     test:'Test',
+    restful:'Restful',
     compileTooltips: 'Compile the code to generate ABI and AVM.',
     deployTooltips: 'Deploy the compiled contract to the blockchain.',
     runTooltips: 'Running contract method'
@@ -173,6 +185,7 @@ module.exports = {
   },
   deploy: {
     selectWallet: 'Select Wallet File',
+    generateWallet:'Generate Wallet',
     walletInfo: 'Wallet Info',
     chooseFile: 'Choose File',
     Browse: 'Browse',
@@ -197,15 +210,19 @@ module.exports = {
     deployed : 'Deployed successful.',
     errorTitle: 'Deployed Failure',
     errorCompile: 'You need to compile first.',
-    errorWallet: 'You need to unlock your wallet first.',
+    errorWallet: 'You need to select your wallet first.',
+    errowWalletPassword:'The password you enter is wrong',
     infoTooltips: 'Contract information',
     resultTooltips: 'Contract deployment result',
     preDeploy: 'Pre-Deploy',
     preDeploytips: 'Please recompile the code first.',
-    emptyInfo: 'Please enter each field of the smart contract information.'
+    emptyInfo: 'Please enter each field of the smart contract information.',
+    generate:'Generate',
+    waitingGenerate:'Waiting...'
   },
   run: {
     selectWallet: 'Select Wallet File',
+    generateWallet:'Generate Wallet',
     walletInfo: 'Wallet Info',
     chooseFile: 'Choose File',
     Browse: 'Browse',
@@ -261,15 +278,31 @@ module.exports = {
     selectNet:'Select Network:',
     mainNet:'Main net',
     testNet:'Test net',
-    privateNet:'Private net',
+    privateNet:'Private net:',
     selectRunType:'Select Run Type:',
     run:'Run',
     preRun:'Pre-run',
     runError:'Run Error',
     download:'Download',
+    save:'Save',
     edit:'Edit',
     cancel:'Cancel',
-    delete:'Delete'
+    delete:'Delete',
+    noAccountError_1:'Please select a signed account for function ',
+    selectContractHash:'Select Contract Hash:',
+    currentContractHash:'Current Contract Hash',
+    Other:'Other',
+    contractHashError:'There is a mistake in the contract you entered'
+  },
+  restful:{
+    modelSuccessTitle:'Results',
+    ok:'OK',
+    waiting:'Connecting...',
+    errorTitle:'Connecting failed',
+    errorContent:'Connecting failed.Please check the network',
+    noValue:'Please enter parameters',
+    send:'Send',
+    privateNet:'Cyano Net:'
   },
   project: {
     event: 'Event',

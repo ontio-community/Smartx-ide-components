@@ -19,9 +19,15 @@ export default {
     RunInfo: {
       contractHash:'',
     },
+    RunWalletInfo: {
+      info: '',
+    },
 
   },
   mutations: {
+    [types.SET_RUN_WALLET_INFO](state, payload) {
+      state.RunWalletInfo.info = payload.info
+    },
     [types.SET_DEBUGGER](state, payload) {
       state.Debugger = payload.debug;
     },
@@ -43,6 +49,47 @@ export default {
     },
   },
   actions: {
+    setRunWallet({dispatch, commit},$payload) {
+
+      let account = $payload.account
+      let network = $payload.network
+
+      let wallet ={
+        account: account,
+        address: account.address,
+        ont: '',
+        ong: ''
+      }
+
+      commit({
+        type: types.SET_RUN_WALLET_INFO,
+        info: wallet
+      })
+
+      let url = network+'/api/v1/balance/'+account.address
+      $.ajax({
+        type: 'GET',
+        url: url,
+        dataType: "json",
+        success: function (response) {
+          //console.log(response)
+          let ont = response.Result.ont
+          let ong = response.Result.ong/1000000000
+
+          wallet.ont = ont
+          wallet.ong = ong
+          commit({
+            type: types.SET_RUN_WALLET_INFO,
+            info: wallet
+          })
+        },
+        error: function (data, textStatus, errorThrown) {
+          return data
+        },
+        complete: function (XMLHttpRequest, textStatus) {
+        }
+      })
+    },
     setContractHash({dispatch, commit},$contractHash) {
       commit({
         type: types.SET_CONTRACT_HASH,

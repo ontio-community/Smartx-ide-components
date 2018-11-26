@@ -13,8 +13,11 @@
       <div class="col pro-operation-btn-center">
         <button class="btn btn-outline-dark pro-operation-button" @click="getToolPage" :class="[showTool ? 'pro-operation-button-click' : '']" data-toggle="tooltip" data-placement="bottom" >{{$t('projectOperation.tool')}}</button>
       </div>
-      <div class="col pro-operation-btn-right">
+      <div class="col pro-operation-btn-center">
         <button class="btn btn-outline-dark pro-operation-button" @click="getTestPage" :class="[showTest ? 'pro-operation-button-click' : '']" data-toggle="tooltip" data-placement="bottom" >{{$t('projectOperation.test')}}</button>
+      </div>
+      <div class="col pro-operation-btn-right">
+        <button class="btn btn-outline-dark pro-operation-button" @click="getRestfulPage" :class="[showRestful ? 'pro-operation-button-click' : '']" data-toggle="tooltip" data-placement="bottom" >{{$t('projectOperation.restful')}}</button>
       </div>
     </div>
     <div class="pro-operation-border">
@@ -33,6 +36,9 @@
       <div v-show="showTest" class="pro-operation-height">
         <Test  :isShowPreDeployAndPreRun='isShowPreDeployAndPreRun'></Test>
       </div>
+      <div v-show="showRestful" class="pro-operation-height">
+        <Restful  :isShowPreDeployAndPreRun='isShowPreDeployAndPreRun'></Restful>
+      </div>
     </div>
   </div>
 </template>
@@ -43,6 +49,7 @@
   import Run from './Run'
   import Tool from './Tool'
   import Test from './Test'
+  import Restful from './Restful'
   import {mapState} from 'vuex'
 
   export default {
@@ -55,6 +62,7 @@
         showRun: false,
         showTool: false,
         showTest:false,
+        showRestful:false,
         isUseChineseLang: this.$i18n.locale === 'zh' ? true : false,
       }
     },
@@ -63,7 +71,8 @@
       Deploy,
       Run,
       Tool,
-      Test
+      Test,
+      Restful
     },
     watch: {
       '$route': 'getPage',
@@ -116,6 +125,7 @@
         this.showRun = false
         this.showTool = false
         this.showTest = false
+        this.showRestful = false
       },
       showDeployPage(){
         this.showCompile = false
@@ -123,6 +133,7 @@
         this.showRun = false
         this.showTool = false
         this.showTest = false
+        this.showRestful = false
       },
       showRunPage(){
         this.showCompile = false
@@ -130,6 +141,7 @@
         this.showRun = true
         this.showTool = false
         this.showTest = false
+        this.showRestful = false
       },
       showToolPage(){
         this.showCompile = false
@@ -137,6 +149,7 @@
         this.showRun = false
         this.showTool = true
         this.showTest = false
+        this.showRestful = false
       },
       showTestPage(){
         this.showCompile = false
@@ -144,6 +157,15 @@
         this.showRun = false
         this.showTool = false
         this.showTest = true
+        this.showRestful = false
+      },
+      showRestfulPage(){
+        this.showCompile = false
+        this.showDeploy = false
+        this.showRun = false
+        this.showTool = false
+        this.showTest = false
+        this.showRestful = true
       },
       getCompilePage(){
         this.$router.push({ name:'IDE-Compile',params:{projectName:this.projectName.info.projectName}})
@@ -160,6 +182,9 @@
       getTestPage(){
         this.$router.push({ name:'IDE-Test',params:{projectName:this.projectName.info.projectName}})
       },
+      getRestfulPage(){
+        this.$router.push({ name:'IDE-Restful',params:{projectName:this.projectName.info.projectName}})
+      },
       getPage(){
         if(this.$route.name === 'IDE-Compile'){
           this.showCompilePage()
@@ -171,6 +196,8 @@
           this.showToolPage()
         }else if(this.$route.name === 'IDE-Test'){
           this.showTestPage()
+        }else if(this.$route.name === 'IDE-Restful'){
+          this.showRestfulPage()
         }
       },
     }

@@ -7,6 +7,7 @@ module.exports = {
 
   PYTHON_URL: '"https://smartxcompiler.ont.io/api/beta/python/compile"',
   CSHARP_URL: '"https://smartxcompiler.ont.io/api/beta/csharp/compile"',
+NODE_URL:'"https://dappnode1.ont.io:10334"',
 
   PROJECT_LIBRARY_URL: '"https://devapibeta.ont.io/api/v1"',
 
@@ -21,6 +22,10 @@ module.exports = {
   GITHUB_GET_CODE: '"https://github.com/login/oauth/authorize?client_id=b603d248fc646222eb59&scope=user,public_repo"',
   GITHUB_GET_ACCESS_TOKEN: '"http://localhost:8080/githubLauncher/login/oauth/access_token?"',
   GITHUB_GET_USER_INFO :'"https://api.github.com/user?"',*/
+
+  RESTFUL_SERVER_TEST:'"https://cors-anywhere.herokuapp.com/http://polaris1.ont.io:20334"',
+  RESTFUL_SERVER_MAIN:'"https://dappnode1.ont.io:10334"',
+  FORWARD_SERVER:'"https://cors-anywhere.herokuapp.com/"',
 
   VERSION: '"20180605-1"'
 }

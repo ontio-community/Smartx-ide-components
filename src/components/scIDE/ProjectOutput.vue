@@ -18,7 +18,7 @@
           <button class="btn btn-sm btn-outline-secondary pro-output-btn-event" @click="showLocalsPage" :class="[showLocals ? 'pro-output-button-click' : '']">{{ $t('project.locals')}}</button>
         </div>
         <div class="col-auto mr-auto pro-output-btn-center">
-          <button class="btn btn-sm btn-outline-secondary pro-output-btn-event" @click="showStoragePage" :class="[showLocals ? 'pro-output-button-click' : '']">{{ $t('project.storage')}}</button>
+          <button class="btn btn-sm btn-outline-secondary pro-output-btn-event" @click="showStoragePage" :class="[showStorage ? 'pro-output-button-click' : '']">{{ $t('project.storage')}}</button>
         </div>
         <div class="col-auto pro-output-btn">
           <div @click="resume" data-toggle="tooltip" data-placement="bottom" :title="$t('project.continue')"><i class="fa fa-play pro-output-fa-trash"></i></div>

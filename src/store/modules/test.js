@@ -18,13 +18,18 @@ export default {
     },
     testFunctionNum:{
       info:[0]
+    },
+    testFunctionJson:{
+      info:''
     }
   },
   mutations: {
     [types.SET_TEST_ACCOUNT](state, payload) {
       state.testAccountInfo.info = payload.info
     },
-
+    [types.SET_TEST_FUNCTION_JSON](state, payload) {
+      state.testFunctionJson.info = payload.info
+    },
   },
   actions: {
     addAccount({dispatch, commit},$payload) {
@@ -58,6 +63,13 @@ export default {
       })
 
     },
+    setTestJson({dispatch, commit},$payload) {
+
+      commit({
+        type: types.SET_TEST_FUNCTION_JSON,
+        info:$payload
+      })
+    }
 
   }
 }
