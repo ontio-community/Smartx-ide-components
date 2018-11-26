@@ -52,17 +52,6 @@
 const Ont = require('ontology-ts-sdk');
 export default {
     name: 'ScParameter',
-    data(){
-        return {
-            arrayParamExample: `Enter JSON array.Each item should contain type and value.For example:
-[
-    {
-        "type": "Integer",
-        "value": 1
-    }
-]`
-        }
-    },
     props:['parameter'],
     methods: {
         changeParameterTypeTip(parameter) {
