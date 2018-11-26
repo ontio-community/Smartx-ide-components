@@ -17,6 +17,7 @@
 <script>
   import 'bootstrap/dist/css/bootstrap.min.css'
   import 'bootstrap/dist/js/bootstrap.min.js'
+  import '../../static/css/open-iconic-bootstrap.css'
   import LoadingModal from './Modals/Loading'
 
   export default {
