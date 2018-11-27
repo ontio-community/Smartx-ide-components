@@ -840,8 +840,8 @@
     height: 20%;
   }
   .card-Option{
-    height: 50%;
-    padding-bottom: 40px;
+    height: calc(50% - 40px);
+    padding-bottom: 60px;
   }
   .run-card-select{
     margin-top: 5px;
@@ -984,9 +984,6 @@
 
 .run-btns button {
   width:30%;
-<<<<<<< HEAD
   margin-bottom:10px;
-=======
->>>>>>> update parameter type
 }
 </style>
