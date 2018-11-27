@@ -8,6 +8,7 @@ import Run from '@/components/scIDE/Run'
 import Tool from '@/components/scIDE/Tool'
 import Test from '@/components/scIDE/Test'
 import Restful from '@/components/scIDE/Restful'
+import Config from '@/components/scIDE/Config'
 
 Vue.use(Router)
 let routes = [
@@ -16,6 +17,7 @@ let routes = [
     name: 'IDE',
     component: IDE,
     children:[
+      { path: '/ide-config/:projectName', name: 'IDE-Config', component: IDE-Config },
       {path: '/ide-compile/:projectName',name:'IDE-Compile',component:IDE-Compile},
       {path: '/ide-deploy/:projectName',name:'IDE-Deploy',component:IDE-Deploy},
       {path: '/ide-run/:projectName',name:'IDE-Run',component:IDE-Run},

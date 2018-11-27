@@ -42,15 +42,8 @@
             </span>
             <!-- For parameter type is Array -->
             <div v-if="parameter.type === 'Array'">
-                <div v-for="(p, i) of parameter.value" :key="i" @change="changeParameterTypeTip(p)" class="array-param-item">
-                    <sc-parameter :parameter="p"></sc-parameter>
-                    <!-- <button @click="handleDeleteParam(i)">Delete</button> -->
-                    <span class="oi oi-delete param-item-remove" title="icon delete" aria-hidden="true"
-                    @click="handleDeleteParam(i)"></span>
-                </div>
-                <button @click="handleAddParam">Add</button>
-
-                </div>
+                <textarea name="" id="" cols="30" rows="10" v-model="parameter.value" :placeholder="arrayParamExample"></textarea>
+             </div>
             <input v-if="parameter.type !== 'Boolean' && parameter.type !== 'Array' " class="run-input" v-model="parameter.value" :placeholder="parameter.typeTip" >
     </div>
 </template>
@@ -59,6 +52,17 @@
 const Ont = require('ontology-ts-sdk');
 export default {
     name: 'ScParameter',
+    data(){
+        return {
+            arrayParamExample: `Enter JSON array.Each item should contain type and value.For example:
+[
+    {
+        "type": "Integer",
+        "value": 1
+    }
+]`
+        }
+    },
     props:['parameter'],
     methods: {
         changeParameterTypeTip(parameter) {
