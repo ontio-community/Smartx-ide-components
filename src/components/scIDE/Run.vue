@@ -56,33 +56,19 @@
       <div class="card border-secondary mb-3" style="max-width: 20rem;">
         <div class="card-header">{{ $t('run.option') }}</div>
         <div class="run-card-scroll">
-          <div class="card-body" v-if="compileInfo.abi">
+           <div class="card-body" v-if="compileInfo.abi">
             <p class="card-text"><strong>{{ $t('run.selectFuc') }}</strong></p>
             <select class="form-control run-card-select" v-model="optionId" @change="getParameter(optionId)">
               <option disabled selected >{{$t('run.selectFucOption')}}</option>
-              <option v-for="(abiVal,index) in compileInfo.abi.functions"
+              <option v-for="(abiVal,index) in compileInfo.abi.functions" :key="index"
                       :value="index"
                       v-if="abiVal.name !== 'Main'">
                 {{abiVal.name }}
               </option>
             </select>
             <br/>
-            <div class="run-input-and-txt" v-for="parameter in this.functionParameters" >
-              <select v-model="parameter.type" style="margin-right: 5px;" @change="changeParameterTypeTip(parameter)">
-                <option value="ByteArray">ByteArray</option>
-                <option value="String">String</option>
-                <option value="Integer">Integer</option>
-                <option value="Boolean">Boolean</option>
-              </select>
-              <p class="card-text">{{parameter.name}}:</p>
-              <span v-if="parameter.type === 'Boolean'" class="run-input-radio">
-                <input type="radio" value="true" v-model="parameter.value" id="trueValue" :checked="parameter.value">
-                <label for="trueValue">True</label>
-                <input type="radio" value="false" v-model="parameter.value" id="falseValue" :checked="parameter.value">
-                <label for="falseValue">False</label>
-              </span>
-              <input v-else class="run-input" v-model="parameter.value" :placeholder="parameter.typeTip" >
-
+            <div >
+                <sc-parameter :parameter="parameter" v-for="(parameter,index) of this.functionParameters" :key="index"></sc-parameter>
             </div>
           </div>
           <div class="card-body" v-else>
@@ -92,7 +78,7 @@
       </div>
     </div>
 
-    <div class="run-card">
+    <div class="run-card run-btns">
       <button class="btn btn-outline-success run-btn-submit" 
               v-bind:disabled="runStatus" @click="debugContract()">{{runStatus&&runDebug ? $t('run.waiting') : $t('run.debugRun')}}</button>
       <button class="btn btn-outline-success run-btn-submit"
@@ -213,7 +199,7 @@
   import Sleep from './../../helpers/sleep'
   import FileHelper from './../../common/ont-wallet/file-generate-and-get'
   import OWallet from './../../common/ont-wallet/wallet'
-
+  import ScParameter from './ScParameter'
 
   function validateRun(self) {
     if(!self.functionName) {
@@ -276,6 +262,9 @@
       }
     },
     created(){
+    },
+    components: {
+      ScParameter
     },
     computed: {
       /*
@@ -806,6 +795,7 @@
     margin-left: 5px ;
     margin-right: 5px;
     height: 100%;
+    position:relative;
   }
   .run-btn-submit {
     border-radius: 0;
@@ -832,8 +822,6 @@
   }
   .card-info{
     height: 30%;
-    margin-top: -65px;
-    padding-top: 69px;
   }
   .card-header{
     background-color: white;
@@ -852,9 +840,8 @@
     height: 20%;
   }
   .card-Option{
-    height: 50%;
-    margin-bottom: -135px;
-    padding-bottom: 135px;
+    height: calc(50% - 40px);
+    padding-bottom: 60px;
   }
   .run-card-select{
     margin-top: 5px;
@@ -985,4 +972,18 @@
     margin-bottom: 2px;
   }
 
+.run-btns {
+     display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+}
+
+.run-btns button {
+  width:30%;
+  margin-bottom:10px;
+}
 </style>

@@ -2,6 +2,9 @@
   <div class="pro-operation-page">
     <div class="row">
       <div class="col pro-operation-btn-left">
+        <button class="btn btn-outline-dark pro-operation-button" @click="getConfigPage" :class="[showConfig? 'pro-operation-button-click' : '']" data-toggle="tooltip" data-placement="bottom" :title="$t('projectOperation.configTooltips')">{{$t('projectOperation.config')}}</button>
+      </div>
+      <div class="col pro-operation-btn-center">
         <button class="btn btn-outline-dark pro-operation-button" @click="getCompilePage" :class="[showCompile ? 'pro-operation-button-click' : '']" data-toggle="tooltip" data-placement="bottom" :title="$t('projectOperation.compileTooltips')">{{$t('projectOperation.compile')}}</button>
       </div>
       <div class="col pro-operation-btn-center">
@@ -21,6 +24,9 @@
       </div>
     </div>
     <div class="pro-operation-border">
+      <div v-show="showConfig" class="pro-operation-height">
+        <config :isRecompile='isShowPreDeployAndPreRun'></config>
+      </div>
       <div v-show="showCompile" class="pro-operation-height">
         <compile :isRecompile='isShowPreDeployAndPreRun'></compile>
       </div>
@@ -45,6 +51,7 @@
 
 <script>
   import Compile from './Compile'
+  import Config from './Config'
   import Deploy from './Deploy'
   import Run from './Run'
   import Tool from './Tool'
@@ -57,7 +64,8 @@
     name: "project-operation",
     data() {
       return {
-        showCompile: true,
+        showConfig: true,
+        showCompile: false,
         showDeploy: false,
         showRun: false,
         showTool: false,
@@ -67,6 +75,7 @@
       }
     },
     components: {
+      Config,
       Compile,
       Deploy,
       Run,
@@ -119,7 +128,17 @@
       })
     },
     methods: {
+      showConfigPage(){
+        this.showConfig = true
+        this.showCompile = false
+        this.showDeploy = false
+        this.showRun = false
+        this.showTool = false
+        this.showTest = false
+        this.showRestful = false
+      },
       showCompilePage(){
+        this.showConfig = false        
         this.showCompile = true
         this.showDeploy = false
         this.showRun = false
@@ -128,6 +147,7 @@
         this.showRestful = false
       },
       showDeployPage(){
+        this.showConfig = false 
         this.showCompile = false
         this.showDeploy = true
         this.showRun = false
@@ -136,6 +156,7 @@
         this.showRestful = false
       },
       showRunPage(){
+        this.showConfig = false 
         this.showCompile = false
         this.showDeploy = false
         this.showRun = true
@@ -144,6 +165,7 @@
         this.showRestful = false
       },
       showToolPage(){
+        this.showConfig = false 
         this.showCompile = false
         this.showDeploy = false
         this.showRun = false
@@ -152,6 +174,7 @@
         this.showRestful = false
       },
       showTestPage(){
+        this.showConfig = false 
         this.showCompile = false
         this.showDeploy = false
         this.showRun = false
@@ -160,12 +183,16 @@
         this.showRestful = false
       },
       showRestfulPage(){
+        this.showConfig = false 
         this.showCompile = false
         this.showDeploy = false
         this.showRun = false
         this.showTool = false
         this.showTest = false
         this.showRestful = true
+      },
+      getConfigPage(){
+        this.$router.push({ name:'IDE-Config',params:{projectName:this.projectName.info.projectName}})
       },
       getCompilePage(){
         this.$router.push({ name:'IDE-Compile',params:{projectName:this.projectName.info.projectName}})
@@ -186,7 +213,9 @@
         this.$router.push({ name:'IDE-Restful',params:{projectName:this.projectName.info.projectName}})
       },
       getPage(){
-        if(this.$route.name === 'IDE-Compile'){
+        if(this.$route.name === 'IDE-Config'){
+          this.showConfigPage()
+        } else if(this.$route.name === 'IDE-Compile'){
           this.showCompilePage()
         }else if(this.$route.name === 'IDE-Deploy'){
           this.showDeployPage()

@@ -147,6 +147,7 @@ module.exports = {
     ok:'确定'
   },
   projectOperation: {
+    config: '配置',
     compile: '编译',
     deploy: '部署',
     run: '运行',

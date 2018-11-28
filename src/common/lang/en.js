@@ -148,6 +148,7 @@ module.exports = {
     ok:'Ok'
   },
   projectOperation: {
+    config: 'Config',
     compile: 'Compile',
     deploy: 'Deploy',
     run: 'Run',
