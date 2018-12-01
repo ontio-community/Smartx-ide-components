@@ -1,38 +1,6 @@
 <template>
   <div class="run-page">
-    <div class="run-card">
-      <button class="btn btn-outline-success run-btn-submit" style="margin-bottom: 0" data-toggle="modal" data-target="#WalletFileInfoInRun">{{$t('deploy.selectWallet')}}</button>
-    </div>
-    <div class="run-card card-info" >
-      <div class="card border-secondary mb-3" style="max-width: 20rem;">
-        <div class="card-header">{{$t('deploy.walletInfo')}}</div>
-        <div class="run-card-scroll">
-          <div class="card-body">
-            <p class="card-text test-title-text test-card-text-title" style="margin-top: 0px"><strong>{{ $t('test.selectNet') }}</strong></p>
-            <label class="card-text test-title-text"><input name="RunNet" type="radio" v-model="networkInRun" value="0" @change="getNetworkAsset()"/><strong style="margin-left: 4px">{{ $t('test.mainNet') }}</strong></label>
-            <label class="card-text test-title-text" style="margin-left: 8px"><input name="RunNet" type="radio" v-model="networkInRun" value="1"  @change="getNetworkAsset()"/><strong style="margin-left: 4px">{{ $t('test.testNet') }}</strong></label>
-            <label class="card-text test-title-text" style="margin-left: 8px"><input name="RunNet" type="radio" v-model="networkInRun" value="2"  @change="getNetworkAsset()"/><strong style="margin-left: 4px">{{ $t('test.privateNet') }}</strong></label>
-            <input class="test-private-net-input" v-show="networkInRun === '2'&& !isHidePrivateNetInput" v-model="privateNet" >
-            <button v-show="networkInRun === '2' && !isHidePrivateNetInput" @click="privateNetInputState">ok</button>
-            <a v-show="networkInRun === '2' && isHidePrivateNetInput">{{privateNet}}</a>
-            <button v-show="networkInRun === '2' && isHidePrivateNetInput" @click="privateNetInputState">Cancel</button>
-          </div>
-          <div  v-show="showWalletInfo" class="card-body">
-            <span class="card-text"><strong>{{ $t('deploy.address') }}</strong></span>
-            <span class="card-text">{{ runWalletInfo.info.address }}</span>
-          </div>
-          <div  v-show="showWalletInfo" class="card-body">
-            <span class="card-text"><strong>ONT:</strong></span>
-            <span class="card-text">{{runWalletInfo.info.ont}} </span>
-          </div>
-          <div v-show="showWalletInfo" class="card-body card-last-body">
-            <span class="card-text"><strong>ONG:</strong></span>
-            <span class="card-text">{{runWalletInfo.info.ong}}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
+  
     <!--Basic Info-->
     <div class="run-card card-basic-info" >
       <div class="card border-secondary mb-3" style="max-width: 20rem;">
@@ -61,14 +29,14 @@
             <select class="form-control run-card-select" v-model="optionId" @change="getParameter(optionId)">
               <option disabled selected >{{$t('run.selectFucOption')}}</option>
               <option v-for="(abiVal,index) in compileInfo.abi.functions" :key="index"
-                      :value="index"
+                      :value="abiVal.name"
                       v-if="abiVal.name !== 'Main'">
                 {{abiVal.name }}
               </option>
             </select>
             <br/>
             <div >
-                <sc-parameter :parameter="parameter" v-for="(parameter,index) of this.functionParameters" :key="index"></sc-parameter>
+                <sc-parameter :parameter="parameter" v-for="(parameter,index) of this.parameters" :key="parameter.name"></sc-parameter>
             </div>
           </div>
           <div class="card-body" v-else>
@@ -212,7 +180,7 @@
       return false;
     }
     //validate and format parameters
-    const parameters = self.functionParameters.slice();
+    const parameters = self.parameters.slice();
     for(let p of parameters) {
       if(p.name && !p.value) {
         alert('Parameter '+ p.name + ' is required.')
@@ -241,7 +209,8 @@
       return {
         optionId: '',
         functionName : '',
-        functionParameters : [],
+        functionParameters : {},
+        parameters: [],
         ErrorInfo: '',
         runStatus: false,
         runDebug:false,
@@ -313,20 +282,33 @@
         projectInfo: state => state.ProjectInfoPage.ProjectInfo,
         ProjectName: state => state.ProjectInfoPage.ProjectName,
         compileInfo: state => state.CompilePage.CompileInfo,
+        functionParameters: state => state.RunPage.functionParameters,
         runInfo : state => state.RunPage.RunInfo,
         projectEditor: state => state.EditorPage.OntEditor,
         store : state => state.EditorPage.Store,
         runWalletInfo: state => state.RunPage.RunWalletInfo,
 
+        configWallet: state => state.Config.wallet,
+        nodeUrl : state => state.Config.nodeUrl
       })
     },
     mounted(){
+      if(this.compileInfo.abi && this.compileInfo.abi.functions.length > 0) {
+        for(let f of this.compileInfo.abi.functions) {
+          this.functionParameters[f.name] = f.parameters.map((p)=> new Ont.Parameter(p.name, p.type, ''))
+        }
+      }
     },
     watch: {
       runInfo : function(newInfo, oldInfo) {
         this.optionId = ''
         this.functionName = ''
         this.functionParameters = []
+      },
+      compileInfo: function(newInfo, oldInfo) {
+        for(let f of newInfo.abi.functions) {
+          this.functionParameters[f.name] = f.parameters.map((p)=> new Ont.Parameter(p.name, p.type, ''))
+        }
       }
     },
     methods: {
@@ -429,18 +411,20 @@
         this.isShowPassword = !this.isShowPassword
       },
       getParameter($optionId){
-        let funcObj = this.compileInfo.abi.functions[$optionId]
-        this.functionName = funcObj.name
-        let params = []
-        for(let p of funcObj.parameters) {
-          if(p.name) {
-            let o = new Ont.Parameter(p.name, p.type, '')
-            o.typeTip = this.getParameterTypeTip(p.type)
-            console.log(o)
-            params.push(o)
-          }
-        }
-        this.functionParameters = params
+        this.parameters = this.functionParameters[$optionId]
+        this.functionName = $optionId
+        // let funcObj = this.compileInfo.abi.functions[$optionId]
+        // this.functionName = funcObj.name
+        // let params = []
+        // for(let p of funcObj.parameters) {
+        //   if(p.name) {
+        //     let o = new Ont.Parameter(p.name, p.type, '')
+        //     o.typeTip = this.getParameterTypeTip(p.type)
+        //     console.log(o)
+        //     params.push(o)
+        //   }
+        // }
+        // this.functionParameters = params
       },
       changeParameterTypeTip(parameter) {
         parameter.typeTip = this.getParameterTypeTip(parameter.type)
@@ -481,7 +465,7 @@
           return;
         }
 
-        let args = Ont.ScriptBuilder.buildSmartContractParam(this.functionName, this.functionParameters);
+        let args = Ont.ScriptBuilder.buildSmartContractParam(this.functionName, this.parameters);
         console.log(args);
 
         let avm = new Buffer(this.compileInfo.avm, 'hex');
@@ -650,7 +634,14 @@
         this.runStatus = false
         this.runOnly = false
       },
-      runContract(preExec) {
+      async runContract(preExec) {
+        if(!this.configWallet.address || !this.configWallet.privateKey) {
+          alert('Please select the wallet at first.')
+          return;
+        }
+        const account = new Ont.Crypto.Address(this.configWallet.address);
+        const privateKey = new Ont.Crypto.PrivateKey(this.configWallet.privateKey);
+
         let _self = this
         this.runStaus = true;
         if(preExec){
@@ -680,10 +671,10 @@
         }
         //validate and format parameters
         const parameters = [];
-        for(let i = 0; i<this.functionParameters.length; i++) {
-          const p = this.functionParameters[i]
+        for(let i = 0; i<this.parameters.length; i++) {
+          let p = new Ont.Parameter(this.parameters[i].name, this.parameters[i].type, this.parameters[i].value); 
           parameters.push(p);
-          if(p.name && !p.value) {
+          if(p.name && p.type !=='Boolean' && !p.value) {
             alert('Parameter '+ p.name + ' is required.')
             this.$store.commit({
               type : types.SET_RUN_STATUS,
@@ -691,7 +682,7 @@
             })
             return;
           }
-          if(p.type === 'ByteArray' && p.value.length%2 !== 0) {
+          if(p.type === 'ByteArray' && !Ont.utils.isHexString(p.value)) {
             alert('Parameter ' + p.name + ' is not valid hex string.')
             this.runStatus = false;
             return;
@@ -701,6 +692,18 @@
           }
           if(p.type === 'Boolean') {
             p.value = p.value === 'true' ? true : false;
+          }
+          if(p.type === 'Address') {
+            p.value = new Ont.Crypto.Address(p.value).serialize();
+            p.type = 'ByteArray'
+          }
+          if(p.type === 'Array') {
+            p = this.formatArrayParameter(p)
+            if(!p) return;
+          }
+          if(p.type === 'Map') {
+            p = this.formatMapParameter(p)
+            if(!p) return;
           }
         }
 
@@ -712,71 +715,41 @@
           contractAddr: contractAddr,
           method: this.functionName,
           parameters: parameters,
-          gasPrice: 500,
-          gasLimit: 20000,
-          requireIdentity: false
+          gasPrice: '500',
+          gasLimit: '60000'
         }
-
-
-        if(preExec){//预运行
-
-          const tx = Ont.TransactionBuilder.makeInvokeTransaction(params.method, params.parameters, params.contractAddr, params.gasPrice, params.gasLimit);
-          console.log(tx)
-          let res
-          if(this.networkInRun === '0'){
-            res = new Ont.RestClient(process.env.NODE_URL).sendRawTransaction(tx.serialize(), true, false);
-          }else if(this.networkInRun === '1'){
-            res = new Ont.RestClient("https://polaris1.ont.io:10334").sendRawTransaction(tx.serialize(), true, false);
-          }else{
-            res = new Ont.RestClient(this.privateNet).sendRawTransaction(tx.serialize(), true, false);
+        
+    
+          const tx = Ont.TransactionBuilder.makeInvokeTransaction(
+            params.method,
+            params.parameters,
+            params.contractAddr,
+            params.gasPrice,
+            params.gasLimit,
+            account
+            );
+          Ont.TransactionBuilder.signTransaction(tx, privateKey);
+          const socketClient = new Ont.WebsocketClient('ws://' + this.nodeUrl + ':20335');
+          try {
+            const res = await socketClient.sendRawTransaction(tx.serialize(), preExec, !preExec);
+            if(res.Result) {
+              this.$store.commit({
+                type: types.APPEND_OUTPUT_LOG,
+                log: res.Result,
+                op: OP_TYPE.Invoke
+              })
+            }
+          } catch(err) {
+             console.log(err)
+            this.$store.commit({
+              type: types.APPEND_OUTPUT_LOG,
+              log: err,
+              op: OP_TYPE.Invoke
+            })
           }
-          res.then(function(value) {
-            console.log(value)
-            _self.$store.commit({
-              type: types.APPEND_OUTPUT_LOG,
-              log: value,
-              op: OP_TYPE.Invoke
-            })
-          }, function(error) {
-            console.log(error)
-            _self.$store.commit({
-              type: types.APPEND_OUTPUT_LOG,
-              log: error,
-              op: OP_TYPE.Invoke
-            })
-          });
-
           this.runStatus = false;
           this.runPreRun = false
-        }else{
-          this.runContractParam = params
-          this.showEnterWalletPassword()
-        }
-/*        this.$store.dispatch('getDapiProvider').then(provider => {
-          if(!provider) {
-            alert(this.$t('ide.noProvider'))
-            this.runStatus = false;
-            return;
-          }
-          if(preExec) {
-            this.$store.dispatch('dapiInvokeRead', params).then(res => {
-              console.log(res);
-              this.runStatus = false;
-              this.runPreRun = false
-              return;
-            })
-          } else {
-            this.$store.dispatch('dapiInvoke', params).then(res => {
-              console.log(res)
-              this.runStatus = false
-              this.runOnly = false
-              if(res === 'NO_ACCOUNT') {
-                alert(this.$t('ide.noProviderAccount'));
-                return;
-              }
-            })
-          }
-        })*/
+        
       },
       showLoadingModal($title,$content,$isShowCloseButton){
         let payload = {
@@ -786,7 +759,109 @@
         }
         this.$store.dispatch('showLoadingModals',payload)
       },
-    }
+
+      formatMapParameter(param){
+        let values;
+        try {
+            values = JSON.parse(param.value)
+            if(typeof values !== 'object') {
+              throw 'Invalid Object'
+            }
+          } catch(err) {
+            alert('Parameter ' + param.name + ' is not valid JSON Object')
+            this.runStaus = false;
+            return;
+        }
+        const val = {}
+        for(let k in values) {
+          let temp = this.transformParamItem(values[k]);
+          val[k] = temp;
+        }
+        param.value = val;
+        return param
+      },
+
+      formatArrayParameter(param) {
+        let values;
+        try {
+            values = JSON.parse(param.value)
+            if(!Array.isArray(values)) {
+              throw 'Invalid array'
+            }
+          } catch(err) {
+            alert('Parameter ' + param.name + ' is not valid Array')
+            this.runStaus = false;
+            return;
+        }
+        const list = []
+        for(let p of values) {
+          let temp = this.transformParamItem(p);
+          list.push(temp);
+        }
+        param.value = list;
+        return param
+      },
+
+      transformParamItem(p) {
+        let temp;
+        if(!p.type) {
+          alert('Parameter must contain [type]');
+          return;
+        }
+        this.validateArrayParamItem(p);
+        if(p.type === 'Address') {
+          p.value = new Ont.Crypto.Address(p.value).serialize();
+          temp = new Ont.Parameter('', Ont.ParameterType.ByteArray, p.value)
+        } else if (p.type === 'Array') {
+          const val = p.value.map(item => this.transformParamItem(item))
+          temp = new Ont.Parameter('', p.type, val)
+        } 
+        else if (p.type === 'Map') {
+          const val = p.value;
+           Object.keys(val).forEach(k => {val[k] = this.transformParamItem(val[k])});
+          temp = new Ont.Parameter('', p.type, val);
+        } else {
+          temp = new Ont.Parameter('', p.type, p.value)
+        } 
+        return temp;
+      },
+
+      validateArrayParamItem(p) {
+        if(!p.type || !p.value) return;
+
+        const paramTypes = ['ByteArray', 'String', 'Integer', 'Boolean', 'Address', 'Array', 'Map']
+        if(paramTypes.indexOf(p.type) < 0 ){
+          alert('Invalid parameter type ['+ p.type + '] in array')
+          return;
+        }
+        if(p.type === 'ByteArray' && !Ont.utils.isHexString(p.value)) {
+          alert('Invalid parameter value, expect ByteArray, got '+ p.value + ' in array')
+          return;
+        }
+        if(p.type === 'Boolean' && typeof p.value !== "boolean") {
+          alert('Invalid parameter value, expect Boolean, got '+ p.value + ' in array')
+          return;
+        }
+        if(p.type === 'Address' && p.value && (p.value.length !==34 || p.value[0]!=='A' )) {
+          alert('Invalid parameter value, expect Address, got '+ p.value + ' in array')
+          return;
+        }
+        if(p.type === 'Integer' && typeof p.value !== "number") {
+          alert('Invalid parameter value, expect Integer, got '+ p.value + ' in array')
+          return;
+        }
+        if(p.type === 'String' && typeof p.value !== "string") {
+          alert('Invalid parameter value, expect String, got '+ p.value + ' in array')
+          return;
+        }
+        if(p.type === 'Array' && !Array.isArray(p.value)) {
+          alert('Invalid parameter value, expect Array, got '+ p.value + ' in array')
+          return;
+        }
+      }
+
+  }
+    
   }
 </script>
 
@@ -840,7 +915,7 @@
     height: 20%;
   }
   .card-Option{
-    height: calc(50% - 40px);
+    height: calc(80% - 40px);
     padding-bottom: 60px;
   }
   .run-card-select{

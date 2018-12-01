@@ -1,41 +1,6 @@
 <template>
   <div class="deploy-page">
 
-    <div class="deploy-card">
-      <button class="btn btn-outline-success deploy-btn-submit deploy-btn-submit-wallet" data-toggle="modal" data-target="#WalletFileInfoInDeploy">{{$t('deploy.selectWallet')}}</button>
-      <button class="btn btn-outline-success deploy-btn-submit deploy-btn-submit-wallet" style="float: right" data-toggle="modal" data-target="#GenerateWallet">{{$t('deploy.generateWallet')}}</button>
-
-    </div>
-    <div class="deploy-card card-info" >
-      <div class="card border-secondary mb-3" style="max-width: 20rem;">
-        <div class="card-header">{{$t('deploy.walletInfo')}}</div>
-        <div class="deploy-card-scroll">
-          <div class="card-body">
-            <p class="card-text test-title-text test-card-text-title" style="margin-top: 0px"><strong>{{ $t('test.selectNet') }}</strong></p>
-            <label class="card-text test-title-text"><input name="deployNet" type="radio" v-model="network" value="0" @change="getNetworkAsset()"/><strong style="margin-left: 4px">{{ $t('test.mainNet') }}</strong></label>
-            <label class="card-text test-title-text" style="margin-left: 8px"><input name="deployNet" type="radio" v-model="network" value="1"  @change="getNetworkAsset()"/><strong style="margin-left: 4px">{{ $t('test.testNet') }}</strong></label>
-            <label class="card-text test-title-text" style="margin-left: 8px"><input name="deployNet" type="radio" v-model="network" value="2"  @change="getNetworkAsset()"/><strong style="margin-left: 4px">{{ $t('test.privateNet') }}</strong></label>
-            <input class="test-private-net-input" v-show="network === '2'&& !isHidePrivateNetInput" v-model="privateNet" >
-            <button v-show="network === '2' && !isHidePrivateNetInput" @click="privateNetInputState">ok</button>
-            <a v-show="network === '2' && isHidePrivateNetInput">{{privateNet}}</a>
-            <button v-show="network === '2' && isHidePrivateNetInput" @click="privateNetInputState">Cancel</button>
-          </div>
-          <div  v-show="showWalletInfo" class="card-body">
-            <span class="card-text"><strong>{{ $t('deploy.address') }}</strong></span>
-            <span class="card-text">{{ deployWalletInfo.info.address }}</span>
-          </div>
-          <div  v-show="showWalletInfo" class="card-body">
-            <span class="card-text"><strong>ONT:</strong></span>
-            <span class="card-text">{{deployWalletInfo.info.ont}} </span>
-          </div>
-          <div v-show="showWalletInfo" class="card-body card-last-body">
-            <span class="card-text"><strong>ONG:</strong></span>
-            <span class="card-text">{{deployWalletInfo.info.ong}}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <div class="deploy-card card-fee" >
       <div class="card border-secondary mb-3" style="max-width: 20rem;">
         <div class="card-header" data-toggle="tooltip" data-placement="bottom" :title="$t('deploy.infoTooltips')">{{$t('deploy.info')}}</div>
@@ -82,136 +47,10 @@
 
     <div class="deploy-card">
       <!--<button class="btn btn-outline-success deploy-btn-submit" v-bind:disabled="waitingStatus" @click="doDeploy">{{waitingStatus ? $t('deploy.waiting') : $t('deploy.deploy')}}</button>-->
-      <button class="btn btn-outline-success deploy-btn-submit" data-toggle="modal" v-bind:disabled="waitingStatus" @click="showEnterWalletPassword" >{{waitingStatus ? $t('deploy.waiting') : $t('deploy.deploy')}}</button>
+      <button class="btn btn-outline-success deploy-btn-submit" data-toggle="modal" v-bind:disabled="waitingStatus" @click="doDeploy" >{{waitingStatus ? $t('deploy.waiting') : $t('deploy.deploy')}}</button>
     </div>
 
-    <!--Wallet Modal -->
-    <div class="modal fade devlop-modal" id="WalletFileInfoInDeploy" tabindex="-1" role="dialog" >
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">{{$t('deploy.selectWallet')}}</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <div class="form-group">
-              <div class="custom-file devlop-custom-file">
-                <input type="file" @change="onFileChange" class="deploy-custom-file-input" id="exampleInputFileInDeploy" aria-describedby="fileHelp"
-                       name="file" v-validate data-vv-rules="required">
-                <label id="deploy-input-file-label" class="deploy-custom-file-label" for="exampleInputFileInDeploy" >{{FileName}}</label>
-              </div>
-              <small class="form-text text-muted deploy-err-message" v-show="errors.has('file')">{{ errors.first('file') }}</small>
-            </div>
-            <div class="form-group">
-              <div class="input-group">
-                <input :type="[isShowPassword ? 'text' : 'password']"
-                       v-model="password"
-                       v-validate data-vv-rules="required|min:6"
-                       class="form-control deploy-input" name="password" :placeholder="$t('deploy.enterPw')">
-                <div class="input-group-append deploy-input-group-append" @click="viewPassword">
-                    <span class="input-group-text">
-                      <i class="fa" :class="[isShowPassword ? 'fa-eye' : 'fa-eye-slash']" aria-hidden="true"></i>
-                    </span>
-                </div>
-              </div>
-              <small class="form-text text-muted deploy-err-message" v-show="errors.has('password')">{{ errors.first('password') }}</small>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary deploy-dialog-btn-close" data-dismiss="modal">{{$t('deploy.close')}}</button>
-            <button type="button" class="btn btn-primary deploy-dialog-btn" v-bind:disabled="waitingUnlockWallet" :data-dismiss="[closeDialog ? 'modal' : '']" @click="unlockWalletFile">{{waitingUnlockWallet ? $t('deploy.waitingUnlock') : $t('deploy.unlock')}}</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!--Enter Wallet Password Modal -->
-    <div class="modal fade devlop-modal" id="enterWalletPassword" tabindex="-1" role="dialog" >
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" >{{$t('deploy.selectWallet')}}</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <div class="form-group">
-              <div class="input-group">
-                <input :type="[isShowPassword ? 'text' : 'password']"
-                       v-model="getWalletPrivateKeyPassowrd"
-                       class="form-control deploy-input" name="password" :placeholder="$t('deploy.enterPw')">
-                <div class="input-group-append deploy-input-group-append" @click="viewPassword">
-                    <span class="input-group-text">
-                      <i class="fa" :class="[isShowPassword ? 'fa-eye' : 'fa-eye-slash']" aria-hidden="true"></i>
-                    </span>
-                </div>
-              </div>
-              <small class="form-text text-muted deploy-err-message" v-show="errors.has('password')">{{ errors.first('password') }}</small>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary deploy-dialog-btn-close" data-dismiss="modal">{{$t('deploy.close')}}</button>
-            <button type="button" class="btn btn-primary deploy-dialog-btn" v-bind:disabled="waitingUnlockWallet" :data-dismiss="[closeDialog ? 'modal' : '']" @click="getWalletPrivateKey">{{waitingUnlockWallet ? $t('deploy.waitingUnlock') : $t('deploy.unlock')}}</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!--Generate Wallet -->
-    <div class="modal fade devlop-modal" id="GenerateWallet" tabindex="-1" role="dialog" >
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" >{{$t('deploy.generateWallet')}}</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <div class="form-group">
-              <div class="input-group">
-                <input :type="[isShowPassword ? 'text' : 'password']"
-                       v-model="generateWalletPassword"
-                       class="form-control deploy-input" name="password" :placeholder="$t('deploy.enterPw')">
-                <div class="input-group-append deploy-input-group-append" @click="viewPassword">
-                    <span class="input-group-text">
-                      <i class="fa" :class="[isShowPassword ? 'fa-eye' : 'fa-eye-slash']" aria-hidden="true"></i>
-                    </span>
-                </div>
-              </div>
-              <small class="form-text text-muted deploy-err-message" v-show="errors.has('password')">{{ errors.first('password') }}</small>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary deploy-dialog-btn-close" data-dismiss="modal">{{$t('deploy.close')}}</button>
-            <button type="button" class="btn btn-primary deploy-dialog-btn" v-bind:disabled="waitingUnlockWallet" :data-dismiss="[closeDialog ? 'modal' : '']" @click="generateWallet">{{waitingUnlockWallet ? $t('deploy.waitingGenerate') : $t('deploy.generate')}}</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Error Modal -->
-    <div class="modal fade devlop-modal" id="DeployError" tabindex="-1" role="dialog" >
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="">{{$t('deploy.errorTitle')}}</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-              <label class="error-modal-body-text">{{ErrorInfo}}</label>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary deploy-dialog-btn-close" data-dismiss="modal">{{$t('deploy.close')}}</button>
-          </div>
-        </div>
-      </div>
-    </div>
+   
   </div>
 </template>
 
@@ -333,7 +172,11 @@
         deployWalletInfo: state => state.DeployPage.DeployWalletInfo,
         deployContractInfo: state => state.DeployPage.DeployContractInfo,
         deployInfo: state => state.DeployPage.DeployInfo,
-        compileInfo : state => state.CompilePage.CompileInfo
+        compileInfo : state => state.CompilePage.CompileInfo,
+
+        configWallet: state => state.Config.wallet,
+        balance: state => state.Config.wallet.balance,
+        nodeUrl: state => state.Config.nodeUrl
       })
     },
     mounted(){
@@ -465,7 +308,12 @@
         this.$store.dispatch('setContractHash', codeHash)
         return codeHash
       },
-     doDeploy($privateKey){
+     doDeploy(){
+        if(!this.configWallet.address || !this.configWallet.privateKey) {
+          alert('Please select the wallet at first.')
+          return;
+        }
+
         if(!this.deployContractInfo.name || !this.deployContractInfo.version || !this.deployContractInfo.author ||
         !this.deployContractInfo.email || !this.deployContractInfo.desc) {
           //Need to be required for now.Will remove it when update on ontology-dapi
@@ -492,22 +340,22 @@
         const desc = this.deployContractInfo.desc || ''
 
         let _self = this
-       let account = this.deployWalletInfo.info.account
+       let account = new Ont.Crypto.Address(this.configWallet.address);
+        const privateKey = new Ont.Crypto.PrivateKey(this.configWallet.privateKey);
 
-
-         let defaultNet
-         if(this.network === '0'){
-           defaultNet = process.env.NODE_URL
-         }else if(this.network === '1'){
-           defaultNet = "https://polaris1.ont.io:10334"
-         }else{
-           defaultNet = this.privateNet
-         }
-         const restClient = new Ont.RestClient(defaultNet);
+        //  let defaultNet
+        //  if(this.network === '0'){
+        //    defaultNet = process.env.NODE_URL
+        //  }else if(this.network === '1'){
+        //    defaultNet = "https://polaris1.ont.io:10334"
+        //  }else{
+        //    defaultNet = this.privateNet
+        //  }
+         const restClient = new Ont.RestClient(this.nodeUrl);
 
          const tx = Ont.TransactionBuilder.makeDeployCodeTransaction(avmCode,name, version, author, email, desc, needStorage, '500', '30000000');
-         tx.payer = new Ont.Crypto.Address(account.address);
-         Ont.TransactionBuilder.signTransaction(tx, $privateKey);
+         tx.payer = account;
+         Ont.TransactionBuilder.signTransaction(tx, privateKey);
          const result = restClient.sendRawTransaction(tx.serialize());
 
          result.then(function(value){
