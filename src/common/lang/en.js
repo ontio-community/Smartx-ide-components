@@ -258,7 +258,8 @@ module.exports = {
   },
   tool:{
     transform: 'Transform',
-    clear:'Clear'
+    clear:'Clear',
+    check: 'Check'
   },
   test:{
     account:'Account',

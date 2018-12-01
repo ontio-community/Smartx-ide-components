@@ -17,7 +17,7 @@ export default {
       running : false
     },
     RunInfo: {
-      contractHash:'',
+      contractHash:'16edbe366d1337eb510c2ff61099424c94aeef02',
     },
     RunWalletInfo: {
       info: '',

@@ -235,6 +235,7 @@ module.exports = {
     selectFuc: '选择运行函数： ',
     selectFucOption: '选择运行函数',
     run: '运行',
+    debugRun: '调试',
     contractName: '合约名称',
     txid: 'TXID',
     noData: '没有数据',
@@ -250,12 +251,13 @@ module.exports = {
     noFunction:'请添加需要运行的方法',
     function:'方法：',
     param:'参数：',
-    preRun:'运行预执行',
+    preRun:'预执行',
     preRuntips: '使用预执行调用查询方法或者查询合约的gas limit。',
   },
   tool:{
     transform: '运行',
-    clear:'清空'
+    clear:'清空',
+    check: '查看'
   },
   test:{
     account:'账户',
