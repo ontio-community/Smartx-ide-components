@@ -1,11 +1,12 @@
 
-
+const address = sessionStorage.getItem('smartx_address') || ''
+const privateKey = sessionStorage.getItem('smartx_privateKey') || ''
 const state = {
     network: 'TEST_NET',
     nodeUrl: 'polaris1.ont.io',
     wallet: {
-        address: 'AXmVniXrYjscjAmoZYPkGiZykdv4GcwCpM',
-        privateKey: 'edea8c9fbf01e041d6b0efc7d623562da483a487d5d2684e0fd9c5b8f1f076d6',
+        address,
+        privateKey,
         balance: {
             ong: 0,
             ont: 0
@@ -30,9 +31,11 @@ const mutations = {
     },
     ['UPDATE_CONFIG_ADDRESS'](state, {address}){
         state.wallet.address = address
+        sessionStorage.setItem('smartx_address', address)
     },
     ['UPDATE_CONFIG_PRIKEY'](state, { privateKey }) {
         state.wallet.privateKey = privateKey
+        sessionStorage.setItem('smartx_privateKey', privateKey)        
     }
 }
 

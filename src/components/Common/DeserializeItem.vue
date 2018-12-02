@@ -21,21 +21,23 @@
     font-weight: bold;
 
 }
+.jv-container .jv-code {
+    overflow: scroll;
+}
 </style>
 <template>
     <div class="transform-container">
         <div class="transform-input">
-            <p class="transform-title">Serialized data (Hex string)</p>
+            <p class="transform-title">Serialized Map data (Hex string) --> JSON</p>
             <textarea name="" id="" cols="30" rows="8" v-model="hex"></textarea>
         </div>
         <div class="transform-icon">
-            <a-icon type="sync" />
+            <a-icon type="arrow-down" />
         </div>
-        <div class="transform-input">
-            <p class="transform-title">Deserialized data (Map)</p>        
+        <div class="transform-input">      
             <json-viewer
                 :value="map"
-                :expand-depth=5
+                :expand-depth=3
                 copyable
                 boxed
                 sort></json-viewer>        
@@ -123,9 +125,9 @@ export default {
                 }
                 const mapObj = Ont.ScriptBuilder.deserializeItem(new Ont.utils.StringReader(this.hex))
                 const map = mapToObj(mapObj)
-                const obj = formatMapObj(map)
-                this.map = JSON.parse(JSON.stringify(obj))
-                // this.map = obj;
+                // const obj = formatMapObj(map)
+                // this.map = JSON.parse(JSON.stringify(obj))
+                this.map = map;
             } else if (this.map) {
 
             } else {

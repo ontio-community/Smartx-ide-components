@@ -159,6 +159,9 @@ module.exports = {
     deployTooltips: 'Deploy the compiled contract to the blockchain.',
     runTooltips: 'Running contract method'
   },
+  config: {
+    applyOng: 'Apply TestNet ONG'
+  },
   compile: {
     compile: 'Compile',
     waiting: 'Waiting...',
@@ -219,7 +222,8 @@ module.exports = {
     preDeploytips: 'Please recompile the code first.',
     emptyInfo: 'Please enter each field of the smart contract information.',
     generate:'Generate',
-    waitingGenerate:'Waiting...'
+    waitingGenerate:'Waiting...',
+    networkInfo: 'Network info'
   },
   run: {
     selectWallet: 'Select Wallet File',

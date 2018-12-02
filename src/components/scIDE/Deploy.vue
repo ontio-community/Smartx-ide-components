@@ -50,12 +50,33 @@
       <button class="btn btn-outline-success deploy-btn-submit" data-toggle="modal" v-bind:disabled="waitingStatus" @click="doDeploy" >{{waitingStatus ? $t('deploy.waiting') : $t('deploy.deploy')}}</button>
     </div>
 
+<!-- Error Modal -->
+    <div class="modal fade devlop-modal" id="DeployError" tabindex="-1" role="dialog" >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="">{{$t('deploy.errorTitle')}}</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+              <label class="error-modal-body-text">{{ErrorInfo}}</label>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary deploy-dialog-btn-close" data-dismiss="modal">{{$t('deploy.close')}}</button>
+          </div>
+        </div>
+      </div>
+    </div>
    
   </div>
 </template>
 
 <script>
   import {mapState} from 'vuex'
+  import * as types from './../../store/mutation-type'
+  import { OP_TYPE } from './../../helpers/consts';
   import zh from './../../common/lang/zh'
   import en from './../../common/lang/en'
   import LangStorage from './../../helpers/lang'
@@ -351,7 +372,7 @@
         //  }else{
         //    defaultNet = this.privateNet
         //  }
-         const restClient = new Ont.RestClient(this.nodeUrl);
+         const restClient = new Ont.RestClient('https://' +  this.nodeUrl + ':10334');
 
          const tx = Ont.TransactionBuilder.makeDeployCodeTransaction(avmCode,name, version, author, email, desc, needStorage, '500', '30000000');
          tx.payer = account;
@@ -367,18 +388,12 @@
              _self.showRun()
              _self.waitingStatus = false
 
-             let contractHash = _self.getContractHash()
-             //save code to server
-             let param = {
-               id: _self.projectName.info.id,
-               contract_hash: contractHash,
-               info_name: _self.deployContractInfo.name,
-               info_version: _self.deployContractInfo.version,
-               info_author: _self.deployContractInfo.author,
-               info_email: _self.deployContractInfo.email,
-               info_desc: _self.deployContractInfo.desc,
-             }
-             _self.$store.dispatch('saveProject', param)
+             _self.$store.commit({
+                type: types.APPEND_OUTPUT_LOG,
+                log: value,
+                op: OP_TYPE.Deploy
+              })
+             
            }else{
              _self.deployStatus = true
              _self.waitingStatus = false

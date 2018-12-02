@@ -158,6 +158,9 @@ module.exports = {
     deployTooltips: '将编译后的合约部署到链上',
     runTooltips: '运行合约方法'
   },
+  config: {
+    applyOng: 'Apply TestNet ONG'
+  },
   compile: {
     compile: '编译',
     waiting: '编译中...',
@@ -217,7 +220,8 @@ module.exports = {
     preDeploytips: '请先重新编译代码',
     emptyInfo: '请填写智能合约的每项信息。',
     generate:'生成',
-    waitingGenerate:'生成中...'
+    waitingGenerate:'生成中...',
+    networkInfo: '网络信息'
   },
   run: {
     selectWallet: '选择钱包文件',

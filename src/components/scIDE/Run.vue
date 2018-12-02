@@ -465,7 +465,11 @@
           return;
         }
 
-        let args = Ont.ScriptBuilder.buildSmartContractParam(this.functionName, this.parameters);
+        const parameters = this.formatAndValidateParameters(this.parameters);
+        const abiFunc = new Ont.AbiFunction(this.functionName, '', parameters);
+        const args = Ont.ScriptBuilder.serializeAbiFunction(abiFunc);
+
+        // let args = Ont.ScriptBuilder.buildSmartContractParam(this.functionName, this.parameters);
         console.log(args);
 
         let avm = new Buffer(this.compileInfo.avm, 'hex');
@@ -670,9 +674,65 @@
           return;
         }
         //validate and format parameters
+        const parameters = this.formatAndValidateParameters(this.parameters);
+        
+        let contractHash = this.runInfo.contractHash
+        let util = Ont.utils
+        const contractAddr = new Ont.Crypto.Address(util.reverseHex(contractHash));
+
+        const params = {
+          contractAddr: contractAddr,
+          method: this.functionName,
+          parameters: parameters,
+          gasPrice: '500',
+          gasLimit: '60000'
+        }
+        
+          const tx = Ont.TransactionBuilder.makeInvokeTransaction(
+            params.method,
+            params.parameters,
+            params.contractAddr,
+            params.gasPrice,
+            params.gasLimit,
+            account
+            );
+          Ont.TransactionBuilder.signTransaction(tx, privateKey);
+          const socketClient = new Ont.WebsocketClient('ws://' + this.nodeUrl + ':20335');
+          try {
+            const res = await socketClient.sendRawTransaction(tx.serialize(), preExec, !preExec);
+            if(res.Result) {
+              this.$store.commit({
+                type: types.APPEND_OUTPUT_LOG,
+                log: res.Result,
+                op: OP_TYPE.Invoke
+              })
+            }
+          } catch(err) {
+            this.$store.commit({
+              type: types.APPEND_OUTPUT_LOG,
+              log: err.message || JSON.stringify(err),
+              op: OP_TYPE.Invoke
+            })
+             console.log(err.message)
+          }
+          this.runStatus = false;
+          this.runPreRun = false
+        
+      },
+      showLoadingModal($title,$content,$isShowCloseButton){
+        let payload = {
+          title:$title,
+          content:$content,
+          isShowCloseButton:$isShowCloseButton
+        }
+        this.$store.dispatch('showLoadingModals',payload)
+      },
+
+      formatAndValidateParameters(paramList) {
+        //validate and format parameters
         const parameters = [];
-        for(let i = 0; i<this.parameters.length; i++) {
-          let p = new Ont.Parameter(this.parameters[i].name, this.parameters[i].type, this.parameters[i].value); 
+        for(let i = 0; i<paramList.length; i++) {
+          let p = new Ont.Parameter(paramList[i].name, paramList[i].type, paramList[i].value); 
           parameters.push(p);
           if(p.name && p.type !=='Boolean' && !p.value) {
             alert('Parameter '+ p.name + ' is required.')
@@ -706,58 +766,7 @@
             if(!p) return;
           }
         }
-
-        let contractHash = this.runInfo.contractHash
-        let util = Ont.utils
-        const contractAddr = new Ont.Crypto.Address(util.reverseHex(contractHash));
-
-        const params = {
-          contractAddr: contractAddr,
-          method: this.functionName,
-          parameters: parameters,
-          gasPrice: '500',
-          gasLimit: '60000'
-        }
-        
-    
-          const tx = Ont.TransactionBuilder.makeInvokeTransaction(
-            params.method,
-            params.parameters,
-            params.contractAddr,
-            params.gasPrice,
-            params.gasLimit,
-            account
-            );
-          Ont.TransactionBuilder.signTransaction(tx, privateKey);
-          const socketClient = new Ont.WebsocketClient('ws://' + this.nodeUrl + ':20335');
-          try {
-            const res = await socketClient.sendRawTransaction(tx.serialize(), preExec, !preExec);
-            if(res.Result) {
-              this.$store.commit({
-                type: types.APPEND_OUTPUT_LOG,
-                log: res.Result,
-                op: OP_TYPE.Invoke
-              })
-            }
-          } catch(err) {
-             console.log(err)
-            this.$store.commit({
-              type: types.APPEND_OUTPUT_LOG,
-              log: err,
-              op: OP_TYPE.Invoke
-            })
-          }
-          this.runStatus = false;
-          this.runPreRun = false
-        
-      },
-      showLoadingModal($title,$content,$isShowCloseButton){
-        let payload = {
-          title:$title,
-          content:$content,
-          isShowCloseButton:$isShowCloseButton
-        }
-        this.$store.dispatch('showLoadingModals',payload)
+        return parameters
       },
 
       formatMapParameter(param){

@@ -288,6 +288,9 @@
     width: 49%;
     display: inline-block;
   }
+  .link-applyOng {
+      float: right;
+  }
 </style>
 <template>
     <div class="config-page">
@@ -328,6 +331,8 @@
                 <div  class="card-body card-last-body">
                     <span class="card-text"><strong>ONG:</strong></span>
                     <span class="card-text">{{ balance.ong}}</span>
+
+                    <a  class="link-applyOng"  href="https://developer.ont.io/applyOng" target="_blank">{{$t('config.applyOng')}}</a>
                 </div>
                 </div>
             </div>
@@ -441,25 +446,6 @@
       </div>
     </div>
 
-    <!-- Error Modal -->
-    <div class="modal fade devlop-modal" id="DeployError" tabindex="-1" role="dialog" >
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="">{{$t('deploy.errorTitle')}}</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-              <label class="error-modal-body-text">{{ErrorInfo}}</label>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary deploy-dialog-btn-close" data-dismiss="modal">{{$t('deploy.close')}}</button>
-          </div>
-        </div>
-      </div>
-    </div>
     </div>
 
 </template>

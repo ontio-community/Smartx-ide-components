@@ -67,7 +67,7 @@
                 <label for="falseValue">False</label>
             </span>
             <!-- For parameter type is Array -->
-            <div v-if="parameter.type === 'Array'" class="card-param-input">
+            <div v-else-if="parameter.type === 'Array'" class="card-param-input">
                 <a-icon type="caret-up"  class="textarea-control-icon" v-if="arrayParamControl" @click="handleArratParamControl"/>
                  <a-icon type="caret-down"  class="textarea-control-icon" v-if="!arrayParamControl" @click="handleArrayParamControl" />
                 <textarea name="" id=""  rows="10" :class="arrayParamControl?'expand-textarea': 'collapse-textarea' " v-model="parameter.value" ></textarea>
