@@ -1884,7 +1884,19 @@ base-task@^0.6.1:
     composer "^0.13.0"
     is-valid-app "^0.1.0"
 
+<<<<<<< HEAD
 base-x@^3.0.2:
+=======
+<<<<<<< HEAD
+base-x@^3.0.2:
+=======
+<<<<<<< HEAD
+base-x@^3.0.2:
+=======
+base-x@^3.0.2, base-x@^3.0.3:
+>>>>>>> 192b0316cf9c551951e1c1c02924bc3e8fbd84f7
+>>>>>>> c482807ff0551c0d51e5bb0d3bcbd5d50156fa06
+>>>>>>> 32005bbd4ced8d61937f25d57dab0d94bfb726cc
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/base-x/-/base-x-3.0.4.tgz#94c1788736da065edb1d68808869e357c977fa77"
   dependencies:
@@ -6136,6 +6148,7 @@ lodash._baseisequal@^3.0.0:
     lodash.isarray "^3.0.0"
     lodash.istypedarray "^3.0.0"
     lodash.keys "^3.0.0"
+<<<<<<< HEAD
 
 lodash._baseismatch@^3.0.0:
   version "3.1.3"
@@ -6158,6 +6171,30 @@ lodash._createwrapper@^3.0.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/lodash._createwrapper/-/lodash._createwrapper-3.2.0.tgz#df453e664163217b895a454065af1c47a0ea3c4d"
   dependencies:
+=======
+
+lodash._baseismatch@^3.0.0:
+  version "3.1.3"
+  resolved "https://registry.yarnpkg.com/lodash._baseismatch/-/lodash._baseismatch-3.1.3.tgz#0728fc48efa11699d3d5f2d73049f2ab13c40fd5"
+  dependencies:
+    lodash._baseisequal "^3.0.0"
+
+lodash._basematches@^3.0.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/lodash._basematches/-/lodash._basematches-3.2.0.tgz#f47e03f07ec20784ab0968d0cb6cb597e2101158"
+  dependencies:
+    lodash._baseismatch "^3.0.0"
+    lodash.pairs "^3.0.0"
+
+lodash._bindcallback@^3.0.0:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/lodash._bindcallback/-/lodash._bindcallback-3.0.1.tgz#e531c27644cf8b57a99e17ed95b35c748789392e"
+
+lodash._createwrapper@^3.0.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/lodash._createwrapper/-/lodash._createwrapper-3.2.0.tgz#df453e664163217b895a454065af1c47a0ea3c4d"
+  dependencies:
+>>>>>>> 192b0316cf9c551951e1c1c02924bc3e8fbd84f7
     lodash._root "^3.0.0"
 
 lodash._getnative@^3.0.0:
@@ -6167,11 +6204,19 @@ lodash._getnative@^3.0.0:
 lodash._replaceholders@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/lodash._replaceholders/-/lodash._replaceholders-3.0.0.tgz#8abbb7126c431f7ed744f7baaf39f08bc9bd9d58"
+<<<<<<< HEAD
 
 lodash._root@^3.0.0:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/lodash._root/-/lodash._root-3.0.1.tgz#fba1c4524c19ee9a5f8136b4609f017cf4ded692"
 
+=======
+
+lodash._root@^3.0.0:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/lodash._root/-/lodash._root-3.0.1.tgz#fba1c4524c19ee9a5f8136b4609f017cf4ded692"
+
+>>>>>>> 192b0316cf9c551951e1c1c02924bc3e8fbd84f7
 lodash.assign@^4.0.6, lodash.assign@^4.2.0:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/lodash.assign/-/lodash.assign-4.2.0.tgz#0d99f3ccd7a6d261d19bdaeb9245005d285808e7"
@@ -6329,14 +6374,42 @@ loglevel@^1.4.1:
   version "1.6.1"
   resolved "https://registry.yarnpkg.com/loglevel/-/loglevel-1.6.1.tgz#e0fc95133b6ef276cdc8887cdaf24aa6f156f8fa"
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> c482807ff0551c0d51e5bb0d3bcbd5d50156fa06
+>>>>>>> 32005bbd4ced8d61937f25d57dab0d94bfb726cc
 long@^4.0.0, long@~4:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/long/-/long-4.0.0.tgz#9a7b71cfb7d361a194ea555241c92f7468d5bf28"
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> 192b0316cf9c551951e1c1c02924bc3e8fbd84f7
+>>>>>>> c482807ff0551c0d51e5bb0d3bcbd5d50156fa06
+>>>>>>> 32005bbd4ced8d61937f25d57dab0d94bfb726cc
 long@~3:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/long/-/long-3.2.0.tgz#d821b7138ca1cb581c172990ef14db200b5c474b"
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+long@~4:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/long/-/long-4.0.0.tgz#9a7b71cfb7d361a194ea555241c92f7468d5bf28"
+
+>>>>>>> 192b0316cf9c551951e1c1c02924bc3e8fbd84f7
+>>>>>>> c482807ff0551c0d51e5bb0d3bcbd5d50156fa06
+>>>>>>> 32005bbd4ced8d61937f25d57dab0d94bfb726cc
 longest@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/longest/-/longest-1.0.1.tgz#30a0b2da38f73770e8294a0d22e6625ed77d0097"
@@ -7183,10 +7256,23 @@ ontology-ts-sdk@^1.0.8:
   version "1.0.8"
   resolved "https://registry.yarnpkg.com/ontology-ts-sdk/-/ontology-ts-sdk-1.0.8.tgz#6d2da77cb785c49cda1863f3bf15ca8c27119e7c"
 =======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 32005bbd4ced8d61937f25d57dab0d94bfb726cc
 ontology-ts-sdk@^1.0.9:
   version "1.0.9"
   resolved "https://registry.yarnpkg.com/ontology-ts-sdk/-/ontology-ts-sdk-1.0.9.tgz#9f4c2ae4fd6951034c956c724784c04f336deafb"
 >>>>>>> add array and map support
+<<<<<<< HEAD
+=======
+=======
+ontology-ts-sdk@^0.9.8:
+  version "0.9.9"
+  resolved "https://registry.yarnpkg.com/ontology-ts-sdk/-/ontology-ts-sdk-0.9.9.tgz#b0257fe53a198a852a4596af7aca9314f820dcbb"
+>>>>>>> 192b0316cf9c551951e1c1c02924bc3e8fbd84f7
+>>>>>>> c482807ff0551c0d51e5bb0d3bcbd5d50156fa06
+>>>>>>> 32005bbd4ced8d61937f25d57dab0d94bfb726cc
   dependencies:
     "@ont-community/hdkey-secp256r1" "^1.0.1"
     "@ont-community/html5-websocket" "^2.0.2"
@@ -7197,12 +7283,21 @@ ontology-ts-sdk@^1.0.9:
     bignumber.js "^7.2.1"
     bip39 "^2.5.0"
     bs58 "^4.0.1"
+<<<<<<< HEAD
     crypto-js "^3.1.9-1"
     ecdsa "^0.7.0"
     ecurve "^1.0.6"
     elliptic "^6.4.0"
     js-sha3 "^0.7.0"
     long "^4.0.0"
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+    bs58check "^2.1.1"
+    crypto "^1.0.1"
+>>>>>>> 32005bbd4ced8d61937f25d57dab0d94bfb726cc
     milagro-crypto-js "^3.3.0"
     promise-timeout "^1.3.0"
     scrypt-async "^2.0.0"
