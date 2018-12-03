@@ -6,15 +6,17 @@
       <div class="card border-secondary mb-3" style="max-width: 20rem;">
         <div class="card-header">{{$t('run.basicInfo')}}</div>
         <div class="run-card-scroll">
-          <div class="card-body" v-if="runInfo.contractHash">
+          <div class="card-body" >
             <div>
               <p><strong>{{ $t('run.tradingHash') }}</strong></p>
-              <p>{{ runInfo.contractHash }}</p>
+              <!-- <input>{{ runInfo.contractHash }}</input> -->
+              <div class="contractHash-input">
+                <input class="run-input" type="text" v-model="contractHash" >
+                <!-- <button @click="handleConfirmHash">Ok</button> -->
+              </div>
             </div>
           </div>
-          <div class="card-body" v-else>
-            <p class="card-text">{{$t('compile.noData')}}</p>
-          </div>
+          
         </div>
       </div>
     </div>
@@ -228,7 +230,8 @@
         privateNet:'http://127.0.0.1:20334',
         isHidePrivateNetInput:false,
         getWalletPrivateKeyPassowrd:'',
-        runContractParam:''
+        runContractParam:'',
+        contractHash: ''
       }
     },
     created(){
@@ -237,48 +240,6 @@
       ScParameter
     },
     computed: {
-      /*
-        projectInfo:{
-          info:{
-            abi:'',
-            code:'',
-            contract_hash:'',
-            created_at:'',
-            id:'',
-            info_author:'',
-            info_desc:'',
-            info_email:'',
-            info_name:'',
-            info_version:'',
-            language:'',
-            name:'',
-            nvm_byte_code:'',
-            type:'',
-            updated_at:'',
-            user_id:'',
-            wat:''
-        }，
-        compileInfo:{
-          abi{
-            function:[{
-              name:'',
-              parameters:[{
-                name:'',
-                type:''
-              }]
-              returntype:''
-            }],
-            avm:'',
-            contractHash:'',
-            errdetail:'',
-            haveReCompile:'',
-            showCompileInfo: '',
-          }
-        }
-        runInfo:{
-          contractHash:'',
-        }
-       */
       ...mapState({
         projectInfo: state => state.ProjectInfoPage.ProjectInfo,
         ProjectName: state => state.ProjectInfoPage.ProjectName,
@@ -290,7 +251,8 @@
         runWalletInfo: state => state.RunPage.RunWalletInfo,
 
         configWallet: state => state.Config.wallet,
-        nodeUrl : state => state.Config.nodeUrl
+        nodeUrl : state => state.Config.nodeUrl,
+        network: state => state.Config.network
       })
     },
     mounted(){
@@ -299,18 +261,24 @@
           this.functionParameters[f.name] = f.parameters.map((p)=> new Ont.Parameter(p.name, p.type, ''))
         }
       }
+      if(this.runInfo.contractHash) {
+        this.contractHash = this.runInfo.contractHash
+      }
     },
     watch: {
       runInfo : function(newInfo, oldInfo) {
         this.optionId = ''
         this.functionName = ''
         this.functionParameters = []
+        if(this.runInfo.contractHash) {
+          this.contractHash = this.runInfo.contractHash
+        }
       },
       compileInfo: function(newInfo, oldInfo) {
         for(let f of newInfo.abi.functions) {
           this.functionParameters[f.name] = f.parameters.map((p)=> new Ont.Parameter(p.name, p.type, ''))
         }
-      }
+      },
     },
     methods: {
       privateNetInputState(){
@@ -671,7 +639,7 @@
           })
           return;
         }
-        if(!this.runInfo.contractHash) {
+        if(!this.contractHash) {
           this.ErrorInfo = (LangStorage.getLang('zh') === "zh") ? zh.run.noContractHash : en.run.noContractHash
           this.showLoadingModal(errorTitle,this.ErrorInfo,true)
           this.$store.commit({
@@ -688,7 +656,7 @@
           return;
         }
         
-        let contractHash = this.runInfo.contractHash
+        let contractHash = this.contractHash
         let util = Ont.utils
         const contractAddr = new Ont.Crypto.Address(util.reverseHex(contractHash));
 
@@ -709,7 +677,13 @@
             account
             );
           Ont.TransactionBuilder.signTransaction(tx, privateKey);
-          const socketClient = new Ont.WebsocketClient('ws://' + this.nodeUrl + ':20335');
+          let url = ''
+          if(this.network === 'PRIVATE_NET') {
+            url =  'ws://' + this.nodeUrl.split('//')[1] + ':20335'
+          } else {
+            url = 'ws://' +  this.nodeUrl + ':20335'
+          }
+          const socketClient = new Ont.WebsocketClient(url);
           try {
             const res = await socketClient.sendRawTransaction(tx.serialize(), preExec, !preExec);
             if(res.Result) {
@@ -795,8 +769,7 @@
     height: 20%;
   }
   .card-Option{
-    height: calc(80% - 40px);
-    padding-bottom: 60px;
+    height: calc(80% - 60px);
   }
   .run-card-select{
     margin-top: 5px;
@@ -812,6 +785,7 @@
     width: 50%;
     height: 24px;
     margin-left: 16px;
+    border: 1px solid #dddddd;
   }
   .run-card-scroll{
     overflow-y:auto;
@@ -930,7 +904,7 @@
 .run-btns {
      display: flex;
     flex-direction: row;
-    justify-content: space-around;
+    justify-content: space-between;
     position: absolute;
     bottom: 0;
     left: 0;
@@ -940,5 +914,18 @@
 .run-btns button {
   width:30%;
   margin-bottom:10px;
+}
+
+.contractHash-input {
+  display: flex;
+  flex-direction: row;
+}
+.contractHash-input input {
+  width: 350px;
+}
+.contractHash-input button {
+  margin-left: 10px;
+  cursor: pointer;
+  width:50px
 }
 </style>

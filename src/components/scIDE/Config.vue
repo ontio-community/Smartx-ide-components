@@ -474,7 +474,7 @@ export default {
         WalletFile: '',
         closeDialog : false,
         waitingUnlockWallet: false,
-        privateNet:'127.0.0.1',
+        privateNet:'http://127.0.0.1',
         getWalletPrivateKeyPassowrd:'',
         generateWalletPassword:''
       }
@@ -488,17 +488,14 @@ export default {
   },
   mounted() {
       this.$store.dispatch('updateConfigBalance')
+      this.interval = setInterval(()=>{
+        this.$store.dispatch('updateConfigBalance')
+      }, 5000)
+  },
+  beforeDestroy() {
+    clearInterval(this.interval)
   },
   methods: {
-      changePrivateNetwork(network, url) {
-          if(network === 'PRIVATE_NET') {
-              if(!url) {
-                  alert('Please enter the url of your private net');
-                  return;
-              }
-          }
-          this.$store.dispatch('changeNetWork', {network, url})
-      },
       changeNetwork(network, url) {
           if(network === 'PRIVATE_NET') {
               if(!url) {

@@ -100,7 +100,7 @@
         WalletFile: '',
         closeDialog : false,
         waitingUnlockWallet: false,
-        network:'1',
+        // network:'1',
         privateNet:'http://127.0.0.1:20334',
         isHidePrivateNetInput:false,
         getWalletPrivateKeyPassowrd:'',
@@ -197,7 +197,8 @@
 
         configWallet: state => state.Config.wallet,
         balance: state => state.Config.wallet.balance,
-        nodeUrl: state => state.Config.nodeUrl
+        nodeUrl: state => state.Config.nodeUrl,
+        network: state => state.Config.network
       })
     },
     mounted(){
@@ -365,7 +366,13 @@
         const privateKey = new Ont.Crypto.PrivateKey(this.configWallet.privateKey);
 
         const contractHash = this.getContractHash();
-         const restClient = new Ont.RestClient('https://' +  this.nodeUrl + ':10334');
+        let url = ''
+        if(this.network === 'PRIVATE_NET') {
+          url = this.nodeUrl + ':20334'
+        } else {
+          url = 'https://' +  this.nodeUrl + ':10334'
+        }
+         const restClient = new Ont.RestClient(url);
 
         let contractOnChain
         try {
