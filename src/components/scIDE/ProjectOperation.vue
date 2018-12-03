@@ -17,10 +17,10 @@
         <button class="btn btn-outline-dark pro-operation-button" @click="getToolPage" :class="[showTool ? 'pro-operation-button-click' : '']" data-toggle="tooltip" data-placement="bottom" >{{$t('projectOperation.tool')}}</button>
       </div>
       <div class="col pro-operation-btn-center">
-        <button class="btn btn-outline-dark pro-operation-button" @click="getTestPage" :class="[showTest ? 'pro-operation-button-click' : '']" data-toggle="tooltip" data-placement="bottom" >{{$t('projectOperation.test')}}</button>
+        <button class="btn btn-outline-dark pro-operation-button" @click="getRestfulPage" :class="[showRestful ? 'pro-operation-button-click' : '']" data-toggle="tooltip" data-placement="bottom" >{{$t('projectOperation.restful')}}</button>
       </div>
       <div class="col pro-operation-btn-right">
-        <button class="btn btn-outline-dark pro-operation-button" @click="getRestfulPage" :class="[showRestful ? 'pro-operation-button-click' : '']" data-toggle="tooltip" data-placement="bottom" >{{$t('projectOperation.restful')}}</button>
+        <button class="btn btn-outline-dark pro-operation-button" @click="getTestPage" :class="[showTest ? 'pro-operation-button-click' : '']" data-toggle="tooltip" data-placement="bottom" >{{$t('projectOperation.test')}}</button>        
       </div>
     </div>
     <div class="pro-operation-border">

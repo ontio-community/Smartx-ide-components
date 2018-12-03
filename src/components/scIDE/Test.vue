@@ -81,7 +81,7 @@
                 </div>
 
                 <div v-show="testFunctions.isRun[num]">
-                  <div class="test-input-and-txt" v-for="parameter in testFunctions.params[num]" @change="changeParameterTypeTip(parameter)">
+                  <!-- <div class="test-input-and-txt" v-for="parameter in testFunctions.params[num]" @change="changeParameterTypeTip(parameter)">
                     <select v-model="parameter.type" style="margin-right: 5px;">
                       <option value="ByteArray">ByteArray</option>
                       <option value="String">String</option>
@@ -90,7 +90,10 @@
                     </select>
                     <p class="card-text">{{parameter.name}}:</p>
                     <input class="run-input" v-model="parameter.value" :placeholder="parameter.typeTip" >
-                  </div>
+                  </div> -->
+                  <div >
+                    <sc-parameter :parameter="parameter" v-for="(parameter) of functionParameters[testFunctions.functionName[num]]" :key="parameter.name"></sc-parameter>
+                  </div> 
 
                   <p class="card-text test-title-text test-card-text-title"><strong>{{ $t('test.selectRunType') }}</strong></p>
                   <label class="card-text test-title-text"><input :name="'testPreExec'+num" type="radio" v-model="testFunctions.preExec[num]" value="0"/><strong style="margin-left: 4px">{{ $t('test.run') }}</strong></label>
@@ -125,9 +128,14 @@
   import * as types from './../../store/mutation-type'
   import FileHelper from "./../../common/ont-wallet/file-generate-and-get";
   import Sleep from './../../helpers/sleep'
+  import ScParameter from './ScParameter'
+  import * as ParamsHelper from './../../helpers/params'
 
   export default {
-    name: "tool",
+    name: "Testing",
+    components: {
+      ScParameter
+    },
     data() {
       return {
         //accountPrivateKey:'063441409768bb701301a44d67a7dbaf75d73479101c4241d7da2f8e9962840f',
@@ -135,7 +143,7 @@
         showAddAccountEdit:false,
         optionId: [''],
         functionName : '',
-        functionParameters : [[]],
+        functionParameters : {},
         addressId:[''],
         runStatus:false,
         testFunctions: {
@@ -167,8 +175,14 @@
     created(){
       this.isShowAddAccountEdit()
     },
+   
     watch: {
       compileInfo : function(newInfo, oldInfo) {
+        if(this.compileInfo.abi && this.compileInfo.abi.functions.length > 0) {
+          for(let f of this.compileInfo.abi.functions) {
+            this.functionParameters[f.name] = f.parameters.map((p)=> new Ont.Parameter(p.name, p.type, ''))
+          }
+        }
         this.showTestFunctions()
       }
     },
@@ -184,6 +198,7 @@
           }
           this.$store.dispatch('showLoadingModals',payload)
         }else{
+
           let payload={
             privateKey:this.accountPrivateKey,
             testAccount:this.testAccountInfo.info,
@@ -262,7 +277,7 @@
         this.testFunctions.account.push('')
         this.testFunctions.isRun.push(false)
         this.testFunctions.preExec.push('0')
-        this.functionParameters.push('')
+        // this.functionParameters.push('')
         this.optionId.push($functionId)
         this.getParameter($functionId,this.testFunctionNum.length-1)
         this.addressId.push('')
@@ -274,7 +289,7 @@
         this.testFunctions.account = []
         this.testFunctions.isRun = []
         this.testFunctions.preExec = []
-        this.functionParameters= []
+        // this.functionParameters= []
         this.optionId = []
         this.testFunctions.params = []
         this.addressId = []
@@ -290,7 +305,7 @@
         this.testFunctions.account.splice($functionId,1)
         this.testFunctions.isRun.splice($functionId,1)
         this.testFunctions.preExec.splice($functionId,1)
-        this.functionParameters.splice($functionId,1)
+        // this.functionParameters.splice($functionId,1)
         this.optionId.splice($functionId,1)
         this.addressId.splice($functionId,1)
       },
@@ -387,9 +402,11 @@
         let testFuns=[]
         for(let i=0;i<this.testFunctionNum.length;i++){
           if(this.testFunctions.isRun[i]){
+            const functionName = _self.testFunctions.functionName[i]
             let testFun = {
-              functionName: _self.testFunctions.functionName[i],
-              params: _self.testFunctions.params[i],
+              functionName,
+              // params: _self.testFunctions.params[i],
+              params: _self.functionParameters[functionName],
               isRun: _self.testFunctions.isRun[i],
               preExec: _self.testFunctions.preExec[i],
               account: _self.testFunctions.account[i],
@@ -437,29 +454,35 @@
           this.runStatus = false;
           return;
         }
-        //validate and format parameters
-        const parameters = $testFunction.params.slice();
-        for(let p of parameters) {
-          if(p.name && !p.value) {
-            alert('Parameter '+ p.name + ' is required.')
-            this.$store.commit({
-              type : types.SET_RUN_STATUS,
-              running : false
-            })
-            return;
-          }
-          if(p.type === 'ByteArray' && p.value.length%2 !== 0) {
-            alert('Parameter ' + p.name + ' is not valid hex string.')
-            this.runStatus = false;
-            return;
-          }
-          if(p.type === 'Integer') {
-            p.value = parseInt(p.value)
-          }
-          if(p.type === 'Boolean') {
-            p.value = Boolean(p.value);
-          }
+
+        const parameters = ParamsHelper.formatAndValidateParameters($testFunction.params);
+        if(!parameters) {
+          this.runStatus = false;
+          return;
         }
+        //validate and format parameters
+        // const parameters = $testFunction.params.slice();
+        // for(let p of parameters) {
+        //   if(p.name && !p.value) {
+        //     alert('Parameter '+ p.name + ' is required.')
+        //     this.$store.commit({
+        //       type : types.SET_RUN_STATUS,
+        //       running : false
+        //     })
+        //     return;
+        //   }
+        //   if(p.type === 'ByteArray' && p.value.length%2 !== 0) {
+        //     alert('Parameter ' + p.name + ' is not valid hex string.')
+        //     this.runStatus = false;
+        //     return;
+        //   }
+        //   if(p.type === 'Integer') {
+        //     p.value = parseInt(p.value)
+        //   }
+        //   if(p.type === 'Boolean') {
+        //     p.value = Boolean(p.value);
+        //   }
+        // }
 
         let contractHash
         if(this.selectContractHash === "0"){
@@ -493,7 +516,7 @@
             const payer = new Ont.Crypto.Address(payerAddress)
             const privateKey = new Ont.Crypto.PrivateKey(payerPri)
 
-            const tx = Ont.TransactionBuilder.makeInvokeTransaction($testFunction.functionName, $testFunction.params, contractAddr, '500', '20000',payer);
+            const tx = Ont.TransactionBuilder.makeInvokeTransaction($testFunction.functionName, parameters, contractAddr, '500', '20000',payer);
             Ont.TransactionBuilder.signTransaction(tx, privateKey);
             console.log(tx)
             let res
@@ -523,7 +546,7 @@
 
           }else{
             console.log($testFunction.params)
-            const tx = Ont.TransactionBuilder.makeInvokeTransaction($testFunction.functionName, $testFunction.params, contractAddr, '500', '20000');
+            const tx = Ont.TransactionBuilder.makeInvokeTransaction($testFunction.functionName, parameters, contractAddr, '500', '20000');
             console.log(tx)
             let res
             if(this.network === '0'){

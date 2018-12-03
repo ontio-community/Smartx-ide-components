@@ -168,6 +168,7 @@
   import FileHelper from './../../common/ont-wallet/file-generate-and-get'
   import OWallet from './../../common/ont-wallet/wallet'
   import ScParameter from './ScParameter'
+  import * as ParamsHelper from './../../helpers/params'
 
   function validateRun(self) {
     if(!self.functionName) {
@@ -282,7 +283,7 @@
         projectInfo: state => state.ProjectInfoPage.ProjectInfo,
         ProjectName: state => state.ProjectInfoPage.ProjectName,
         compileInfo: state => state.CompilePage.CompileInfo,
-        functionParameters: state => state.RunPage.functionParameters,
+        // functionParameters: state => state.RunPage.functionParameters,
         runInfo : state => state.RunPage.RunInfo,
         projectEditor: state => state.EditorPage.OntEditor,
         store : state => state.EditorPage.Store,
@@ -465,7 +466,13 @@
           return;
         }
 
-        const parameters = this.formatAndValidateParameters(this.parameters);
+        // const parameters = this.formatAndValidateParameters(this.parameters);
+        const parameters = ParamsHelper.formatAndValidateParameters(this.parameters);
+        if(!parameters) {
+          this.runStaus = false;
+          return;
+        }
+
         const abiFunc = new Ont.AbiFunction(this.functionName, '', parameters);
         const args = Ont.ScriptBuilder.serializeAbiFunction(abiFunc);
 
@@ -674,7 +681,12 @@
           return;
         }
         //validate and format parameters
-        const parameters = this.formatAndValidateParameters(this.parameters);
+        // const parameters = this.formatAndValidateParameters(this.parameters);
+        const parameters = ParamsHelper.formatAndValidateParameters(this.parameters);
+        if(!parameters) {
+          this.runStaus = false;
+          return;
+        }
         
         let contractHash = this.runInfo.contractHash
         let util = Ont.utils
@@ -726,147 +738,6 @@
           isShowCloseButton:$isShowCloseButton
         }
         this.$store.dispatch('showLoadingModals',payload)
-      },
-
-      formatAndValidateParameters(paramList) {
-        //validate and format parameters
-        const parameters = [];
-        for(let i = 0; i<paramList.length; i++) {
-          let p = new Ont.Parameter(paramList[i].name, paramList[i].type, paramList[i].value); 
-          parameters.push(p);
-          if(p.name && p.type !=='Boolean' && !p.value) {
-            alert('Parameter '+ p.name + ' is required.')
-            this.$store.commit({
-              type : types.SET_RUN_STATUS,
-              running : false
-            })
-            return;
-          }
-          if(p.type === 'ByteArray' && !Ont.utils.isHexString(p.value)) {
-            alert('Parameter ' + p.name + ' is not valid hex string.')
-            this.runStatus = false;
-            return;
-          }
-          if(p.type === 'Integer') {
-            p.value = parseInt(p.value)
-          }
-          if(p.type === 'Boolean') {
-            p.value = p.value === 'true' ? true : false;
-          }
-          if(p.type === 'Address') {
-            p.value = new Ont.Crypto.Address(p.value).serialize();
-            p.type = 'ByteArray'
-          }
-          if(p.type === 'Array') {
-            p = this.formatArrayParameter(p)
-            if(!p) return;
-          }
-          if(p.type === 'Map') {
-            p = this.formatMapParameter(p)
-            if(!p) return;
-          }
-        }
-        return parameters
-      },
-
-      formatMapParameter(param){
-        let values;
-        try {
-            values = JSON.parse(param.value)
-            if(typeof values !== 'object') {
-              throw 'Invalid Object'
-            }
-          } catch(err) {
-            alert('Parameter ' + param.name + ' is not valid JSON Object')
-            this.runStaus = false;
-            return;
-        }
-        const val = {}
-        for(let k in values) {
-          let temp = this.transformParamItem(values[k]);
-          val[k] = temp;
-        }
-        param.value = val;
-        return param
-      },
-
-      formatArrayParameter(param) {
-        let values;
-        try {
-            values = JSON.parse(param.value)
-            if(!Array.isArray(values)) {
-              throw 'Invalid array'
-            }
-          } catch(err) {
-            alert('Parameter ' + param.name + ' is not valid Array')
-            this.runStaus = false;
-            return;
-        }
-        const list = []
-        for(let p of values) {
-          let temp = this.transformParamItem(p);
-          list.push(temp);
-        }
-        param.value = list;
-        return param
-      },
-
-      transformParamItem(p) {
-        let temp;
-        if(!p.type) {
-          alert('Parameter must contain [type]');
-          return;
-        }
-        this.validateArrayParamItem(p);
-        if(p.type === 'Address') {
-          p.value = new Ont.Crypto.Address(p.value).serialize();
-          temp = new Ont.Parameter('', Ont.ParameterType.ByteArray, p.value)
-        } else if (p.type === 'Array') {
-          const val = p.value.map(item => this.transformParamItem(item))
-          temp = new Ont.Parameter('', p.type, val)
-        } 
-        else if (p.type === 'Map') {
-          const val = p.value;
-           Object.keys(val).forEach(k => {val[k] = this.transformParamItem(val[k])});
-          temp = new Ont.Parameter('', p.type, val);
-        } else {
-          temp = new Ont.Parameter('', p.type, p.value)
-        } 
-        return temp;
-      },
-
-      validateArrayParamItem(p) {
-        if(!p.type || !p.value) return;
-
-        const paramTypes = ['ByteArray', 'String', 'Integer', 'Boolean', 'Address', 'Array', 'Map']
-        if(paramTypes.indexOf(p.type) < 0 ){
-          alert('Invalid parameter type ['+ p.type + '] in array')
-          return;
-        }
-        if(p.type === 'ByteArray' && !Ont.utils.isHexString(p.value)) {
-          alert('Invalid parameter value, expect ByteArray, got '+ p.value + ' in array')
-          return;
-        }
-        if(p.type === 'Boolean' && typeof p.value !== "boolean") {
-          alert('Invalid parameter value, expect Boolean, got '+ p.value + ' in array')
-          return;
-        }
-        if(p.type === 'Address' && p.value && (p.value.length !==34 || p.value[0]!=='A' )) {
-          alert('Invalid parameter value, expect Address, got '+ p.value + ' in array')
-          return;
-        }
-        if(p.type === 'Integer' && typeof p.value !== "number") {
-          alert('Invalid parameter value, expect Integer, got '+ p.value + ' in array')
-          return;
-        }
-        if(p.type === 'String' && typeof p.value !== "string") {
-          alert('Invalid parameter value, expect String, got '+ p.value + ' in array')
-          return;
-        }
-        if(p.type === 'Array' && !Array.isArray(p.value)) {
-          alert('Invalid parameter value, expect Array, got '+ p.value + ' in array')
-          return;
-        }
       }
 
   }

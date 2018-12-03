@@ -221,7 +221,8 @@ module.exports = {
     emptyInfo: '请填写智能合约的每项信息。',
     generate:'生成',
     waitingGenerate:'生成中...',
-    networkInfo: '网络信息'
+    networkInfo: '网络信息',
+    alreadyDeployed: '合约已经部署在链上。合约哈希：'
   },
   run: {
     selectWallet: '选择钱包文件',

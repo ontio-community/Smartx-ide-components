@@ -112,4 +112,8 @@
     background-color: #2ec0e0;
     color: white;
   }
+
+  .jv-container .jv-code {
+    overflow: scroll !important;
+}
 </style>

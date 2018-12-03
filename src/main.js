@@ -26,7 +26,9 @@ Vue.component(Select.name, Select)
 Vue.component(Select.Option.name, Select.Option)
 Vue.component(Input.name, Input)
 Vue.component(Spin.name, Spin);
-
+Vue.prototype.$message = message
+Vue.prototype.$confirm = Modal.confirm
+Vue.prototype.$success = Modal.success
 import VueCookies from 'vue-cookies'
 
 import $ from 'jquery'

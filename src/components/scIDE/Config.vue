@@ -290,6 +290,7 @@
   }
   .link-applyOng {
       float: right;
+      font-size:14px;
   }
 </style>
 <template>
@@ -303,10 +304,10 @@
                     <p class="card-text test-title-text test-card-text-title" style="margin-top: 0px"><strong>{{ $t('test.selectNet') }}</strong></p>
                     <label class="card-text test-title-text"><input name="deployNet" type="radio" :checked="network === 'MAIN_NET' " @change="changeNetwork('MAIN_NET')"/><strong style="margin-left: 4px">{{ $t('test.mainNet') }}</strong></label>
                     <label class="card-text test-title-text" style="margin-left: 8px"><input name="deployNet" type="radio" :checked="network === 'TEST_NET' "  @change="changeNetwork('TEST_NET')"/><strong style="margin-left: 4px">{{ $t('test.testNet') }}</strong></label>
-                    <!-- <label class="card-text test-title-text" style="margin-left: 8px"><input name="deployNet" type="radio" :checked="network === 'PRIVATE_NET' "  @change="changeNetwork('PRIVATE_NET', privateNet)"/><strong style="margin-left: 4px">{{ $t('test.privateNet') }}</strong></label> -->
-                    <!-- <input class="test-private-net-input" v-show="network === 'PRIVATE_NET'&& !isHidePrivateNetInput" v-model="privateNet" >
-                    <button v-show="network === 'PRIVATE_NET' && !isHidePrivateNetInput" @click="changeNetWork('PRIVATE_NET', privateNet)">ok</button>
-                    <a v-show="network === 'PRIVATE_NET' && isHidePrivateNetInput">{{privateNet}}</a> -->
+                    <label class="card-text test-title-text" style="margin-left: 8px"><input name="deployNet" type="radio" :checked="network === 'PRIVATE_NET' "  @change="changeNetwork('PRIVATE_NET', privateNet)"/><strong style="margin-left: 4px">{{ $t('test.privateNet') }}</strong></label>
+                    <input class="test-private-net-input" v-show="network === 'PRIVATE_NET'&& !isHidePrivateNetInput" v-model="privateNet" >
+                    <button v-show="network === 'PRIVATE_NET' " @click="changeNetwork('PRIVATE_NET', privateNet)" >ok</button>
+                    <a v-show="network === 'PRIVATE_NET' && isHidePrivateNetInput">{{privateNet}}</a>
                 </div>
                 </div>
             </div>
@@ -332,7 +333,7 @@
                     <span class="card-text"><strong>ONG:</strong></span>
                     <span class="card-text">{{ balance.ong}}</span>
 
-                    <a  class="link-applyOng"  href="https://developer.ont.io/applyOng" target="_blank">{{$t('config.applyOng')}}</a>
+                    <a  class="link-applyOng"  href="https://developer.ont.io/applyOng" target="_blank">{{$t('config.applyOng')}} <a-icon type="arrow-right" /></a>
                 </div>
                 </div>
             </div>
@@ -489,14 +490,19 @@ export default {
       this.$store.dispatch('updateConfigBalance')
   },
   methods: {
-      changeNetwork(network, url) {
+      changePrivateNetwork(network, url) {
           if(network === 'PRIVATE_NET') {
               if(!url) {
                   alert('Please enter the url of your private net');
                   return;
               }
-              if(url.split(':').length > 0) {
-                  alert('The url of private net should not contain port.')
+          }
+          this.$store.dispatch('changeNetWork', {network, url})
+      },
+      changeNetwork(network, url) {
+          if(network === 'PRIVATE_NET') {
+              if(!url) {
+                  alert('Please enter the url of your private net');
                   return;
               }
           }

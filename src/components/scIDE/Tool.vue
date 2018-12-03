@@ -147,8 +147,8 @@
             <p class="card-text-title">Deserialize Item </p>
            
             <div class="tool-card-text card-wrap-text">
-              <a>Serialized data (Hex string) : </a>
-              <a>——> Map</a>
+              <a>Serialized Map data (Hex string) : </a>
+              <a>——> JSON</a>
               <a>{{newScriptH}}&nbsp;&nbsp;</a>
             </div>
 

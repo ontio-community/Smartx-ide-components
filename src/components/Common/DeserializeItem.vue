@@ -21,9 +21,7 @@
     font-weight: bold;
 
 }
-.jv-container .jv-code {
-    overflow: scroll;
-}
+
 </style>
 <template>
     <div class="transform-container">
@@ -107,6 +105,23 @@ function formatItem(v) {
     return val;
 }
 
+function formatByteArrayVal(obj) {
+    for(let k of Object.keys(obj)) {
+        obj[k] = formatByteArrayItem(obj[k])
+    }
+    return obj;
+}
+
+function formatByteArrayItem(v) {
+    if(typeof v === 'string') {
+        v = Ont.utils.hexstr2str(v);
+    } else if(Array.isArray(v)) {
+        v = v.map( i => formatByteArrayItem(i));
+    } else if (typeof v === 'object') {
+        Object.keys(v).forEach(i => v[i] = formatByteArrayItem(v[i]))
+    }
+    return v;
+}
 
 export default {
     name: 'DeserializeItem',
@@ -119,6 +134,7 @@ export default {
     methods: {
         transform() {
             if(this.hex) {
+                this.map = '';
                 if(!Ont.utils.isHexString(this.hex)){
                     this.$message.error('Invalid hex string.')
                     return;
@@ -127,7 +143,8 @@ export default {
                 const map = mapToObj(mapObj)
                 // const obj = formatMapObj(map)
                 // this.map = JSON.parse(JSON.stringify(obj))
-                this.map = map;
+                const obj = formatByteArrayVal(map)
+                this.map = obj;
             } else if (this.map) {
 
             } else {

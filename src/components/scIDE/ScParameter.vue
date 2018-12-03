@@ -68,7 +68,7 @@
             </span>
             <!-- For parameter type is Array -->
             <div v-else-if="parameter.type === 'Array'" class="card-param-input">
-                <a-icon type="caret-up"  class="textarea-control-icon" v-if="arrayParamControl" @click="handleArratParamControl"/>
+                <a-icon type="caret-up"  class="textarea-control-icon" v-if="arrayParamControl" @click="handleArrayParamControl"/>
                  <a-icon type="caret-down"  class="textarea-control-icon" v-if="!arrayParamControl" @click="handleArrayParamControl" />
                 <textarea name="" id=""  rows="10" :class="arrayParamControl?'expand-textarea': 'collapse-textarea' " v-model="parameter.value" ></textarea>
                 <a-icon type="question-circle-o" class="textarea-control-icon" @click="showArrayTip" />
@@ -83,8 +83,8 @@
                 <input class="run-input" v-model="parameter.value"  :placeholder="parameter.typeTip" >
              </div>
 
-             <common-modal :modalId="'ScParameter-' + parameter.name" title="JSON Editor" :footer="null">
-                 <json-editor :paramType="parameter.type" :modalId="'ScParameter-' + parameter.name" :key="parameter.name" v-if="showJsonEditor"
+             <common-modal :modalId="modalId" title="JSON Editor" :footer="null">
+                 <json-editor :paramType="parameter.type" :modalId="modalId" :key="parameter.name" v-if="showJsonEditor"
                    @confirm="handleConfirmParam" @cancel="handleCancel"></json-editor>
              </common-modal>
     </div>
@@ -94,6 +94,7 @@
 const Ont = require('ontology-ts-sdk');
 import CommonModal from '../Modals/CommonModal'
 import JsonEditor from '../Common/JsonEditor'
+const uuidv4 = require('uuid/v4');
 export default {
     name: 'ScParameter',
     components: {
@@ -107,10 +108,26 @@ export default {
             paramTip: '',
             paramType: '',
             code: '',
-            showJsonEditor: false
+            showJsonEditor: false,
+            param: this.parameter,
+            modalId: uuidv4()
         }
     },
     props:['parameter'],
+    computed: {
+        pType() {
+            console.log('computed: ' + this.parameter.type)
+            return this.parameter.type
+        }
+    },
+    watch:{
+        pType(newVal, oldVal) {
+                console.log(oldVal)
+                
+                console.log(newVal)
+            }
+
+    },
     methods: {
         changeParameterTypeTip(parameter) {
             parameter.typeTip = this.getParameterTypeTip(parameter.type)
@@ -161,11 +178,11 @@ export default {
         },
         showArrayTip() {  
             this.showJsonEditor = true  
-            this.$store.commit('SHOW_COMMON_MODAL', {modalId: 'ScParameter-'+ this.parameter.name})
+            this.$store.commit('SHOW_COMMON_MODAL', {modalId: this.modalId})
         },
         showMapTip() {
             this.showJsonEditor = true
-            this.$store.commit('SHOW_COMMON_MODAL', {modalId: 'ScParameter-'+ this.parameter.name})
+            this.$store.commit('SHOW_COMMON_MODAL', {modalId: this.modalId})
         },
         handleConfirmParam(param) {
             this.showJsonEditor = false

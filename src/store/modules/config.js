@@ -51,7 +51,7 @@ const actions = {
         }
         let node =  'https://' + state.nodeUrl + ':10334'
         if(state.network === 'PRIVATE_NET') {
-            node = 'http' +  state.nodeUrl + ':20334'
+            node = 'http://' +  state.nodeUrl + ':20334'
         }
         const address = state.wallet.address;
         const url = node + '/api/v1/balance/' + address
@@ -72,6 +72,14 @@ const actions = {
             },
             error: function (data, textStatus, errorThrown) {
                 console.log(data)
+                const balance = {
+                  ont: 0,
+                  ong: 0
+                }
+                commit('UPDATE_CONFIG_BALANCE', {
+                  balance
+                })
+
                 alert('Network error. ' + data.statusText)
                 return data
             },

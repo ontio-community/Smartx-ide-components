@@ -29,7 +29,7 @@
       </div>
     </div>
 
-    <div class="deploy-card card-result" >
+    <!-- <div class="deploy-card card-result" >
       <div class="card border-secondary mb-3" style="gitmax-width: 20rem;">
         <div class="card-header" data-toggle="tooltip" data-placement="bottom" :title="$t('deploy.resultTooltips')">{{$t('deploy.result')}}</div>
         <div class="deploy-card-scroll">
@@ -43,7 +43,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <div class="deploy-card">
       <!--<button class="btn btn-outline-success deploy-btn-submit" v-bind:disabled="waitingStatus" @click="doDeploy">{{waitingStatus ? $t('deploy.waiting') : $t('deploy.deploy')}}</button>-->
@@ -326,10 +326,10 @@
         const hash = contractAddr.serialize();
         const codeHash = contractAddr.toHexString();
         // let contractHash = Ont.utils.num2hexstring(vmType) + hash.substr(2)
-        this.$store.dispatch('setContractHash', codeHash)
+        // this.$store.dispatch('setContractHash', codeHash)
         return codeHash
       },
-     doDeploy(){
+     async doDeploy(){
         if(!this.configWallet.address || !this.configWallet.privateKey) {
           alert('Please select the wallet at first.')
           return;
@@ -364,26 +364,47 @@
        let account = new Ont.Crypto.Address(this.configWallet.address);
         const privateKey = new Ont.Crypto.PrivateKey(this.configWallet.privateKey);
 
-        //  let defaultNet
-        //  if(this.network === '0'){
-        //    defaultNet = process.env.NODE_URL
-        //  }else if(this.network === '1'){
-        //    defaultNet = "https://polaris1.ont.io:10334"
-        //  }else{
-        //    defaultNet = this.privateNet
-        //  }
+        const contractHash = this.getContractHash();
          const restClient = new Ont.RestClient('https://' +  this.nodeUrl + ':10334');
+
+        let contractOnChain
+        try {
+          contractOnChain = await restClient.getContract(contractHash);
+        } catch(err) {
+          console.log(err);
+           _self.deployStatus = true
+          _self.waitingStatus = false
+          _self.$store.dispatch('clearContractHash')
+          alert('Network error. '+ err);
+          return;
+        }
+        if(contractOnChain.Result) { //already deployed
+          this.$store.dispatch('setContractHash', contractHash);
+          this.$message.success(this.$t('deploy.alreadyDeployed') + contractHash, 5);
+          this.deployStatus = true
+             this.showRun()
+             this.waitingStatus = false
+          return;
+        }
 
          const tx = Ont.TransactionBuilder.makeDeployCodeTransaction(avmCode,name, version, author, email, desc, needStorage, '500', '30000000');
          tx.payer = account;
          Ont.TransactionBuilder.signTransaction(tx, privateKey);
-         const result = restClient.sendRawTransaction(tx.serialize());
-
-         result.then(function(value){
-
-           _self.$store.dispatch('setDeployInfo', value)
+         let value;
+         try {
+           value = await restClient.sendRawTransaction(tx.serialize());
+         } catch(err) {
+           console.log(err);
+           _self.deployStatus = true
+          _self.waitingStatus = false
+          _self.$store.dispatch('clearContractHash')
+           alert('Network error. '+ err);
+           return;
+         }
 
            if(value.Desc === "SUCCESS"){
+            _self.$store.dispatch('setDeployInfo', value)
+             this.$store.dispatch('setContractHash', contractHash);
              _self.deployStatus = true
              _self.showRun()
              _self.waitingStatus = false
@@ -399,11 +420,6 @@
              _self.waitingStatus = false
              _self.$store.dispatch('clearContractHash')
            }
-         })
-
-
-
-
 
 
 /*        this.$store.dispatch('getDapiProvider').then(provider => {
