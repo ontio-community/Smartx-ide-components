@@ -1,6 +1,9 @@
 const Ont = require('ontology-ts-sdk')
 
 export function formatAndValidateParameters(paramList) {
+    if(!paramList) {
+      return [];
+    }
     //validate and format parameters
     const parameters = [];
     for(let i = 0; i<paramList.length; i++) {
