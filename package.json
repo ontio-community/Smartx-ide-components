@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "A Vue.js project",
   "author": "liyingxuan <mvp_xuan@163.com>",
-  "private": true,
+  "license": "MIT",
   "scripts": {
     "dev": "webpack-dev-server --host 0.0.0.0 --inline --progress --config build/webpack.dev.conf.js",
     "start": "npm run dev",
@@ -27,7 +27,6 @@
     "ontology-ts-vm": "^0.3.14",
     "popper.js": "^1.14.4",
     "raphael": "^2.2.7",
-    "save": "^2.3.2",
     "update": "^0.7.4",
     "vee-validate": "^2.0.6",
     "vue": "^2.5.16",
