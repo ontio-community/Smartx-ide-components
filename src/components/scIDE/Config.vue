@@ -292,6 +292,11 @@
       float: right;
       font-size:14px;
   }
+  .balance-refresh-icon {
+    font-size:16px;
+    margin-left:10px;
+    cursor: pointer;
+  }
 </style>
 <template>
     <div class="config-page">
@@ -324,6 +329,7 @@
                 <div  class="card-body">
                     <span class="card-text"><strong>{{ $t('deploy.address') }}</strong></span>
                     <span class="card-text">{{ wallet.address }}</span>
+                    <a-icon type="reload" class="balance-refresh-icon" @click="handleRefresh"/>
                 </div>
                 <div  class="card-body">
                     <span class="card-text"><strong>ONT:</strong></span>
@@ -488,9 +494,6 @@ export default {
   },
   mounted() {
       this.$store.dispatch('updateConfigBalance')
-      this.interval = setInterval(()=>{
-        this.$store.dispatch('updateConfigBalance')
-      }, 5000)
   },
   beforeDestroy() {
     clearInterval(this.interval)
@@ -504,6 +507,9 @@ export default {
               }
           }
           this.$store.dispatch('changeNetWork', {network, url})
+      },
+      handleRefresh(){
+        this.$store.dispatch('updateConfigBalance')
       },
       privateNetInputState() {
 

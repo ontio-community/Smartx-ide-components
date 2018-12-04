@@ -115,7 +115,7 @@
   import {mapState} from 'vuex'
   import zh from './../../common/lang/zh'
   import en from './../../common/lang/en'
-
+  import FileHelper from './../../common/ont-wallet/file-generate-and-get'
 
   export default {
     props: ['useChineseLanguage'],
@@ -144,44 +144,6 @@
       ProjectOperation
     },
     computed: {
-      /*
-        projectInfo:{
-          info:{
-            abi:'',
-            code:'',
-            contract_hash:'',
-            created_at:'',
-            id:'',
-            info_author:'',
-            info_desc:'',
-            info_email:'',
-            info_name:'',
-            info_version:'',
-            language:'',
-            name:'',
-            nvm_byte_code:'',
-            type:'',
-            updated_at:'',
-            user_id:'',
-            wat:''
-        }，
-        projectName:{
-          info:{
-            id:'',
-            language:'',
-            projectName:'',
-          }
-        }
-        editor：''，
-        projectList:{
-          info:[{
-            id:'',
-            language:'',
-            languageType:'',
-            name:''
-          }]
-        },
-       */
       ...mapState({
         projectInfo: state => state.ProjectInfoPage.ProjectInfo,
         ProjectName: state => state.ProjectInfoPage.ProjectName,
@@ -196,11 +158,8 @@
     },
     methods: {
       saveProject(){
-        let param={
-          code: this.editor.getValue(),
-          id: this.projectInfo.info.id,
-        }
-        this.$store.dispatch('saveProject', param)
+        const code = this.editor.getValue();
+        FileHelper.downloadTextFile(code, 'smartx_saved_contract.py');
       },
       isShowIdeLoadingModal($data){
         $('#ide-loading').modal('hide')
@@ -239,10 +198,7 @@
       },
       checkFileType($codeFileInfo){
         let fileNameType = this.fileName.substring(this.fileName.length-3,this.fileName.length)
-        if((fileNameType === ".py"&&this.projectInfo.info.language === "1") ||
-          (fileNameType === ".js"&&this.projectInfo.info.language === "3") ||
-          (fileNameType === ".cs"&&this.projectInfo.info.language === "2")){
-
+        if (fileNameType === ".py"  || fileNameType === ".cs"){
           document.getElementById('ide-project-file').style.color = 'black'
           this.readFile($codeFileInfo,this)
 
@@ -261,6 +217,8 @@
         var reader = new FileReader();
         reader.onload = function() {
           _self.editor.setValue(this.result)
+          _self.fileName = '';
+          document.getElementById("codeFile").value = ''
         }
         reader.readAsText($file);
       },
@@ -284,15 +242,18 @@
   .ide-nav-link-button {
     border:1px solid #C4C3C3;
     min-width: 100%;
-    height: 20px;
-    color: black;
+    height: 30px;
+    line-height: 30px;
+    font-size:15px;
+    color: #ffffff;
+    background-color: #36a3bc;
     text-align: center;
-    padding: 0 4px 0 4px;
+    padding: 0 10px;
+    cursor: pointer;
   }
   .ide-nav-link-button:hover,
   .ide-nav-link-button:active {
-    background-color: #ECF0F1;
-    color: black;
+    background-color: #26c0e2;
   }
   .ide-fa-mail-forward{
     cursor: pointer;

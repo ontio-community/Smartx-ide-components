@@ -4,10 +4,23 @@ import URL_API from "../../../config/prod.env";
 import axios from "axios/index";
 let Ont = require('ontology-ts-sdk');
 
+const address = sessionStorage.getItem('smartx_address') || ''
+const privateKey = sessionStorage.getItem('smartx_privateKey') || ''
+const accounts =[]
+if(address && privateKey) {
+  accounts.push(
+    {
+      address,
+      privateKey
+    }
+  )
+}
+
+
 export default {
   state: {
     testAccountInfo: {
-      info: []
+      info: accounts
     },
     testFunctions: {
       functionName: [''],

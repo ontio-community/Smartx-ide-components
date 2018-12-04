@@ -187,36 +187,6 @@ import {SET_EDITOR} from '../../store/mutation-type'
       }
     },
     computed: {
-      /*
-        projectInfo:{
-          info:{
-            abi:'',
-            code:'',
-            contract_hash:'',
-            created_at:'',
-            id:'',
-            info_author:'',
-            info_desc:'',
-            info_email:'',
-            info_name:'',
-            info_version:'',
-            language:'',
-            name:'',
-            nvm_byte_code:'',
-            type:'',
-            updated_at:'',
-            user_id:'',
-            wat:''
-        }，
-        projectName:{
-          info:{
-            id:'',
-            language:'',
-            projectName:'',
-          }
-        }
-        projectEditor：''，
-       */
       ...mapState({
         projectInfo: state => state.ProjectInfoPage.ProjectInfo,
         ProjectName: state => state.ProjectInfoPage.ProjectName,
@@ -234,15 +204,21 @@ import {SET_EDITOR} from '../../store/mutation-type'
     mounted() {
       //console.log(this.ProjectName)
       this.getEditor(this.ProjectName.info.language)
-      let _self = this
-      this.$store.dispatch('getProject', this.ProjectName).then(function (response) {
-        //_self.projectEditor.setValue(_self.projectInfo.info.code || '')
-        _self.$store.dispatch('getPublicLibraryProject').then(function(res){
-          _self.$emit('isShowLoadingModal',false);
-          _self.$store.dispatch('setHaveReCompile', true)
-        })
-      })
 
+      //get cached codes from local
+      const cached = localStorage.getItem('smartx_code') || ''
+      if(cached) {
+        this.projectEditor.setValue(cached)
+      }
+
+      //cache codes in local
+      this.interval = setInterval(()=>{
+        const code = this.projectEditor.getValue();
+        localStorage.setItem('smartx_code', code);
+      }, 5000)
+    },
+    beforeDestroy() {
+      clearInterval(this.interval)
     },
     methods: {
       getCode(){
