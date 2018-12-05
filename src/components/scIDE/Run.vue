@@ -269,7 +269,6 @@
       runInfo : function(newInfo, oldInfo) {
         this.optionId = ''
         this.functionName = ''
-        this.functionParameters = []
         if(this.runInfo.contractHash) {
           this.contractHash = this.runInfo.contractHash
         }
@@ -277,6 +276,9 @@
       compileInfo: function(newInfo, oldInfo) {
         for(let f of newInfo.abi.functions) {
           this.functionParameters[f.name] = f.parameters.map((p)=> new Ont.Parameter(p.name, p.type, ''))
+        }
+        if(newInfo.contractHash) {
+          this.contractHash = newInfo.contractHash
         }
       },
     },
