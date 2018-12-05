@@ -22,11 +22,11 @@
             <input class="deploy-input" v-model="deployContractInfo.email">
           </div>
           <div class="card-body">
-            <label class="card-text deploy-info-card-text">{{ $t('deploy.desc') }}</label>
+            <label class="card-text deploy-info-card-text card-last-body">{{ $t('deploy.desc') }}</label>
             <input class="deploy-input" v-model="deployContractInfo.desc">
           </div>
 
-          <div class="card-body">
+          <div class="card-body gas-container">
             <label class="card-text deploy-info-card-text">{{ $t('deploy.gasPrice') }}</label>
             <input class="deploy-input" v-model="gasPrice">
           </div>
@@ -715,5 +715,9 @@
   .deploy-btn-submit-wallet{
     width: 49%;
     display: inline-block;
+  }
+  .gas-container {
+    border-top:1px solid #dddddd;
+    margin-top: 10px;
   }
 </style>

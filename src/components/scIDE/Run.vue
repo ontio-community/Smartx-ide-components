@@ -746,6 +746,8 @@
     margin-right: 5px;
     height: 100%;
     position:relative;
+    display: flex;
+    flex-direction: column;
   }
   .run-btn-submit {
     border-radius: 0;
@@ -787,10 +789,11 @@
     border-color: #C4C3C3 !important;
   }
   .card-basic-info{
-    height: 20%;
+    height: 180px;
   }
   .card-Option{
-    height: calc(80% - 60px);
+    /* height: calc(80% - 60px); */
+    flex:1;
   }
   .run-card-select{
     margin-top: 5px;
@@ -925,9 +928,9 @@
      display: flex;
     flex-direction: row;
     justify-content: space-between;
-    position: absolute;
+    /* position: absolute;
     bottom: 0;
-    left: 0;
+    left: 0; */
     width: 100%;
 }
 
