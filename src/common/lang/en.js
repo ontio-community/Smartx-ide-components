@@ -224,7 +224,9 @@ module.exports = {
     generate:'Generate',
     waitingGenerate:'Waiting...',
     networkInfo: 'Network info',
-    alreadyDeployed: 'Contract is already deployed at '
+    alreadyDeployed: 'Contract is already deployed at ',
+    gasPrice: 'Gas price: ',
+    gasLimit: 'Gas limit: '
   },
   run: {
     selectWallet: 'Select Wallet File',
@@ -253,6 +255,7 @@ module.exports = {
     errorTitle: 'Running Failure',
     errorWallet: 'You need to unlock your wallet first.',
     errorFunction: 'You need to select one function to run.',
+    errorGasPriceLimit: 'Please enter the valid gas price and gas limit',
     noContractHash: 'No contract hash.Please deploy your contract first.',
     noFunction:'Please add the function to run',
     function:'Function:',

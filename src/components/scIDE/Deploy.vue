@@ -22,8 +22,18 @@
             <input class="deploy-input" v-model="deployContractInfo.email">
           </div>
           <div class="card-body">
-            <label class="card-text deploy-info-card-text card-last-body">{{ $t('deploy.desc') }}</label>
+            <label class="card-text deploy-info-card-text">{{ $t('deploy.desc') }}</label>
             <input class="deploy-input" v-model="deployContractInfo.desc">
+          </div>
+
+          <div class="card-body">
+            <label class="card-text deploy-info-card-text">{{ $t('deploy.gasPrice') }}</label>
+            <input class="deploy-input" v-model="gasPrice">
+          </div>
+
+          <div class="card-body">
+            <label class="card-text deploy-info-card-text card-last-body">{{ $t('deploy.gasLimit') }}</label>
+            <input class="deploy-input" v-model="gasLimit">
           </div>
         </div>
       </div>
@@ -104,89 +114,14 @@
         privateNet:'http://127.0.0.1:20334',
         isHidePrivateNetInput:false,
         getWalletPrivateKeyPassowrd:'',
-        generateWalletPassword:''
+        generateWalletPassword:'',
+        gasPrice: '500',
+        gasLimit: '300000000'
       }
     },
     created(){
     },
     computed: {
-      /*
-        projectInfo:{
-          info:{
-            abi:'',
-            code:'',
-            contract_hash:'',
-            created_at:'',
-            id:'',
-            info_author:'',
-            info_desc:'',
-            info_email:'',
-            info_name:'',
-            info_version:'',
-            language:'',
-            name:'',
-            nvm_byte_code:'',
-            type:'',
-            updated_at:'',
-            user_id:'',
-            wat:''
-        }，
-        projectName:{
-          info:{
-            id:'',
-            language:'',
-            projectName:'',
-          }
-        }
-        deployContractInfo:{
-          author:'',
-          desc:'',
-          email:'',
-          name:'',
-          version:'',
-        }
-        deployInfo:{
-          info:{
-            result:{
-              Action:'',
-              Desc:'',
-              Error:'',
-              Result:{
-                GasConsumed:'',
-                Notify:[{
-                  ContractAddress:'',
-                  States:[{
-                    0:'',//Transfer type
-                    1:'',//From,
-                    2:'',//To
-                    3:'',//GasConsumed
-                  }]
-                }]
-                State:'',
-                TxHash:''
-              },
-              Version:''
-            }
-          }
-        }
-        compileInfo:{
-          abi{
-            function:[{
-              name:'',
-              parameters:[{
-                name:'',
-                type:''
-              }]
-              returntype:''
-            }],
-            avm:'',
-            contractHash:'',
-            errdetail:'',
-            haveReCompile:'',
-            showCompileInfo: '',
-          }
-        }
-       */
       ...mapState({
         projectInfo: state => state.ProjectInfoPage.ProjectInfo,
         projectName: state => state.ProjectInfoPage.ProjectName,
@@ -337,7 +272,7 @@
         }
 
         if(!this.deployContractInfo.name || !this.deployContractInfo.version || !this.deployContractInfo.author ||
-        !this.deployContractInfo.email || !this.deployContractInfo.desc) {
+        !this.deployContractInfo.email || !this.deployContractInfo.desc || !this.gasPrice || !this.gasLimit) {
           //Need to be required for now.Will remove it when update on ontology-dapi
           this.ErrorInfo = (LangStorage.getLang('zh') === "zh") ? zh.deploy.emptyInfo : en.deploy.emptyInfo
           $('#DeployError').modal('show')
@@ -394,7 +329,7 @@
           return;
         }
 
-         const tx = Ont.TransactionBuilder.makeDeployCodeTransaction(avmCode,name, version, author, email, desc, needStorage, '500', '30000000');
+         const tx = Ont.TransactionBuilder.makeDeployCodeTransaction(avmCode,name, version, author, email, desc, needStorage, this.gasPrice, this.gasLimit);
          tx.payer = account;
          Ont.TransactionBuilder.signTransaction(tx, privateKey);
          let value;
@@ -425,6 +360,11 @@
            }else{
              _self.deployStatus = true
              _self.waitingStatus = false
+             _self.$store.commit({
+                type: types.APPEND_OUTPUT_LOG,
+                log: value,
+                op: OP_TYPE.Deploy
+              })
              _self.$store.dispatch('clearContractHash')
            }
 

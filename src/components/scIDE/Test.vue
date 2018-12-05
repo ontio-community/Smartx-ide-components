@@ -57,11 +57,23 @@
               <input class="test-private-net-input" v-show="selectContractHash === '1'" v-model="otherContractHash" >
             </div>
 
+            <div style="margin-bottom: 10px">
+              <div class="">
+                <label class="run-input-label">{{ $t('deploy.gasPrice') }}</label>
+                <input class="run-input" v-model="gasPrice">
+              </div>
+
+              <div class="">
+                <label class="run-input-label">{{ $t('deploy.gasLimit') }}</label>
+                <input class="run-input" v-model="gasLimit">
+              </div>
+            </div>
+
             <button class="btn btn-outline-success test-btn-submit" v-bind:disabled="runStatus"  @click="runTest()">{{runStatus ? $t('run.waiting') : $t('run.run')}}</button>
 
             <div class="test-line"></div>
 
-            <div v-for="num in testFunctionNum">
+            <div v-for="(num, index) in testFunctionNum" :key="index">
               <div class="test-project-delete"  @click="spliceTestFunction(num)">
                 <img src="./../../../src/assets/project/delete.png" alt="">
               </div>
@@ -71,7 +83,7 @@
                 <div style="display: flex;">
                   <select class="form-control test-card-select test-card-select-function-name" v-model="optionId[num]" @change="getParameter(optionId[num],num)">
                     <option disabled selected >{{$t('run.selectFucOption')}}</option>
-                    <option v-for="(abiVal,index) in compileInfo.abi.functions"
+                    <option v-for="(abiVal,index) in compileInfo.abi.functions" :key="index"
                             :value="index"
                             v-if="abiVal.name !== 'Main'">
                       {{abiVal.name }}
@@ -158,7 +170,9 @@
         otherContractHash:'',
         testFunctionNum:[],
         privateNet:'http://127.0.0.1:20334/',
-        runFunctionNumber:0
+        runFunctionNumber:0,
+        gasPrice: '500',
+        gasLimit: '60000'
       }
     },
     computed: {
@@ -516,7 +530,7 @@
             const payer = new Ont.Crypto.Address(payerAddress)
             const privateKey = new Ont.Crypto.PrivateKey(payerPri)
 
-            const tx = Ont.TransactionBuilder.makeInvokeTransaction($testFunction.functionName, parameters, contractAddr, '500', '20000',payer);
+            const tx = Ont.TransactionBuilder.makeInvokeTransaction($testFunction.functionName, parameters, contractAddr, this.gasPrice, this.gasLimit ,payer);
             Ont.TransactionBuilder.signTransaction(tx, privateKey);
             console.log(tx)
             let res
@@ -624,8 +638,8 @@
           abi:this.projectInfo.info.name+'_abi.json',
           defaultPayer:'',
           defaultSigner:'',
-          gasPrice:500,
-          gasLimit:30000,
+          gasPrice:this.gasPrice,
+          gasLimit:this.gasLimit,
           functions:[]
         }
         for(let i=0 ; i<this.testFunctionNum.length;i++){
@@ -878,5 +892,9 @@
     margin-top: 4px;
     cursor: pointer;
     color: black;
+  }
+
+  .run-input-label {
+    width:80px;
   }
 </style>
