@@ -8,13 +8,20 @@
         <div class="run-card-scroll">
           <div class="card-body" >
             <div>
-              <p><strong>{{ $t('run.tradingHash') }}</strong></p>
+              <label class="run-input-label"><strong>{{ $t('run.tradingHash') }}</strong></label>
               <!-- <input>{{ runInfo.contractHash }}</input> -->
-              <div class="contractHash-input">
                 <input class="run-input" type="text" v-model="contractHash" >
-                <!-- <button @click="handleConfirmHash">Ok</button> -->
-              </div>
             </div>
+          </div>
+
+          <div class="card-body">
+            <label class="run-input-label">{{ $t('deploy.gasPrice') }}</label>
+            <input class="run-input" v-model="gasPrice">
+          </div>
+
+          <div class="card-body">
+            <label class="run-input-label">{{ $t('deploy.gasLimit') }}</label>
+            <input class="run-input" v-model="gasLimit">
           </div>
           
         </div>
@@ -38,7 +45,7 @@
             </select>
             <br/>
             <div >
-                <sc-parameter :parameter="parameter" v-for="(parameter,index) of this.parameters" :key="parameter.name"></sc-parameter>
+                <sc-parameter :parameter="parameter" v-for="(parameter) of this.parameters" :key="parameter.name"></sc-parameter>
             </div>
           </div>
           <div class="card-body" v-else>
@@ -231,7 +238,9 @@
         isHidePrivateNetInput:false,
         getWalletPrivateKeyPassowrd:'',
         runContractParam:'',
-        contractHash: ''
+        contractHash: '',
+        gasPrice: '500',
+        gasLimit: '60000'
       }
     },
     created(){
@@ -632,6 +641,16 @@
         }
         let errorTitle = (LangStorage.getLang('zh') === "zh") ? zh.run.errorTitle : en.run.errorTitle
 
+        if(!this.gasPrice || !this.gasLimit) {
+          this.ErrorInfo = (LangStorage.getLang('zh') === "zh") ? zh.run.errorGasPriceLimit : en.run.errorGasPriceLimit
+          this.showLoadingModal(errorTitle,this.ErrorInfo,true)
+          this.$store.commit({
+            type : types.SET_RUN_STATUS,
+            running : false
+          })
+          return;
+        }
+
         if(!this.functionName) {
           this.ErrorInfo = (LangStorage.getLang('zh') === "zh") ? zh.run.errorFunction : en.run.errorFunction
           this.showLoadingModal(errorTitle,this.ErrorInfo,true)
@@ -666,8 +685,8 @@
           contractAddr: contractAddr,
           method: this.functionName,
           parameters: parameters,
-          gasPrice: '500',
-          gasLimit: '60000'
+          gasPrice: this.gasPrice,
+          gasLimit: this.gasLimit
         }
         
           const tx = Ont.TransactionBuilder.makeInvokeTransaction(
@@ -784,9 +803,8 @@
     margin-top: 8px;
   }
   .run-input{
-    width: 50%;
+    width: 70%;
     height: 24px;
-    margin-left: 16px;
     border: 1px solid #dddddd;
   }
   .run-card-scroll{
@@ -893,7 +911,7 @@
     min-width: 55px;
   }
   .card-body {
-    padding-top: 15px !important;
+    padding-top: 10px !important;
     padding-bottom: 0 !important;
   }
   .card-last-body {
@@ -930,4 +948,9 @@
   cursor: pointer;
   width:50px
 }
+
+.run-input-label {
+  width:80px;
+}
+
 </style>

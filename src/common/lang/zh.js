@@ -222,7 +222,9 @@ module.exports = {
     generate:'生成',
     waitingGenerate:'生成中...',
     networkInfo: '网络信息',
-    alreadyDeployed: '合约已经部署在链上。合约哈希：'
+    alreadyDeployed: '合约已经部署在链上。合约哈希：',
+    gasPrice: 'Gas price: ',
+    gasLimit: 'Gas limit: '
   },
   run: {
     selectWallet: '选择钱包文件',
@@ -252,6 +254,7 @@ module.exports = {
     errorTitle: '运行失败',
     errorWallet: '请先选择您的钱包文件',
     errorFunction: '请选择一个需要运行的方法',
+    errorGasPriceLimit: '请输入合适的gas price和gas limit',
     noContractHash: '没有合约哈希。请先部署合约。',
     noFunction:'请添加需要运行的方法',
     function:'方法：',
