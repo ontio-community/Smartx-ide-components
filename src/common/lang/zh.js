@@ -158,6 +158,9 @@ module.exports = {
     deployTooltips: '将编译后的合约部署到链上',
     runTooltips: '运行合约方法'
   },
+  config: {
+    applyOng: 'Apply TestNet ONG'
+  },
   compile: {
     compile: '编译',
     waiting: '编译中...',
@@ -217,7 +220,9 @@ module.exports = {
     preDeploytips: '请先重新编译代码',
     emptyInfo: '请填写智能合约的每项信息。',
     generate:'生成',
-    waitingGenerate:'生成中...'
+    waitingGenerate:'生成中...',
+    networkInfo: '网络信息',
+    alreadyDeployed: '合约已经部署在链上。合约哈希：'
   },
   run: {
     selectWallet: '选择钱包文件',
@@ -235,6 +240,7 @@ module.exports = {
     selectFuc: '选择运行函数： ',
     selectFucOption: '选择运行函数',
     run: '运行',
+    debugRun: '调试',
     contractName: '合约名称',
     txid: 'TXID',
     noData: '没有数据',
@@ -250,12 +256,13 @@ module.exports = {
     noFunction:'请添加需要运行的方法',
     function:'方法：',
     param:'参数：',
-    preRun:'运行预执行',
+    preRun:'预执行',
     preRuntips: '使用预执行调用查询方法或者查询合约的gas limit。',
   },
   tool:{
     transform: '运行',
-    clear:'清空'
+    clear:'清空',
+    check: '查看'
   },
   test:{
     account:'账户',

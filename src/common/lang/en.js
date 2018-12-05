@@ -153,11 +153,14 @@ module.exports = {
     deploy: 'Deploy',
     run: 'Run',
     tool:'Tool',
-    test:'Test',
+    test:'Testing',
     restful:'Restful',
     compileTooltips: 'Compile the code to generate ABI and AVM.',
     deployTooltips: 'Deploy the compiled contract to the blockchain.',
     runTooltips: 'Running contract method'
+  },
+  config: {
+    applyOng: 'Apply TestNet ONG'
   },
   compile: {
     compile: 'Compile',
@@ -219,7 +222,9 @@ module.exports = {
     preDeploytips: 'Please recompile the code first.',
     emptyInfo: 'Please enter each field of the smart contract information.',
     generate:'Generate',
-    waitingGenerate:'Waiting...'
+    waitingGenerate:'Waiting...',
+    networkInfo: 'Network info',
+    alreadyDeployed: 'Contract is already deployed at '
   },
   run: {
     selectWallet: 'Select Wallet File',
@@ -258,7 +263,8 @@ module.exports = {
   },
   tool:{
     transform: 'Transform',
-    clear:'Clear'
+    clear:'Clear',
+    check: 'Check'
   },
   test:{
     account:'Account',

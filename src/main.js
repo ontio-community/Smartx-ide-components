@@ -13,6 +13,22 @@ import zh from './common/validate/zh'
 import en from './common/validate/en'
 import VeeValidate, { Validator } from 'vee-validate'
 
+import { Button, Modal, message, Table, Icon, Popconfirm, Select, Input, Spin } from 'ant-design-vue';
+import JsonViewer from 'vue-json-viewer'
+Vue.use(JsonViewer)
+
+Vue.component(Button.name, Button)
+Vue.component(Modal.name, Modal)
+Vue.component(Table.name, Table)
+Vue.component(Icon.name, Icon)
+Vue.component(Popconfirm.name, Popconfirm)
+Vue.component(Select.name, Select)
+Vue.component(Select.Option.name, Select.Option)
+Vue.component(Input.name, Input)
+Vue.component(Spin.name, Spin);
+Vue.prototype.$message = message
+Vue.prototype.$confirm = Modal.confirm
+Vue.prototype.$success = Modal.success
 import VueCookies from 'vue-cookies'
 
 import $ from 'jquery'

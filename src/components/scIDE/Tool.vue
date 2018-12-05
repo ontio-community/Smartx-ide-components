@@ -140,6 +140,27 @@
       </div>
     </div>
 
+     <div class="tool-card" >
+      <div class="card border-secondary mb-3" style="max-width: 20rem;">
+        <div class="tool-card-scroll-x">
+          <div class="card-body tool-cart-body tool-card-text-nowrap" >
+            <p class="card-text-title">Deserialize Item </p>
+           
+            <div class="tool-card-text card-wrap-text">
+              <a>Serialized Map data (Hex string) : </a>
+              <a>——> JSON</a>
+              <a>{{newScriptH}}&nbsp;&nbsp;</a>
+            </div>
+
+            <button class="btn btn-outline-success tool-btn-submit" @click="deserialize">
+              {{$t('tool.check')}}
+            </button>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="tool-card" >
       <div class="card border-secondary mb-3" style="max-width: 20rem;">
         <div class="tool-card-scroll-x">
@@ -271,14 +292,23 @@
         </div>
       </div>
     </div>
+
+    <common-modal modalId="DeserializeItem" @modalOk="sysPassModalOk" title="Deserialize Item">
+      <deserialize-item></deserialize-item>
+    </common-modal>
   </div>
 </template>
 
 <script>
   let Ont = require('ontology-ts-sdk');
-
+  import CommonModal from '../Modals/CommonModal'
+  import DeserializeItem from '../Common/DeserializeItem'
   export default {
     name: "tool",
+    components: {
+      CommonModal,
+      DeserializeItem
+    },
     data() {
       return {
         originalHexString:'',
@@ -506,7 +536,14 @@
         this.newHexStirng_3 = ''
         this.newWif = ''
         this.newAddress_2 = ''
-      }
+      },
+      deserialize() {
+        this.$store.commit('SHOW_COMMON_MODAL', {modalId: 'DeserializeItem'})
+      },
+      sysPassModalOk(modalId) {
+        console.log(modalId)
+        this.$store.commit('HIDE_COMMON_MODAL', {modalId: 'DeserializeItem'})
+      },
     }
   }
 </script>
@@ -573,5 +610,7 @@
   .tool-card-text-nowrap{
     white-space:nowrap;
   }
-
+  .card-wrap-text {
+    white-space: normal;
+  }
 </style>

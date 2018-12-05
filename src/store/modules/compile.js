@@ -153,6 +153,7 @@ export default {
       errdetail: '',
       showCompileInfo: false,
       haveReCompile: false,
+      functionParameters: {}
     },
   },
   mutations: {

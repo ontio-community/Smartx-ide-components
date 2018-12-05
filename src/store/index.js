@@ -11,6 +11,8 @@ import EditorPage from './modules/editor'
 import ProjectEditor from './modules/project-editor'
 import LoadingModalPage from './modules/LoadingModal'
 import TestPage from './modules/test'
+import Config from './modules/config'
+import CommonModal from './modules/CommonModal'
 
 Vue.use(Vuex)
 
@@ -25,6 +27,8 @@ export default new Vuex.Store({
     EditorPage,
     ProjectEditor,
     LoadingModalPage,
-    TestPage
+    TestPage,
+    Config,
+    CommonModal
   }
 })

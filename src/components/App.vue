@@ -97,4 +97,23 @@
   .app-page{
     height: 100%;
   }
+
+    .btn-submit {
+    border-radius: 0;
+    width: 100px;
+    color: white;
+    border-color: #36a3bc;
+    background-color: #36a3bc;
+    font-size: 10px;
+    padding: 4px 9px;
+  }
+  .btn-submit:hover,
+  .btn-submit:active {
+    background-color: #2ec0e0;
+    color: white;
+  }
+
+  .jv-container .jv-code {
+    overflow: scroll !important;
+}
 </style>
