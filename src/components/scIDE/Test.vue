@@ -202,6 +202,8 @@
       network: function(newVal, oldVal) {
         if(newVal === '2') {
           this.gasPrice = 0;
+        } else {
+          this.gasPrice = 500
         }
       }
     },
