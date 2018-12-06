@@ -290,6 +290,11 @@
           this.contractHash = newInfo.contractHash
         }
       },
+      network: function(newVal, oldVal) {
+        if(newVal === 'PRIVATE_NET') {
+          this.gasPrice = 0;
+        }
+      }
     },
     methods: {
       privateNetInputState(){
@@ -448,7 +453,7 @@
         // const parameters = this.formatAndValidateParameters(this.parameters);
         const parameters = ParamsHelper.formatAndValidateParameters(this.parameters);
         if(!parameters) {
-          this.runStaus = false;
+          this.runStatus = false;
           return;
         }
 
@@ -633,7 +638,7 @@
         const privateKey = new Ont.Crypto.PrivateKey(this.configWallet.privateKey);
 
         let _self = this
-        this.runStaus = true;
+        this.runStatus = true;
         if(preExec){
           this.runPreRun = true
         }else{
@@ -673,7 +678,7 @@
         // const parameters = this.formatAndValidateParameters(this.parameters);
         const parameters = ParamsHelper.formatAndValidateParameters(this.parameters);
         if(!parameters) {
-          this.runStaus = false;
+          this.runStatus = false;
           return;
         }
         
@@ -714,16 +719,19 @@
                 op: OP_TYPE.Invoke
               })
             }
+            this.runStatus = false;
+            this.runPreRun = false
           } catch(err) {
             this.$store.commit({
               type: types.APPEND_OUTPUT_LOG,
               log: err.message || JSON.stringify(err),
               op: OP_TYPE.Invoke
             })
+            this.runStatus = false;
+            this.runPreRun = false
              console.log(err.message)
           }
-          this.runStatus = false;
-          this.runPreRun = false
+          
         
       },
       showLoadingModal($title,$content,$isShowCloseButton){

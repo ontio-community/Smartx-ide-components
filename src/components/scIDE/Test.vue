@@ -198,6 +198,11 @@
           }
         }
         this.showTestFunctions()
+      },
+      network: function(newVal, oldVal) {
+        if(newVal === '2') {
+          this.gasPrice = 0;
+        }
       }
     },
     methods: {

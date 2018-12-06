@@ -139,6 +139,11 @@
     mounted(){
     },
     watch: {
+      network: function(newVal, oldVal) {
+        if(newVal === 'PRIVATE_NET') {
+          this.gasPrice = 0;
+        }
+      }
     },
     methods:{
       privateNetInputState(){
