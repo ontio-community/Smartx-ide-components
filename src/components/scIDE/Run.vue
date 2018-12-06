@@ -292,9 +292,9 @@
       },
       network: function(newVal, oldVal) {
         if(newVal === 'PRIVATE_NET') {
-          this.gasPrice = 0;
+          this.gasPrice = '0';
         } else {
-          this.gasPrice = 500
+          this.gasPrice = '500'
         }
       }
     },
@@ -648,32 +648,23 @@
         }
         let errorTitle = (LangStorage.getLang('zh') === "zh") ? zh.run.errorTitle : en.run.errorTitle
 
-        if(!this.gasPrice || !this.gasLimit) {
+        if(this.gasPrice =='' || !this.gasLimit) {
           this.ErrorInfo = (LangStorage.getLang('zh') === "zh") ? zh.run.errorGasPriceLimit : en.run.errorGasPriceLimit
           this.showLoadingModal(errorTitle,this.ErrorInfo,true)
-          this.$store.commit({
-            type : types.SET_RUN_STATUS,
-            running : false
-          })
+          this.runStatus = false;
           return;
         }
 
         if(!this.functionName) {
           this.ErrorInfo = (LangStorage.getLang('zh') === "zh") ? zh.run.errorFunction : en.run.errorFunction
           this.showLoadingModal(errorTitle,this.ErrorInfo,true)
-          this.$store.commit({
-            type : types.SET_RUN_STATUS,
-            running : false
-          })
+          this.runStatus = false;
           return;
         }
         if(!this.contractHash) {
           this.ErrorInfo = (LangStorage.getLang('zh') === "zh") ? zh.run.noContractHash : en.run.noContractHash
           this.showLoadingModal(errorTitle,this.ErrorInfo,true)
-          this.$store.commit({
-            type : types.SET_RUN_STATUS,
-            running : false
-          })
+          this.runStatus = false;
           return;
         }
         //validate and format parameters

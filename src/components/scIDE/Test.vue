@@ -201,9 +201,9 @@
       },
       network: function(newVal, oldVal) {
         if(newVal === '2') {
-          this.gasPrice = 0;
+          this.gasPrice = '0';
         } else {
-          this.gasPrice = 500
+          this.gasPrice = '500'
         }
       }
     },
@@ -403,7 +403,7 @@
           }
         }
 
-        if(!this.runInfo.contractHash) {
+        if( !this.runInfo.contractHash && !this.otherContractHash) {
           let title = (LangStorage.getLang('zh') === "zh") ? zh.test.runError : en.test.runError
           let content = (LangStorage.getLang('zh') === "zh") ? zh.run.noContractHash : en.run.noContractHash
           let payload = {
@@ -462,6 +462,18 @@
         }
       },
       runContract($testFunction) {
+        if(this.gasPrice =='' || !this.gasLimit) {
+          let title = (LangStorage.getLang('zh') === "zh") ? zh.test.runError : en.test.runError
+          let content = (LangStorage.getLang('zh') === "zh") ? zh.run.errorGasPriceLimit : en.run.errorGasPriceLimit
+          let payload = {
+            title:title,
+            content:content,
+            isShowCloseButton:true
+          }
+          this.$store.dispatch('showLoadingModals',payload)
+          this.runStatus = false;
+          return;
+        }
 
         if(!$testFunction.functionName) {
           let title = (LangStorage.getLang('zh') === "zh") ? zh.test.runError : en.test.runError

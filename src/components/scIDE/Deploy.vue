@@ -141,9 +141,9 @@
     watch: {
       network: function(newVal, oldVal) {
         if(newVal === 'PRIVATE_NET') {
-          this.gasPrice = 0;
+          this.gasPrice = '0';
         } else {
-          this.gasPrice = 500
+          this.gasPrice = '500'
         }
       }
     },
@@ -279,7 +279,7 @@
         }
 
         if(!this.deployContractInfo.name || !this.deployContractInfo.version || !this.deployContractInfo.author ||
-        !this.deployContractInfo.email || !this.deployContractInfo.desc || !this.gasPrice || !this.gasLimit) {
+        !this.deployContractInfo.email || !this.deployContractInfo.desc || this.gasPrice == '' || !this.gasLimit) {
           //Need to be required for now.Will remove it when update on ontology-dapi
           this.ErrorInfo = (LangStorage.getLang('zh') === "zh") ? zh.deploy.emptyInfo : en.deploy.emptyInfo
           $('#DeployError').modal('show')
