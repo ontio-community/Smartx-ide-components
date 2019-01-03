@@ -29,8 +29,16 @@ export function formatAndValidateParameters(paramList) {
         p.value = p.value === 'true' ? true : false;
       }
       if(p.type === 'Address') {
-        p.value = new Ont.Crypto.Address(p.value).serialize();
-        p.type = 'ByteArray'
+        try{
+          p.value = new Ont.Crypto.Address(p.value).serialize();
+          p.type = 'ByteArray'
+        }
+        catch(error){
+          console.log(error)
+          alert('Parameter ' + p.name + 'is not valid Address.')
+          return;
+        }
+        
       }
       if(p.type === 'Array') {
         p = formatArrayParameter(p)

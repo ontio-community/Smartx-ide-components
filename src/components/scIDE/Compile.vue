@@ -300,7 +300,7 @@
     margin-right: 10px;
   }
   .compile-card{
-    margin-top: 5px;
+    /* margin-top: 5px; */
   }
 
   .function-list-margin {
@@ -336,7 +336,7 @@
     padding-top: 69px;
   }
   .card-output-info{
-    height: 30%;
+    height: 25%;
     margin-bottom: -21px;
     padding-bottom: 21px;
   }
@@ -344,7 +344,7 @@
     overflow-y:auto;
   }
   .card-opcode{
-    height: 40%;
+    height: 30%;
     margin-bottom: -21px;
     padding-bottom: 21px;
   }
