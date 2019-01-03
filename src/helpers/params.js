@@ -67,7 +67,11 @@ export function formatMapParameter(param){
     const val = {}
     for(let k in values) {
       let temp = transformParamItem(values[k]);
-      val[k] = temp;
+      if(temp) {
+        val[k] = temp;
+      } else {
+        return;
+      }
     }
     param.value = val;
     return param
@@ -88,7 +92,11 @@ export function formatMapParameter(param){
     const list = []
     for(let p of values) {
       let temp = transformParamItem(p);
-      list.push(temp);
+      if(temp) {
+        list.push(temp);
+      } else {
+        return;
+      }
     }
     param.value = list;
     return param
