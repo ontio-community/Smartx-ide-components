@@ -1,27 +1,27 @@
 <template>
   <div class="pro-operation-page">
-    <div class="row">
-      <div class="col pro-operation-btn-left">
+    <div class="row row-operation">
+      <!-- <div class="col pro-operation-btn-left">
         <button class="btn btn-outline-dark pro-operation-button" @click="getConfigPage" :class="[showConfig? 'pro-operation-button-click' : '']" data-toggle="tooltip" data-placement="bottom" :title="$t('projectOperation.configTooltips')">{{$t('projectOperation.config')}}</button>
-      </div>
+      </div> -->
       <div class="col pro-operation-btn-center">
         <button class="btn btn-outline-dark pro-operation-button" @click="getCompilePage" :class="[showCompile ? 'pro-operation-button-click' : '']" data-toggle="tooltip" data-placement="bottom" :title="$t('projectOperation.compileTooltips')">{{$t('projectOperation.compile')}}</button>
       </div>
-      <div class="col pro-operation-btn-center">
+      <!-- <div class="col pro-operation-btn-center">
         <button class="btn btn-outline-dark pro-operation-button" @click="getDeployPage" :class="[showDeploy ? 'pro-operation-button-click' : '']" data-toggle="tooltip" data-placement="bottom" :title="$t('projectOperation.deployTooltips')">{{$t('projectOperation.deploy')}}</button>
-      </div>
-      <div class="col pro-operation-btn-center">
+      </div> -->
+      <!-- <div class="col pro-operation-btn-center">
         <button class="btn btn-outline-dark pro-operation-button" @click="getRunPage" :class="[showRun ? 'pro-operation-button-click' : '']" data-toggle="tooltip" data-placement="bottom" :title="$t('projectOperation.runTooltips')">{{$t('projectOperation.run')}}</button>
-      </div>
+      </div> -->
       <div class="col pro-operation-btn-center">
         <button class="btn btn-outline-dark pro-operation-button" @click="getToolPage" :class="[showTool ? 'pro-operation-button-click' : '']" data-toggle="tooltip" data-placement="bottom" >{{$t('projectOperation.tool')}}</button>
       </div>
       <div class="col pro-operation-btn-center">
         <button class="btn btn-outline-dark pro-operation-button" @click="getRestfulPage" :class="[showRestful ? 'pro-operation-button-click' : '']" data-toggle="tooltip" data-placement="bottom" >{{$t('projectOperation.restful')}}</button>
       </div>
-      <div class="col pro-operation-btn-right">
+      <!-- <div class="col pro-operation-btn-right">
         <button class="btn btn-outline-dark pro-operation-button" @click="getTestPage" :class="[showTest ? 'pro-operation-button-click' : '']" data-toggle="tooltip" data-placement="bottom" >{{$t('projectOperation.test')}}</button>        
-      </div>
+      </div> -->
     </div>
     <div class="pro-operation-border">
       <div v-show="showConfig" class="pro-operation-height">
@@ -279,5 +279,9 @@
   }
   .pro-operation-height{
     height: 100%;
+  }
+  .row-operation {
+    margin-right: 0;
+    margin-left: 0;
   }
 </style>

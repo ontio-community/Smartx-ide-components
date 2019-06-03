@@ -110,7 +110,7 @@
       JsonViewer,
     },
     created(){
-      this.restfulInfos = Restful
+      this.restfulInfos = Restful.slice(0,5)
     },
     methods: {
       getPrivateNet(){

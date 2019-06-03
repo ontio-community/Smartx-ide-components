@@ -5,8 +5,8 @@ module.exports = {
   API_URL: '"https://ont.io/api/v1/"',
   BC_URL: '"https://srv.ont.io:10443/api/v1/"',
 
-  PYTHON_URL: '"https://smartxcompiler.ont.io/api/beta/python/compile"',
-  CSHARP_URL: '"https://smartxcompiler.ont.io/api/beta/csharp/compile"',
+ PYTHON_URL: '"https://smartxcompiler.ont.io/api/v1.0/python/compile"',
+   CSHARP_URL: '"https://smartxcompiler.ont.io/api/v1.0/csharp/compile"',
 NODE_URL:'"https://dappnode1.ont.io:10334"',
 
   PROJECT_LIBRARY_URL: '"https://devapibeta.ont.io/api/v1"',
