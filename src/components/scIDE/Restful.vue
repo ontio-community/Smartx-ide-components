@@ -1,7 +1,7 @@
 <template>
   <div class="restful-page restful-card-scroll-y">
 
-    <div class="restful-card" >
+    <!-- <div class="restful-card" >
       <div class="card border-secondary mb-3" style="max-width: 20rem;">
         <div class="restful-card-scroll-x">
           <div class="card-body restful-cart-body restful-card-text-nowrap" >
@@ -17,7 +17,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <div v-for="(restfulInfo,index) in restfulInfos" v-show="network!=='2'">
       <div class="restful-card" >
