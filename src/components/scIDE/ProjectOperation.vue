@@ -64,8 +64,8 @@
     name: "project-operation",
     data() {
       return {
-        showConfig: true,
-        showCompile: false,
+        showConfig: false,
+        showCompile: true,
         showDeploy: false,
         showRun: false,
         showTool: false,
