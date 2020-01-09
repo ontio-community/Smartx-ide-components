@@ -597,7 +597,7 @@ export default {
       changeVmType(vmType) {
           this.$store.dispatch('changeVmType', {vmType})
           this.$store.dispatch('clearCompileInfo')
-          this.editor.setValue('')
+        //   this.editor.setValue('')
           this.wasmFileName = this.$t('config.selectWasmFile')
           this.wasmFIle = '';
           if(vmType === this.VM_TYPE.WASMVM) {
