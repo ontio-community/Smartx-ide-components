@@ -4,6 +4,7 @@ import {OP_TYPE, NODE_URL} from '../../helpers/consts'
 import { client, Parameter } from 'ontology-dapi';
 let Ont = require('ontology-ts-sdk');
 
+const vmType = Number(sessionStorage.getItem('smartx_vmType')) || 1
 export default {
   state: {
     DeployWalletInfo: {
@@ -17,7 +18,8 @@ export default {
       version: '',
       author: '',
       email: '',
-      desc: '',
+        desc: '',
+      vmType
     }
   },
   mutations: {
@@ -35,8 +37,12 @@ export default {
       state.DeployContractInfo.version = ''
       state.DeployContractInfo.author = ''
       state.DeployContractInfo.email = ''
-      state.DeployContractInfo.desc = ''
-    }
+        state.DeployContractInfo.desc = ''
+        state.DeployContractInfo.vmType = ''
+      },
+      UPDATE_CONFIG_VM_TYPE(state, { vmType }) { 
+        state.DeployContractInfo.vmType = vmType
+      }
   },
   actions: {
     setDeployWallet({dispatch, commit},$payload) {
@@ -99,7 +105,7 @@ export default {
     },
 
    async dapiDeploy({dispatch, commit}, params) {
-     const {code, name, version, author, email, description, needStorage, gasPrice, gasLimit} = params
+     const {code, name, version, author, email, description, vmType, gasPrice, gasLimit} = params
      try {
        const account = await client.api.asset.getAccount();
      } catch (err) {

@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   navbar: {
     net: '网络选择 :',
     register: '注册',
@@ -159,7 +159,13 @@ module.exports = {
     runTooltips: '运行合约方法'
   },
   config: {
-    applyOng: 'Apply TestNet ONG'
+      applyOng: 'Apply TestNet ONG',
+      vmType: '虚拟机类型',
+      selectVmType: '请选择虚拟机类型',
+      NEO_VM: 'NEO VM',
+      WASM_VM: 'WASM VM',
+      selectWasmFile: '请选择Wasm文件',
+      confirm: '确认'
   },
   compile: {
     compile: '编译',
@@ -224,7 +230,9 @@ module.exports = {
     networkInfo: '网络信息',
     alreadyDeployed: '合约已经部署在链上。合约哈希：',
     gasPrice: 'Gas price: ',
-    gasLimit: 'Gas limit: '
+      gasLimit: 'Gas limit: ',
+      vmType: '虚拟机类型： ',
+      selectWasmFile: '没有合约内容。请在配置页面打开Wasm合约。'
   },
   run: {
     selectWallet: '选择钱包文件',
@@ -260,7 +268,11 @@ module.exports = {
     function:'方法：',
     param:'参数：',
     preRun:'预执行',
-    preRuntips: '使用预执行调用查询方法或者查询合约的gas limit。',
+      preRuntips: '使用预执行调用查询方法或者查询合约的gas limit。',
+      noFunction: '请添加需要运行的方法',
+      inputFuncName: '输入方法名称',
+      funcName: '合约方法名：',
+      addParam: '添加参数'
   },
   tool:{
     transform: '运行',

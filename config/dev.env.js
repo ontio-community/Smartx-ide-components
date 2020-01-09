@@ -8,7 +8,7 @@ module.exports = merge(prodEnv, {
   API_URL: '"https://localhost/api/v1/"',
   BC_URL: '"https://localhost:10443/api/v1/"',
 
-  PYTHON_URL: '"https://smartxcompiler.ont.io/api/beta/python/compile"',
+  PYTHON_URL: '"http://172.168.3.48:8080/api/v1.0/python/compile"',
   CSHARP_URL: '"https://smartxcompiler.ont.io/api/beta/csharp/compile"',
   NODE_URL:'"https://dappnode1.ont.io:10334"',
 

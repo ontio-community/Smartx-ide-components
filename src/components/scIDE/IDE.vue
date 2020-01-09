@@ -160,6 +160,7 @@
       saveProject(){
         const code = this.editor.getValue();
         FileHelper.downloadTextFile(code, 'smartx_saved_contract.py');
+        this.$store.commit('SET_AVM', code);
       },
       isShowIdeLoadingModal($data){
         $('#ide-loading').modal('hide')
