@@ -6,6 +6,10 @@
       <div class="card border-secondary mb-3" style="max-width: 20rem;">
         <div class="card-header">{{$t('run.basicInfo')}}</div>
         <div class="run-card-scroll">
+          <div class="card-body">
+            <label class="card-text deploy-info-card-text">{{ $t('deploy.vmType') }}</label>
+            <input class="deploy-input" :value="vmType === VM_TYPE.NEOVM ? 'NEO VM' : 'WASM VM'" readonly>
+          </div>
           <div class="card-body" >
             <div>
               <label class="run-input-label"><strong>{{ $t('run.tradingHash') }}</strong></label>
@@ -32,7 +36,7 @@
    <div class="run-card card-Option">
       <div class="card border-secondary mb-3" style="max-width: 20rem;">
         <div class="card-header">{{ $t('run.option') }}</div>
-        <div class="run-card-scroll">
+        <div class="run-card-scroll" v-if="vmType === VM_TYPE.NEOVM ">
            <div class="card-body" v-if="compileInfo.abi">
             <p class="card-text"><strong>{{ $t('run.selectFuc') }}</strong></p>
             <select class="form-control run-card-select" v-model="optionId" @change="getParameter(optionId)">
@@ -52,11 +56,27 @@
             <p class="card-text">{{$t('compile.noData')}}</p>
           </div>
         </div>
+
+        <div class="run-card-scroll" v-else>
+            <form class="run-form">
+                <div class="run-item">
+                    <label for="" class="run-label">{{$t('run.funcName')}}</label>
+                    <input type="text" class="run-input" v-model="functionName" :placeholder="$t('run.inputFuncName')" >
+                </div>
+                <div class="run-item">
+                    <div v-for="(parameter, index) of this.parameters" :key="parameter.name" class="run-param-item">
+                        <sc-parameter :parameter="parameter"  :key="parameter.name"></sc-parameter>
+                        <a-icon type="close-circle" class="run-param-remove" @click="onRemoveParam(index)"/>
+                    </div>
+                    <button class="btn-auto-width tool-btn-submit" @click="addParameter">{{$t('run.addParam')}}</button>
+                </div>
+            </form>
+        </div>
       </div>
     </div>
 
     <div class="run-card run-btns">
-      <button class="btn btn-outline-success run-btn-submit" 
+      <button class="btn btn-outline-success run-btn-submit" v-if="vmType === VM_TYPE.NEOVM"
               v-bind:disabled="runStatus" @click="debugContract()">{{runStatus&&runDebug ? $t('run.waiting') : $t('run.debugRun')}}</button>
       <button class="btn btn-outline-success run-btn-submit"
               id="preRun" data-toggle="tooltip" data-placement="top" :title="$t('run.preRuntips')"
@@ -261,7 +281,8 @@
 
         configWallet: state => state.Config.wallet,
         nodeUrl : state => state.Config.nodeUrl,
-        network: state => state.Config.network
+        network: state => state.Config.network,
+        vmType: state => state.Config.vmType
       })
     },
     mounted(){
@@ -600,7 +621,9 @@
 
         let params = this.runContractParam
         console.log(params.parameters)
-        const tx = Ont.TransactionBuilder.makeInvokeTransaction(params.method, params.parameters, params.contractAddr, params.gasPrice, params.gasLimit,payer);
+        const tx = this.vmType === this.VM_TYPE.NEOVM ?
+             Ont.TransactionBuilder.makeInvokeTransaction(params.method, params.parameters, params.contractAddr, params.gasPrice, params.gasLimit,payer):
+             Ont.TransactionBuilder.makeWasmVmInvokeTransaction(params.method, params.parameters, params.contractAddr, params.gasPrice, params.gasLimit,payer);
         Ont.TransactionBuilder.signTransaction(tx, $privateKey);
         console.log(tx)
         let res
@@ -632,6 +655,7 @@
         this.runOnly = false
       },
       async runContract(preExec) {
+          debugger
         if(!this.configWallet.address || !this.configWallet.privateKey) {
           alert('Please select the wallet at first.')
           return;
@@ -687,13 +711,21 @@
           gasLimit: this.gasLimit
         }
         
-          const tx = Ont.TransactionBuilder.makeInvokeTransaction(
-            params.method,
-            params.parameters,
-            params.contractAddr,
-            params.gasPrice,
-            params.gasLimit,
-            account
+          const tx = this.vmType === this.VM_TYPE.NEOVM ? Ont.TransactionBuilder.makeInvokeTransaction(
+                params.method,
+                params.parameters,
+                params.contractAddr,
+                params.gasPrice,
+                params.gasLimit,
+                account
+            ) :
+            Ont.TransactionBuilder.makeWasmVmInvokeTransaction(
+                params.method,
+                params.parameters,
+                params.contractAddr,
+                params.gasPrice,
+                params.gasLimit,
+                account
             );
           Ont.TransactionBuilder.signTransaction(tx, privateKey);
           let url = ''
@@ -734,6 +766,13 @@
           isShowCloseButton:$isShowCloseButton
         }
         this.$store.dispatch('showLoadingModals',payload)
+      },
+      addParameter() {
+          this.parameters.push(new Ont.Parameter('param_' + this.parameters.length,'',''));
+      },
+
+      onRemoveParam(index) {
+          this.parameters.splice(index, 1);
       }
 
   }
@@ -955,6 +994,29 @@
 
 .run-input-label {
   width:80px;
+}
+
+.run-form {
+    padding:15px;
+}
+.run-param-item {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 10px;
+}
+.run-param-item div:first-child {
+    width:80%;
+    margin-right:10px;
+}
+.run-param-remove {
+    cursor: pointer;
+    font-size: 18px;
+}
+.run-label {
+    font-size:14px;
+    color: #000;
+    font-weight: 400;
 }
 
 </style>

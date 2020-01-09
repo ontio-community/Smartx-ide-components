@@ -36,7 +36,18 @@ import 'font-awesome/css/font-awesome.css'
 
 import URL_API from "../config/prod.env";
 import index from 'axios';
-import {client} from 'ontology-dapi';
+import { client } from 'ontology-dapi';
+
+import {VM_TYPE} from './helpers/consts'
+
+const mixin = {
+    data () {
+        return {
+            VM_TYPE: VM_TYPE
+        }
+    }
+}
+Vue.mixin(mixin)
 
 client.registerClient({});
 
@@ -54,11 +65,13 @@ Vue.use(VeeValidate, {
 Vue.use(VueAxios, Axios)
 
 Vue.use(VueI18n)
+import lang_zh from './common/lang/zh'
+import lang_en from './common/lang/en'
 const i18n = new VueI18n({
   locale: LangStorage.getLang('en'),  // 语言标识
   messages: {
-    'zh': require('./common/lang/zh'),
-    'en': require('./common/lang/en')
+    'zh': lang_zh,
+    'en': lang_en
   }
 })
 

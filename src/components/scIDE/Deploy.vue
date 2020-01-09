@@ -5,6 +5,10 @@
       <div class="card border-secondary mb-3" style="max-width: 20rem;">
         <div class="card-header" data-toggle="tooltip" data-placement="bottom" :title="$t('deploy.infoTooltips')">{{$t('deploy.info')}}</div>
         <div class="deploy-card-scroll">
+            <div class="card-body">
+            <label class="card-text deploy-info-card-text">{{ $t('deploy.vmType') }}</label>
+            <input class="deploy-input" :value="deployContractInfo.vmType === VM_TYPE.NEOVM ? 'NEO VM' : 'WASM VM'" readonly>
+          </div>
           <div class="card-body">
             <label class="card-text deploy-info-card-text">{{ $t('deploy.name') }}</label>
             <input class="deploy-input" v-model="deployContractInfo.name">
@@ -133,7 +137,7 @@
         configWallet: state => state.Config.wallet,
         balance: state => state.Config.wallet.balance,
         nodeUrl: state => state.Config.nodeUrl,
-        network: state => state.Config.network
+        network: state => state.Config.network,
       })
     },
     mounted(){
@@ -289,6 +293,10 @@
         this.waitingStatus = true
         if(!this.compileInfo.avm) {
           this.ErrorInfo = (LangStorage.getLang('zh') === "zh") ? zh.deploy.errorCompile : en.deploy.errorCompile
+          debugger
+          if(this.deployContractInfo.vmType === this.VM_TYPE.WASMVM) {
+              this.ErrorInfo = this.$t('deploy.selectWasmFile')
+          }
           $('#DeployError').modal('show')
           this.waitingStatus = false
           return
@@ -302,6 +310,7 @@
         const author = this.deployContractInfo.author || ''
         const email = this.deployContractInfo.email || ''
         const desc = this.deployContractInfo.desc || ''
+        const vmType = this.deployContractInfo.vmType || 1
 
         let _self = this
        let account = new Ont.Crypto.Address(this.configWallet.address);
@@ -336,7 +345,7 @@
           return;
         }
 
-         const tx = Ont.TransactionBuilder.makeDeployCodeTransaction(avmCode,name, version, author, email, desc, needStorage, this.gasPrice, this.gasLimit);
+         const tx = Ont.TransactionBuilder.makeDeployCodeTransaction(avmCode,name, version, author, email, desc, vmType, this.gasPrice, this.gasLimit);
          tx.payer = account;
          Ont.TransactionBuilder.signTransaction(tx, privateKey);
          let value;
@@ -491,7 +500,7 @@
   }
 
   .deploy-info-card-text {
-    width: 70px;
+    width: 90px;
     text-align: right;
   }
 
@@ -564,10 +573,6 @@
     padding-bottom: 26px;
   }
 
-  .deploy-info-card-text {
-    width: 70px;
-    text-align: right;
-  }
 
   .deploy-input{
     width: 70%;
@@ -634,10 +639,6 @@
     padding-bottom: 26px;
   }
 
-  .deploy-info-card-text {
-    width: 70px;
-    text-align: right;
-  }
 
   .deploy-input{
     width: 70%;

@@ -1,9 +1,14 @@
 
+import { VM_TYPE } from '../../helpers/consts'
 const address = sessionStorage.getItem('smartx_address') || ''
 const privateKey = sessionStorage.getItem('smartx_privateKey') || ''
+const network = sessionStorage.getItem('smartx_network') || 'TEST_NET'
+const nodeUrl = sessionStorage.getItem('smartx_nodeUrl') || 'polaris1.ont.io'
+const vmType = Number(sessionStorage.getItem('smartx_vmType')) || 1
 const state = {
-    network: 'TEST_NET',
-    nodeUrl: 'polaris1.ont.io',
+    vmType: vmType,
+    network: network,
+    nodeUrl: nodeUrl,
     wallet: {
         address,
         privateKey,
@@ -25,6 +30,8 @@ const mutations = {
         if(url) {
             state.nodeUrl = url
         }
+        sessionStorage.setItem('smartx_network', network)
+        sessionStorage.setItem('smartx_nodeUrl', url)
     },
     ['UPDATE_CONFIG_BALANCE'](state, {balance}) {
         state.wallet.balance = balance
@@ -36,10 +43,17 @@ const mutations = {
     ['UPDATE_CONFIG_PRIKEY'](state, { privateKey }) {
         state.wallet.privateKey = privateKey
         sessionStorage.setItem('smartx_privateKey', privateKey)        
+    },
+    ['UPDATE_CONFIG_VM_TYPE'](state, { vmType }) {
+        state.vmType = vmType
+        sessionStorage.setItem('smartx_vmType', vmType)
     }
 }
 
 const actions = {
+    changeVmType({ commit }, { vmType }) { 
+        commit('UPDATE_CONFIG_VM_TYPE', {vmType})
+    },
     changeNetWork({commit, dispatch}, {network, url}) {
         commit('CHANGE_CONFIG_NETWORK', {network, url})
         dispatch('updateConfigBalance')

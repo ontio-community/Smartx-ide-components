@@ -1,4 +1,4 @@
-module.exports = {
+export default  {
   navbar: {
     net: 'Choose Network:',
     register: 'Sign Up',
@@ -160,7 +160,13 @@ module.exports = {
     runTooltips: 'Running contract method'
   },
   config: {
-    applyOng: 'Apply TestNet ONG'
+      applyOng: 'Apply TestNet ONG',
+      vmType: 'VM Type',
+      selectVmType: 'Please select the VM type',
+      NEO_VM: 'NEO VM',
+      WASM_VM: 'WASM VM',
+      selectWasmFile: 'Please select Wasm file',
+      confirm: 'OK'
   },
   compile: {
     compile: 'Compile',
@@ -226,7 +232,9 @@ module.exports = {
     networkInfo: 'Network info',
     alreadyDeployed: 'Contract is already deployed at ',
     gasPrice: 'Gas price: ',
-    gasLimit: 'Gas limit: '
+      gasLimit: 'Gas limit: ',
+      vmType: 'VM Type: ',
+      selectWasmFile: 'No contract to deploy. Please open wasm file in the Config page'
   },
   run: {
     selectWallet: 'Select Wallet File',
@@ -263,6 +271,10 @@ module.exports = {
     debugRun:'Debug Run',
     preRun:'Pre-Run',
     preRuntips: 'Use Pre-Run to invoke query method or get the gas limit of the contract',
+    noFunction: 'Please add the function to run',
+    inputFuncName: 'Input the function name',
+    funcName: 'Function name',
+    addParam: 'Add parameter'
   },
   tool:{
     transform: 'Transform',

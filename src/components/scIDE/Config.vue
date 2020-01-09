@@ -211,6 +211,8 @@
 
   .deploy-custom-file-input {
     width: 100%;
+    height:36px;
+    opacity: 0;
   }
   .deploy-custom-file-label {
     position: absolute;
@@ -297,11 +299,52 @@
     margin-left:10px;
     cursor: pointer;
   }
+  .ide-file-label {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 30px;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    border: 1px solid #BCBEC1;
+    padding: 6px 4px 4px 4px;
+    font-size: 10px;
+  }
+  .ide-file-label:hover,
+  .ide-file-label:active {
+    background-color: #ECF0F1;
+    color: black;
+  }
+  .ide-modal-text{
+    font-size: 16px;
+  }
+  .custom-file{
+    width: 100%;
+  }
 </style>
 <template>
     <div class="config-page">
+
+        <div class="deploy-card card-info" >
+            <div class="card border-secondary mb-3" style="max-width: 20rem;">
+                <div class="card-header">{{$t('config.vmType')}}</div>
+                <div class="deploy-card-scroll">
+                <div class="card-body">
+                    <p class="card-text test-title-text test-card-text-title" style="margin-top: 0px"><strong>{{ $t('config.selectVmType') }}</strong></p>
+                    <label class="card-text test-title-text"><input name="vmType" type="radio" :checked="vmType === VM_TYPE.NEOVM " @change="changeVmType(VM_TYPE.NEOVM)"/><strong style="margin-left: 4px">{{ $t('config.NEO_VM') }}</strong></label>
+                    <label class="card-text test-title-text" style="margin-left: 8px; margin-bottom:10px;"><input name="vmType" type="radio" :checked="vmType === VM_TYPE.WASMVM"  @change="changeVmType(VM_TYPE.WASMVM)"/><strong style="margin-left: 10px;">{{ $t('config.WASM_VM') }}</strong></label>                    
+                    <div class="dropdown-item ide-dropdown-item custom-file" v-if="vmType === VM_TYPE.WASMVM">
+                        <input type="file" id="wasmFileInput" @change="onWasmFileChange" class="deploy-custom-file-input"/>
+                        <label class="ide-file-label" for="wasmFileInput" ><i class="fa fa-folder-open-o ide-fa"></i>{{wasmFileName}}</label>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
        
-            <div class="deploy-card card-info" >
+        <div class="deploy-card card-info" >z
             <div class="card border-secondary mb-3" style="max-width: 20rem;">
                 <div class="card-header">{{$t('deploy.networkInfo')}}</div>
                 <div class="deploy-card-scroll">
@@ -331,15 +374,11 @@
                     <span class="card-text">{{ wallet.address }}</span>
                     <a-icon type="reload" class="balance-refresh-icon" @click="handleRefresh"/>
                 </div>
-                <div  class="card-body">
-                    <span class="card-text"><strong>ONT:</strong></span>
-                    <span class="card-text">{{ balance.ont}} </span>
-                </div>
                 <div  class="card-body card-last-body">
-                    <span class="card-text"><strong>ONG:</strong></span>
-                    <span class="card-text">{{ balance.ong}}</span>
+                    <span class="card-text"><strong>GAS:</strong></span>
+                    <span class="card-text">{{ balance.gas}}</span>
 
-                    <a  class="link-applyOng"  href="https://developer.ont.io/applyOng" target="_blank">{{$t('config.applyOng')}} <a-icon type="arrow-right" /></a>
+                    <!-- <a  class="link-applyOng"  href="https://developer.ont.io/applyOng" target="_blank">{{$t('config.applyOng')}} <a-icon type="arrow-right" /></a> -->
                 </div>
                 </div>
             </div>
@@ -355,11 +394,12 @@
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
+          <form>
           <div class="modal-body">
             <div class="form-group">
               <div class="custom-file devlop-custom-file">
                 <input type="file" @change="onFileChange" class="deploy-custom-file-input" id="exampleInputFileInDeploy" aria-describedby="fileHelp"
-                       name="file" v-validate data-vv-rules="required">
+                       name="file" v-validate data-vv-rules="required" data-vv-scope="unlockWallet">
                 <label id="deploy-input-file-label" class="deploy-custom-file-label" for="exampleInputFileInDeploy" >{{FileName}}</label>
               </div>
               <small class="form-text text-muted deploy-err-message" v-show="errors.has('file')">{{ errors.first('file') }}</small>
@@ -368,7 +408,8 @@
               <div class="input-group">
                 <input :type="[isShowPassword ? 'text' : 'password']"
                        v-model="password"
-                       v-validate data-vv-rules="required|min:6"
+                       v-validate data-vv-rules="required|min:6" 
+                       data-vv-scope="unlockWallet"
                        class="form-control deploy-input" name="password" :placeholder="$t('deploy.enterPw')">
                 <div class="input-group-append deploy-input-group-append" @click="viewPassword">
                     <span class="input-group-text">
@@ -379,6 +420,7 @@
               <small class="form-text text-muted deploy-err-message" v-show="errors.has('password')">{{ errors.first('password') }}</small>
             </div>
           </div>
+            </form>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary deploy-dialog-btn-close" data-dismiss="modal">{{$t('deploy.close')}}</button>
             <button type="button" class="btn btn-primary deploy-dialog-btn" v-bind:disabled="waitingUnlockWallet" :data-dismiss="[closeDialog ? 'modal' : '']" @click="unlockWalletFile">{{waitingUnlockWallet ? $t('deploy.waitingUnlock') : $t('deploy.unlock')}}</button>
@@ -453,20 +495,59 @@
       </div>
     </div>
 
+    <!--Select wasm file Modal -->
+    <div class="modal fade devlop-modal" id="selectWasmFileModal" tabindex="-1" role="dialog" >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">{{$t('config.selectWasmFile')}}</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <div class="custom-file devlop-custom-file">
+                <input type="file" @change="onWasmFileChange" class="deploy-custom-file-input" id="wasmFileInput" aria-describedby="fileHelp"
+                       name="file" v-validate data-vv-rules="required" data-vv-scope="selectWasmFile">
+                <label id="deploy-input-file-label" class="deploy-custom-file-label" for="wasmFileInput" >{{wasmFileName}}</label>
+              </div>
+              <small class="form-text text-muted deploy-err-message" v-show="errors.has('file')">{{ errors.first('file') }}</small>
+            </div>
+            
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary deploy-dialog-btn-close" data-dismiss="modal">{{$t('deploy.close')}}</button>
+            <button type="button" class="btn btn-primary deploy-dialog-btn"  :data-dismiss="[closeDialog ? 'modal' : '']" @click="openWasmFile">{{$t('config.confirm')}}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     </div>
 
 </template>
 <script>
 import {mapState} from 'vuex'
-import zh from './../../common/lang/zh'
+const zh = require('./../../common/lang/zh')
 import en from './../../common/lang/en'
 import LangStorage from './../../helpers/lang'
 import Sleep from './../../helpers/sleep'
 import FileHelper from './../../common/ont-wallet/file-generate-and-get'
 import OWallet from './../../common/ont-wallet/wallet'
+import {VM_TYPE} from './../../helpers/consts'
+
+const mixin = {
+    data () {
+        return {
+            VM_TYPE: VM_TYPE
+        }
+    }
+}
 let Ont = require('ontology-ts-sdk');
 export default {
   name: "Config",
+  mixins: [mixin],
   data() {
       return {
           privateNet: '',
@@ -478,20 +559,25 @@ export default {
         isShowPassword: false,
         FileName: '',
         WalletFile: '',
+        wasmFileName: this.$t('config.selectWasmFile'),
+        wasmFile: '',
         closeDialog : false,
         waitingUnlockWallet: false,
         privateNet:'http://127.0.0.1',
         getWalletPrivateKeyPassowrd:'',
-        generateWalletPassword:''
+        generateWalletPassword:'',
       }
   },
   computed: {
       ...mapState({
           network: state => state.Config.network,
           wallet: state => state.Config.wallet,
-          balance: state => state.Config.wallet.balance
+          balance: state => state.Config.wallet.balance,
+          vmType: state => state.Config.vmType,
+          editor: state => state.EditorPage.OntEditor,
       })
   },
+
   mounted() {
       this.$store.dispatch('updateConfigBalance')
   },
@@ -507,6 +593,16 @@ export default {
               }
           }
           this.$store.dispatch('changeNetWork', {network, url})
+      },
+      changeVmType(vmType) {
+          this.$store.dispatch('changeVmType', {vmType})
+          this.$store.dispatch('clearCompileInfo')
+          this.editor.setValue('')
+          this.wasmFileName = this.$t('config.selectWasmFile')
+          this.wasmFIle = '';
+          if(vmType === this.VM_TYPE.WASMVM) {
+              $('#selectWasmFileModal').modal('show')
+          }
       },
       handleRefresh(){
         this.$store.dispatch('updateConfigBalance')
@@ -526,10 +622,53 @@ export default {
         this.FileName = files[0].name
         this.WalletFile = files[0]
       },
+      onWasmFileChange() {
+        let files = document.getElementById("wasmFileInput").files
+        if (!files.length){
+          this.wasmFileName = this.$t('config.selectWasmFile')
+          return
+        }
+        this.wasmFileName = files[0].name
+        this.wasmFIle = files[0]
+        this.checkFileType(files[0])
+      },
+      checkFileType($codeFileInfo){
+        let fileNameType = this.wasmFileName.substring(this.wasmFileName.length-3,this.wasmFileName.length)
+        if(this.wasmFileName.indexOf('wasm') > -1){
+          document.getElementById('ide-project-file').style.color = 'black'
+          this.readFile($codeFileInfo,this)
+
+        }else{
+
+          this.wasmFileName = 'Please select wasm file'
+          document.getElementById('ide-project-file').style.color = 'red'
+        }
+      },
+      readFile($file,_self){
+        var reader = new FileReader();
+        reader.onload = function() {
+            if (_self.wasmFileName.indexOf('wasm') > -1) {
+                const vmCode = Ont.utils.ab2hexstring(this.result);
+                _self.editor.setValue(vmCode)
+                _self.$store.commit('SET_AVM', vmCode);
+            } else {
+                _self.editor.setValue(this.result)
+            }    
+            _self.$message.success('Open file succeed!')   
+            $('#selectWasmFileModal').modal('hide')    
+            
+        }
+        if(_self.wasmFileName.indexOf('wasm') > -1) {
+            reader.readAsArrayBuffer($file);
+        } else {
+            reader.readAsText($file);
+        }
+      },
       unlockWalletFile(){
         let _self = this
-        this.$validator.validateAll().then(result => {
+        this.$validator.validateAll('unlockWallet').then(result => {
           if (result) {
+              debugger
             this.waitingUnlockWallet = true
             Sleep.sleep(200).then(() => {
               FileHelper.readWalletFile(this.WalletFile).then((walletFile) => {
@@ -550,9 +689,13 @@ export default {
               })
               this.waitingUnlockWallet = false
             })
-          }else{
           }
+        }).catch(err => {
+            console.log(err)
         })
+      },
+      openWasmFile() {
+
       },
       getNetworkWalletInfo($account,_self){
         _self.$store.commit('UPDATE_CONFIG_ADDRESS', {address: $account.address})

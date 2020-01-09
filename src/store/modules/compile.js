@@ -153,7 +153,7 @@ export default {
       errdetail: '',
       showCompileInfo: false,
       haveReCompile: false,
-      functionParameters: {}
+          functionParameters: {}
     },
   },
   mutations: {
@@ -167,8 +167,8 @@ export default {
       state.CompileInfo.contractHash = ''
       state.CompileInfo.showCompileInfo = false
     },
-    [types.SET_AVM](state, payload){
-      state.CompileInfo.avm = payload.avm
+    [types.SET_AVM](state, avm){
+      state.CompileInfo.avm = avm
     },
     [types.HAVE_RE_COMPILE](state, payload){
       state.CompileInfo.haveReCompile = payload.info

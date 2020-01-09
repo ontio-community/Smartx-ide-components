@@ -4,7 +4,7 @@
       <div class="col pro-operation-btn-left">
         <button class="btn btn-outline-dark pro-operation-button" @click="getConfigPage" :class="[showConfig? 'pro-operation-button-click' : '']" data-toggle="tooltip" data-placement="bottom" :title="$t('projectOperation.configTooltips')">{{$t('projectOperation.config')}}</button>
       </div>
-      <div class="col pro-operation-btn-center">
+      <div class="col pro-operation-btn-center" v-if="vmType === VM_TYPE.NEOVM">
         <button class="btn btn-outline-dark pro-operation-button" @click="getCompilePage" :class="[showCompile ? 'pro-operation-button-click' : '']" data-toggle="tooltip" data-placement="bottom" :title="$t('projectOperation.compileTooltips')">{{$t('projectOperation.compile')}}</button>
       </div>
       <div class="col pro-operation-btn-center">
@@ -13,15 +13,15 @@
       <div class="col pro-operation-btn-center">
         <button class="btn btn-outline-dark pro-operation-button" @click="getRunPage" :class="[showRun ? 'pro-operation-button-click' : '']" data-toggle="tooltip" data-placement="bottom" :title="$t('projectOperation.runTooltips')">{{$t('projectOperation.run')}}</button>
       </div>
-      <div class="col pro-operation-btn-center">
+      <div class="col pro-operation-btn-right">
         <button class="btn btn-outline-dark pro-operation-button" @click="getToolPage" :class="[showTool ? 'pro-operation-button-click' : '']" data-toggle="tooltip" data-placement="bottom" >{{$t('projectOperation.tool')}}</button>
       </div>
-      <div class="col pro-operation-btn-center">
+      <!-- <div class="col pro-operation-btn-right">
         <button class="btn btn-outline-dark pro-operation-button" @click="getRestfulPage" :class="[showRestful ? 'pro-operation-button-click' : '']" data-toggle="tooltip" data-placement="bottom" >{{$t('projectOperation.restful')}}</button>
-      </div>
-      <div class="col pro-operation-btn-right">
+      </div> -->
+      <!-- <div class="col pro-operation-btn-right">
         <button class="btn btn-outline-dark pro-operation-button" @click="getTestPage" :class="[showTest ? 'pro-operation-button-click' : '']" data-toggle="tooltip" data-placement="bottom" >{{$t('projectOperation.test')}}</button>        
-      </div>
+      </div> -->
     </div>
     <div class="pro-operation-border">
       <div v-show="showConfig" class="pro-operation-height">
@@ -93,38 +93,10 @@
       this.getPage();
     },
     computed: {
-      /*
-        projectInfo:{
-          info:{
-            abi:'',
-            code:'',
-            contract_hash:'',
-            created_at:'',
-            id:'',
-            info_author:'',
-            info_desc:'',
-            info_email:'',
-            info_name:'',
-            info_version:'',
-            language:'',
-            name:'',
-            nvm_byte_code:'',
-            type:'',
-            updated_at:'',
-            user_id:'',
-            wat:''
-        }，
-        projectName:{
-          info:{
-            id:'',
-            language:'',
-            projectName:'',
-          }
-        }
-       */
       ...mapState({
         projectInfo: state => state.ProjectInfoPage.ProjectInfo,
         projectName: state => state.ProjectInfoPage.ProjectName,
+        vmType: state => state.Config.vmType
       })
     },
     methods: {

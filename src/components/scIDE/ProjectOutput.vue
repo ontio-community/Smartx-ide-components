@@ -5,32 +5,34 @@
         <div class="col-auto pro-output-btn-left">
           <button class="btn btn-sm btn-outline-secondary pro-output-btn-event" @click="showLogPage" :class="[showLog ? 'pro-output-button-click' : '']">{{ $t('project.logs')}}</button>
         </div>
-        <div class="col-auto pro-output-btn-center">
+        <div class="col-auto pro-output-btn-center" v-if="vmType === VM_TYPE.NEOVM">
           <button class="btn btn-sm btn-outline-secondary pro-output-btn-event" @click="showEvaluationStackPage" :class="[showEvaluationStack ? 'pro-output-button-click' : '']">{{ $t('project.evaluationStack')}}</button>
         </div>
-        <div class="col-auto pro-output-btn-center">
+        <div class="col-auto pro-output-btn-center" v-if="vmType === VM_TYPE.NEOVM">
           <button class="btn btn-sm btn-outline-secondary pro-output-btn-event" @click="showAltStackPage" :class="[showAltStack ? 'pro-output-button-click' : '']">{{ $t('project.altStack')}}</button>
         </div>
-        <div class="col-auto pro-output-btn-center">
+        <div class="col-auto pro-output-btn-center" v-if="vmType === VM_TYPE.NEOVM">
           <button class="btn btn-sm btn-outline-secondary pro-output-btn-event" @click="showHistoryPage" :class="[showHistory ? 'pro-output-button-click' : '']">{{ $t('project.history')}}</button>
         </div>
-        <div class="col-auto pro-output-btn-center">
+        <div class="col-auto pro-output-btn-center" v-if="vmType === VM_TYPE.NEOVM">
           <button class="btn btn-sm btn-outline-secondary pro-output-btn-event" @click="showLocalsPage" :class="[showLocals ? 'pro-output-button-click' : '']">{{ $t('project.locals')}}</button>
         </div>
-        <div class="col-auto mr-auto pro-output-btn-center">
+        <div class="col-auto mr-auto pro-output-btn-center" v-if="vmType === VM_TYPE.NEOVM">
           <button class="btn btn-sm btn-outline-secondary pro-output-btn-event" @click="showStoragePage" :class="[showStorage ? 'pro-output-button-click' : '']">{{ $t('project.storage')}}</button>
         </div>
-        <div class="col-auto pro-output-btn">
-          <div @click="resume" data-toggle="tooltip" data-placement="bottom" :title="$t('project.continue')"><i class="fa fa-play pro-output-fa-trash"></i></div>
-        </div>
-        <div class="col-auto pro-output-btn">
-          <div @click="stop" data-toggle="tooltip" data-placement="bottom" :title="$t('project.stop')"><i class="fa fa-stop pro-output-fa-trash"></i></div>
-        </div>
-        <div class="col-auto pro-output-btn">
-          <div @click="stepOver" data-toggle="tooltip" data-placement="bottom" :title="$t('project.stepOverLine')"><i class="fa fa-level-down pro-output-fa-trash"></i></div>
-        </div>
-        <div class="col-auto pro-output-btn">
-          <div @click="stepOverOpcode" data-toggle="tooltip" data-placement="bottom" :title="$t('project.stepOverOpcode')"><i class="fa fa-long-arrow-down pro-output-fa-trash"></i></div>
+        <div class="debug-container" v-if="vmType === VM_TYPE.NEOVM">
+            <div class="col-auto pro-output-btn" >
+                <div @click="resume" data-toggle="tooltip" data-placement="bottom" :title="$t('project.continue')"><i class="fa fa-play pro-output-fa-trash"></i></div>
+            </div>
+            <div class="col-auto pro-output-btn">
+                <div @click="stop" data-toggle="tooltip" data-placement="bottom" :title="$t('project.stop')"><i class="fa fa-stop pro-output-fa-trash"></i></div>
+            </div>
+            <div class="col-auto pro-output-btn">
+                <div @click="stepOver" data-toggle="tooltip" data-placement="bottom" :title="$t('project.stepOverLine')"><i class="fa fa-level-down pro-output-fa-trash"></i></div>
+            </div>
+            <div class="col-auto pro-output-btn">
+                <div @click="stepOverOpcode" data-toggle="tooltip" data-placement="bottom" :title="$t('project.stepOverOpcode')"><i class="fa fa-long-arrow-down pro-output-fa-trash"></i></div>
+            </div>
         </div>
         <div class="col-auto pro-output-btn">
           <div @click="cleanLog"><i class="fa fa-trash-o pro-output-fa-trash"></i></div>
@@ -279,7 +281,7 @@
   }
 
   .pro-output-btn-event {
-    width: 100px;
+    width: 120px;
     height: 26px;
     margin-top: 1px;
     border-radius:0;
@@ -317,6 +319,11 @@
 
   .pro-output-btn{
     margin-right: 12px;
+  }
+
+  .debug-container {
+      display: flex;
+      flex-direction: row;
   }
 
 </style>

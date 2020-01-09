@@ -8,9 +8,8 @@ export const PROJECT_LANGAUGE = {
 }
 
 export const VM_TYPE = {
-  NativeVM : 0xFF,
-  NEOVM    : 0x80,
-  WASMVM   : 0x90
+  NEOVM    : 1,
+  WASMVM   : 3
 }
 
 export const OP_TYPE = {
